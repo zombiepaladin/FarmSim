@@ -38,7 +38,7 @@
     defined. Use this list to locate code in this document:
 
 		SimlatorGuiMorph
-        CropIDE_Morph
+        CropSystemMorph
 
 
     credits
@@ -70,7 +70,7 @@ modules.crop_gui = '2013-November-07';
 // Declarations
 
 var SimulatorMorph;
-var CropIDE_Morph;
+var CropSystemMorph;
 var CropIconMorph;
 
 var ControlBarMorph;
@@ -324,7 +324,7 @@ SimulatorMorph.prototype.createCropSystem = function() {
 		this.cropSystem.destroy();
 	}
 	
-	this.cropSystem = new CropIDE_Morph(undefined);
+	this.cropSystem = new CropSystemMorph(undefined);
 	this.add(this.cropSystem);
 	if(this.currentSystem !== 'crops') this.cropSystem.hide();
 };
@@ -393,27 +393,27 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	
 	
 
-// CropIDE_Morph /////////////////////////////////////////////////////////
+// CropSystemMorph /////////////////////////////////////////////////////////
 
-// I am FarmSim's crop editor panel
+// I am FarmSim's crop system editor panel
 
-// CropIDE_Morph inherits from Morph:
+// CropSystemMorph inherits from Morph:
 
-CropIDE_Morph.prototype = new Morph();
-CropIDE_Morph.prototype.constructor = CropIDE_Morph;
-CropIDE_Morph.uber = Morph.prototype;
+CropSystemMorph.prototype = new Morph();
+CropSystemMorph.prototype.constructor = CropSystemMorph;
+CropSystemMorph.uber = Morph.prototype;
 
-// CropIDE_Morph preferences settings and skins
+// CropSystemMorph preferences settings and skins
 
 // ... to follow ...
 
-// CropIDE_Morph instance creation:
+// CropSystemMorph instance creation:
 
-function CropIDE_Morph(aCrop) {
+function CropSystemMorph(aCrop) {
     this.init(aCrop);
 }
 
-CropIDE_Morph.prototype.init = function (aCrop) {
+CropSystemMorph.prototype.init = function (aCrop) {
 
     // additional properties
 	this.crop = aCrop; // || new CropSpriteMorph();
@@ -429,7 +429,7 @@ CropIDE_Morph.prototype.init = function (aCrop) {
 	this.corralBar = null;
 	this.corral = null;
 	this.pallette = null;
-	this.cropBar = null;
+	this.editorBar = null;
 	this.tabBar = null;
 	this.cropEditor = null;
 	
@@ -437,7 +437,7 @@ CropIDE_Morph.prototype.init = function (aCrop) {
 	this.setHeight(429);
 	
 	// initialize inherited properties
-	CropIDE_Morph.uber.init.call(this);
+	CropSystemMorph.uber.init.call(this);
 	
 	// configure inherited properties
 	this.fps = 2;
@@ -452,7 +452,7 @@ CropIDE_Morph.prototype.init = function (aCrop) {
 	this.createCropEditor();
 };
 
-CropIDE_Morph.prototype.createStageBar = function () {
+CropSystemMorph.prototype.createStageBar = function () {
 	if(this.stageBar) {
 		this.stageBar.destroy();
 	}
@@ -466,7 +466,7 @@ CropIDE_Morph.prototype.createStageBar = function () {
 	this.add(this.stageBar);
 };
 
-CropIDE_Morph.prototype.createStage = function () {
+CropSystemMorph.prototype.createStage = function () {
 	// assumes stageBar has already been created
 	if(this.stage) {
 		this.stage.destroy();
@@ -477,7 +477,7 @@ CropIDE_Morph.prototype.createStage = function () {
 	this.add(this.stage);
 };
 
-CropIDE_Morph.prototype.createCorralBar = function () {
+CropSystemMorph.prototype.createCorralBar = function () {
 	// assumes stage has already been created
 	if(this.corralBar) {
 		this.corralBar.destroy();
@@ -490,7 +490,7 @@ CropIDE_Morph.prototype.createCorralBar = function () {
 	this.add(this.corralBar);
 };
 
-CropIDE_Morph.prototype.createCorral = function () {
+CropSystemMorph.prototype.createCorral = function () {
 	// assumes corralBar has already been created
 	var frame, template, padding = 5, myself = this;
 	
@@ -573,13 +573,23 @@ CropIDE_Morph.prototype.createCorral = function () {
 	};
 };
 
-CropIDE_Morph.prototype.createTabBar = function() {
+CropSystemMorph.prototype.createEditorBar = function() {
+	var myself = this;
+	
+	if (this.editorBar) {
+		this.editorBar.destroy();
+	}
+	
+	
+}
+
+CropSystemMorph.prototype.createTabBar = function() {
 	var tab,
 		tabCorner = 15,
-		tabColors = [new Color(220,100,100), new Color(100,220,100), new Color(100,100,220)],
+		tabColors = SimulatorMorph.prototype.tabColors,
 		myself = this;
 		
-	if(this.tabBar) {
+	if (this.tabBar) {
 		this.tabBar.destroy();
 	}
 	
@@ -600,8 +610,8 @@ CropIDE_Morph.prototype.createTabBar = function() {
 	tab = new TabMorph(
 		tabColors,
 		null, // target
-		function () {tabBar.tabTo('scripts');},
-		localize('Scropts'), // label
+		function () {myself.tabBar.tabTo('scripts');},
+		localize('Scripts'), // label
 		function () { // query
 			return myself.currentTab === 'stages';
 		}
@@ -619,7 +629,7 @@ CropIDE_Morph.prototype.createTabBar = function() {
 	tab = new TabMorph(
 		tabColors,
 		null, // target
-		function () {tabBar.tabTo('stages');},
+		function () {this.tabBar.tabTo('stages');},
 		localize('Costumes'), // label
 		function () { // query
 			return myself.currentTab === 'stages';
@@ -633,16 +643,16 @@ CropIDE_Morph.prototype.createTabBar = function() {
 	tab.labelColor = this.buttonLabelColor;
 	tab.drawNew();
 	tab.fixLayout();
-	//this.tabBar.add(tab);
+	this.tabBar.add(tab);
 	
 	this.tabBar.fixLayout();
 	this.tabBar.children.forEach(function (each) {
 		each.refresh();
 	});
-	this.add(this.tabBar);
+	//this.add(this.tabBar);
 }
 
-CropIDE_Morph.prototype.createCropEditor = function() {
+CropSystemMorph.prototype.createCropEditor = function() {
 	// assumes the stage has already been created
 	var scripts = undefined; //this.currentCrop.scripts,
 		myself = this;
@@ -675,7 +685,7 @@ CropIDE_Morph.prototype.createCropEditor = function() {
 };
 
 
-CropIDE_Morph.prototype.fixLayout = function () {
+CropSystemMorph.prototype.fixLayout = function () {
 	
 	this.stageBar.setPosition(this.topLeft().add(5));
 	this.stage.setPosition(this.stageBar.bottomLeft());
@@ -688,8 +698,8 @@ CropIDE_Morph.prototype.fixLayout = function () {
 	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
 	this.tabBar.setHeight(30);
 	this.cropEditor.setPosition(this.tabBar.bottomLeft());
-	this.cropEditor.setWidth(this.tabBar.width());
-	this.cropEditor.setHeight(this.height() - this.tabBar.height() - 20);
+	this.cropEditor.setWidth(this.width() - this.stageBar.width() - 30);
+	this.cropEditor.setHeight(this.height() - this.tabBar.height() - 10);
 	
 	console.log("fixLayout");
 	console.log(this);
