@@ -1,6 +1,6 @@
 /*
 
-    crop_gui.js
+    simulator.js
 
     a sumulation programming environment
     based on morphic.js, blocks.js, threads.js and objects.js
@@ -37,8 +37,7 @@
     the following list shows the order in which all constructors are
     defined. Use this list to locate code in this document:
 
-		SimlatorGuiMorph
-        CropSystemMorph
+		SimlatorMorph
 
 
     credits
@@ -70,10 +69,6 @@ modules.crop_gui = '2013-November-07';
 // Declarations
 
 var SimulatorMorph;
-var CropSystemMorph;
-var CropIconMorph;
-
-var ControlBarMorph;
 
 
 // SimulatorMorph /////////////////////////////////////////////////////
@@ -129,6 +124,7 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.logo = null;
 	this.systemSelectBar = null;
 	this.cropSystem = null;
+	this.soilSystem = null;
 	
 	// gui settings:
 	this.isAutoFill = isAutoFill || true;
@@ -168,9 +164,13 @@ SimulatorMorph.prototype.openIn = function(world) {
 // SimulatorMorph construction
 
 SimulatorMorph.prototype.buildPanes = function() {
+
+	console.log("create build panels");
+	
 	this.createLogo();
 	this.createSystemSelectBar();
 	this.createCropSystem();
+	this.createSoilSystem();
 };
 	
 SimulatorMorph.prototype.createLogo = function() {
@@ -320,6 +320,8 @@ SimulatorMorph.prototype.createCropSystem = function() {
 	// assumes systemSelectBar has already been created
 	var myself = this;
 	
+	console.log("create crop system");
+	
 	if (this.cropSystem) {
 		this.cropSystem.destroy();
 	}
@@ -328,6 +330,24 @@ SimulatorMorph.prototype.createCropSystem = function() {
 	this.add(this.cropSystem);
 	if(this.currentSystem !== 'crops') this.cropSystem.hide();
 };
+
+SimulatorMorph.prototype.createSoilSystem = function() {
+	
+	console.log("create soil system.");
+	
+	var myself = this;
+	
+	if( this.soilSystem) {
+		this.soilSystem.Destroy();
+	}
+	
+	this.soilSystem = new SoilSystemMorph(undefined); // pass in undefined for default soil.
+
+	this.add(this.soilSystem); // add soil system to the main system
+	
+	if( this.currentSystem != 'soils') this.soilSystem.hide(); // if soil system isn't selected, hide it.
+}
+
 
 // SimulatorMorph layout
 
@@ -345,6 +365,12 @@ SimulatorMorph.prototype.fixLayout = function (situation) {
 	this.cropSystem.setWidth(this.systemSelectBar.width());
 	this.cropSystem.setHeight(this.height() - this.systemSelectBar.bottom());
 	this.cropSystem.fixLayout();
+	
+	// soil system
+	this.soilSystem.setPosition(this.systemSelectBar.bottomLeft());
+	this.soilSystem.setWidth(this.systemSelectBar.width());
+	this.soilSystem.setHeight(this.height() - this.systemSelectBar.bottom());
+	this.soilSystem.fixLayout();
 	
 	Morph.prototype.trackChanges = true;
 	this.changed();
@@ -384,6 +410,11 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	switch (system) {
 		case 'crops':
 			this.cropSystem.show();
+			console.log("switch to crop system");
+			break;
+		case 'soils':
+			this.soilSystem.show();
+			console.log("switch to soil system");
 			break;
 	}
 	
@@ -391,421 +422,3 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 };
 	
 	
-	
-
-// CropSystemMorph /////////////////////////////////////////////////////////
-
-// I am FarmSim's crop system editor panel
-
-// CropSystemMorph inherits from Morph:
-
-CropSystemMorph.prototype = new Morph();
-CropSystemMorph.prototype.constructor = CropSystemMorph;
-CropSystemMorph.uber = Morph.prototype;
-
-// CropSystemMorph preferences settings and skins
-
-// ... to follow ...
-
-// CropSystemMorph instance creation:
-
-function CropSystemMorph(aCrop) {
-    this.init(aCrop);
-}
-
-CropSystemMorph.prototype.init = function (aCrop) {
-
-    // additional properties
-	this.crop = aCrop; // || new CropSpriteMorph();
-	
-	this.globalVariables = new VariableFrame();
-	this.crops = new List([]);
-	this.currentCategory = 'motion';
-	this.currentTab = 'scripts';
-	this.stageDimensions = new Point(240, 160);
-	
-	this.stageBar = null;
-	this.stage = null;
-	this.corralBar = null;
-	this.corral = null;
-	this.pallette = null;
-	this.editorBar = null;
-	this.tabBar = null;
-	this.cropEditor = null;
-	
-	this.setWidth(910);
-	this.setHeight(429);
-	
-	// initialize inherited properties
-	CropSystemMorph.uber.init.call(this);
-	
-	// configure inherited properties
-	this.fps = 2;
-	this.setColor(new Color(20, 200, 20)); 
-	
-	// build panes
-	this.createStageBar();
-	this.createStage();
-	this.createCorralBar();
-	this.createCorral();
-	this.createTabBar();
-	this.createCropEditor();
-};
-
-CropSystemMorph.prototype.createStageBar = function () {
-	if(this.stageBar) {
-		this.stageBar.destroy();
-	}
-	this.stageBar = new ControlBarMorph();
-	this.stageBar.setWidth(this.stageDimensions.x);
-	this.stageBar.setHeight(30);
-	this.stageBar.corner = 10;
-	this.stageBar.setColor(new Color(244, 20, 20));
-	
-	
-	this.add(this.stageBar);
-};
-
-CropSystemMorph.prototype.createStage = function () {
-	// assumes stageBar has already been created
-	if(this.stage) {
-		this.stage.destroy();
-	}
-	StageMorph.prototype.framerate = 0;
-	this.stage = new StageMorph(this.globalVariables/* this.globalVariables? */);
-	this.stage.setExtent(this.stageDimensions); // dimensions are fixed
-	this.add(this.stage);
-};
-
-CropSystemMorph.prototype.createCorralBar = function () {
-	// assumes stage has already been created
-	if(this.corralBar) {
-		this.corralBar.destroy();
-	}
-	this.corralBar = new ControlBarMorph();
-	
-	this.corralBar.add( new StringMorph("Crops") );
-	this.corralBar.setWidth(this.stageDimensions.x);
-	this.corralBar.setHeight(30);
-	this.add(this.corralBar);
-};
-
-CropSystemMorph.prototype.createCorral = function () {
-	// assumes corralBar has already been created
-	var frame, template, padding = 5, myself = this;
-	
-	if (this.corral) {
-		this.corral.destroy();
-	}
-	
-	this.corral = new ScrollFrameMorph(null, null, this.sliderColor);
-	this.corral.acceptsDrops = false;
-	this.corral.contents.acceptsDrops = false;
-	
-	this.corral.contents.wantsDropOf = function (morph) {
-		return morph instanceof CropSpriteIconMorph;
-	};
-	
-	this.corral.contents.reactToDropOf = function (cropIcon) {
-		myself.corral.reactToDropOf(cropIcon);
-	};
-	
-	this.crops.asArray().forEach(function(morph) {
-		template = new CropSpriteIconMorph(morph, template);
-		this.corral.contents.add(template);
-	});
-	
-	this.add(this.corral);
-	
-	this.corral.fixLayout = function() {
-		console.log(this.width());
-		console.log(this.height());
-		this.arrangeIcons();
-		this.refresh();
-	}
-	
-	this.corral.arrangeIcons = function() {
-		var x = this.left(),
-			y = this.top(),
-			max = this.right(),
-			start = this.left();
-		
-		this.contents.children.forEach(function (icon) {
-			var w = icon.width();
-			
-			if (x + w > max) {
-				x = start;
-				y += icon.height(); 
-			}
-			icon.setPosition(new Point(x, y));
-			x += 2;
-		});
-		this.contents.adjustBounds();
-	};
-	
-	this.corral.addCrop = function (crop) {
-		this.contents.add(new CropIconMorph(crop));
-		this.fixLayout();
-	};
-	
-	this.corral.refresh = function () {
-		this.contents.children.forEach(function(icon) {
-			icon.refresh();
-		});
-	};
-	
-	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof cropIconMorph;
-	};
-	
-	this.corral.reactToDropOf = function (cropIcon) {
-		var idx = 1,
-			pos = cropIcon.position();
-		cropIcon.destroy();
-		this.contents.children.forEach(function (icon) {
-			if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
-				idx += 1;
-			}
-		});
-		myself.crops.add(spriteIcon.object, idx);
-		myself.createCorral();
-		myself.fixLayout();
-	};
-};
-
-CropSystemMorph.prototype.createEditorBar = function() {
-	var myself = this;
-	
-	if (this.editorBar) {
-		this.editorBar.destroy();
-	}
-	
-	
-}
-
-CropSystemMorph.prototype.createTabBar = function() {
-	var tab,
-		tabCorner = 15,
-		tabColors = SimulatorMorph.prototype.tabColors,
-		myself = this;
-		
-	if (this.tabBar) {
-		this.tabBar.destroy();
-	}
-	
-	this.tabBar = new AlignmentMorph('row', -tabCorner * 2);
-	
-	this.tabBar.tabTo = function (tabString) {
-		var active;
-		myself.currentTab = tabString;
-		this.children.forEach(function (each) {
-			each.refresh();
-			if(each.state) {active = each;}
-		});
-		active.refresh(); // needed when programmatically tabbing
-		myself.createCropEditor();
-		myself.fixLayout('tabEditor');
-	};
-	
-	tab = new TabMorph(
-		tabColors,
-		null, // target
-		function () {myself.tabBar.tabTo('scripts');},
-		localize('Scripts'), // label
-		function () { // query
-			return myself.currentTab === 'stages';
-		}
-	);
-	tab.padding = 3;
-	tab.corner = tabCorner;
-	tab.edge = 1;
-	tab.labelShadowOffset = new Point(-1, -1);
-	tab.labelShadowColor = tabColors[1];
-	tab.labelColor = this.buttonLabelColor;
-	tab.drawNew();
-	tab.fixLayout();
-	//this.tabBar.add(tab);
-	
-	tab = new TabMorph(
-		tabColors,
-		null, // target
-		function () {this.tabBar.tabTo('stages');},
-		localize('Costumes'), // label
-		function () { // query
-			return myself.currentTab === 'stages';
-		}
-	);
-	tab.padding = 3;
-	tab.corner = tabCorner;
-	tab.edge = 1;
-	tab.labelShadowOffset = new Point(-1, -1);
-	tab.labelShadowColor = tabColors[1];
-	tab.labelColor = this.buttonLabelColor;
-	tab.drawNew();
-	tab.fixLayout();
-	this.tabBar.add(tab);
-	
-	this.tabBar.fixLayout();
-	this.tabBar.children.forEach(function (each) {
-		each.refresh();
-	});
-	//this.add(this.tabBar);
-}
-
-CropSystemMorph.prototype.createCropEditor = function() {
-	// assumes the stage has already been created
-	var scripts = undefined; //this.currentCrop.scripts,
-		myself = this;
-		
-	if(this.cropEditor) {
-		this.cropEditor.destroy();
-	}
-	
-	if (this.currentTab === 'scripts') {
-		//scripts.isDraggable = false;
-		
-		this.cropEditor = new ScrollFrameMorph(
-			scripts,
-			null,
-			this.sliderColor
-		);
-		this.cropEditor.padding = 10;
-		this.cropEditor.growth = 50;
-		this.cropEditor.isDraggable = false;
-		this.cropEditor.acceptsDrops = false;
-		this.cropEditor.contents.acceptsDrops = true;
-		
-		//scripts.scrollFrame = this.cropEditor
-		this.add(this.cropEditor);
-		this.cropEditor.scrollX(this.cropEditor.padding);
-		this.cropEditor.scrollY(this.cropEditor.padding);
-	} else if (this.currentTab === 'stages') {
-		// Wardrobe
-	}
-};
-
-
-CropSystemMorph.prototype.fixLayout = function () {
-	
-	this.stageBar.setPosition(this.topLeft().add(5));
-	this.stage.setPosition(this.stageBar.bottomLeft());
-	this.corralBar.setPosition(this.stage.bottomLeft().add(new Point(0,10)));
-	this.corral.setPosition(this.corralBar.bottomLeft());
-	this.corral.setWidth(this.corralBar.width());
-	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
-	this.corral.fixLayout();
-	this.tabBar.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
-	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
-	this.tabBar.setHeight(30);
-	this.cropEditor.setPosition(this.tabBar.bottomLeft());
-	this.cropEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.cropEditor.setHeight(this.height() - this.tabBar.height() - 10);
-	
-	console.log("fixLayout");
-	console.log(this);
-	console.log(this.children);
-};
-
-// CropIconMorph ////////////////////////////////////////////////////
-
-/*
-    I am a selectable element in the CropEditor's "Crops" tab, keeping
-    a self-updating thumbnail of the crop I'm respresenting, and a
-    self-updating label of the crop's name (in case it is changed
-    elsewhere)
-*/
-
-// CropIconMorph inherits from ToggleButtonMorph (Widgets)
-// ... and copies methods from SpriteIconMorph
-
-CropIconMorph.prototype = new ToggleButtonMorph();
-CropIconMorph.prototype.constructor = CropIconMorph;
-CropIconMorph.uber = ToggleButtonMorph.prototype;
-
-// CropIconMorph settings
-
-CropIconMorph.prototype.thumbSize = new Point(80, 60);
-CropIconMorph.prototype.labelShadowOffset = null;
-CropIconMorph.prototype.labelColor = new Color(255, 255, 255);
-CropIconMorph.prototype.fontSize = 9;
-
-// CropIconMorph instance creation:
-
-function CropIconMorph(aCrop, aTemplate) {
-	this.init(aCrop, aTemplate);
-}
-
-CropIconMorph.prototype.init = function (aCrop, aTemplate) {
-	var colors, action, query, myself = this;
-	
-	if(!aTemplate) {
-		colors = [
-			IDE_Morph.prototype.groupColor,
-			IDE_Morph.prototype.frameColor,
-			IDE_Morph.prototype.frameColor
-		];
-	}
-}
-
-
-// ControlBarMorph ///////////////////////////////////////
-
-// I am a bar with rounded corners
-
-// ControlBarMorph inherits from BoxMorph:
-
-ControlBarMorph.prototype = new BoxMorph();
-ControlBarMorph.prototype.constructor = ControlBarMorph;
-ControlBarMorph.uber = BoxMorph.prototype;
-
-// ControlBarMorph preference settings:
-
-ControlBarMorph.corner = 5;
-
-// ControlBarMorph instance creation:
-
-function ControlBarMorph(edge, border, borderColor){
-	this.init(edge, border, borderColor);
-}
-
-ControlBarMorph.init = function(edge, border, borderColor) {
-	// initialize inherited properties
-	ControlBarMorph.uber.init.call(this, edge, border, borderColor);
-}
-
-// ControlBarMorph drawing
-
-ControlBarMorph.prototype.outlinePath = function (context, radius, inset) {
-    var offset = radius + inset,
-        w = this.width(),
-        h = this.height();
-
-    // top left:
-    context.arc(
-        offset,
-        offset,
-        radius,
-        radians(-180),
-        radians(-90),
-        false
-    );
-    // top right:
-    context.arc(
-        w - offset,
-        offset,
-        radius,
-        radians(-90),
-        radians(-0),
-        false
-    );
-    // bottom right:
-    context.lineTo(
-        w - inset,
-        h - inset
-    );
-    // bottom left:
-    context.lineTo(
-        inset,
-        h - inset
-    );
-};
