@@ -108,13 +108,14 @@ SoilSystemMorph.prototype.init = function(aSoil){
 	this.currentTab = 'scripts';
 	this.stageDimensions = new Point(240, 160);
 	
+	// The morphs associated with this system
 	this.stageBar = null;
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;
-	this.editorBar = null;
-	this.tabBar = null;
+	this.pallette = null;  // not in use.
+	this.editorBar = null; // not in use.
+	this.tabBar = null;    // not in use.
 	this.soilEditor = null;
 	
 	this.setWidth(910);
@@ -189,7 +190,7 @@ SoilSystemMorph.prototype.createCorralBar = function(){
 	this.corralBar = new ControlBarMorph();
 	
 	// define its properties.
-	this.corralBar.add( new StringMorph("Soils") );
+	this.corralBar.add( new StringMorph("    Soils") );
 	this.corralBar.setWidth(this.stageDimensions.x);
 	this.corralBar.setHeight(30);
 	
@@ -225,7 +226,7 @@ SoilSystemMorph.prototype.createCorral = function(){
 	};
 	
 	this.soils.asArray().forEach( function(morph) {
-		template = new SoilSpriteIconMorph( morph, template);
+		template = new SoilIconMorph( morph, template);
 		this.corral.contents.add(template);
 	});
 	
@@ -258,8 +259,8 @@ SoilSystemMorph.prototype.createCorral = function(){
 		this.contents.adjustBounds();
 	};
 	
-	this.corral.addSoil = function() {
-		this.contents.add( SoilIconMorph(soil) );
+	this.corral.addSoil = function(soil) {
+		this.contents.add( new SoilIconMorph(soil) );
 		this.fixLayout();
 	};
 	
@@ -270,7 +271,7 @@ SoilSystemMorph.prototype.createCorral = function(){
 	};
 	
 	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof soildIconMorph;
+		return morph instanceof SoilIconMorph;
 	};
 	
 	this.corral.reactToDropOf = function (soilIcon) {
@@ -362,8 +363,7 @@ SoilSystemMorph.prototype.fixLayout = function() {
 	
 }
 
-
-// SoilIconMorph ////////////////////////////////////////////////////
+// SoiilIconMorph ////////////////////////////////////////////////////
 
 /*
     I am a selectable element in the SoilEditor's "Soils" tab, keeping
@@ -379,19 +379,18 @@ SoilIconMorph.prototype = new ToggleButtonMorph();
 SoilIconMorph.prototype.constructor = SoilIconMorph;
 SoilIconMorph.uber = ToggleButtonMorph.prototype;
 
-// CSoilIconMorph settings
-
+// SoilIconMorph settings
 SoilIconMorph.prototype.thumbSize = new Point(80, 60);
 SoilIconMorph.prototype.labelShadowOffset = null;
-SoilIconMorph.prototype.labelColor = new Color(255, 255, 255);
+SoilIconMorph.prototype.labelColor = new Color(255, 255, 255); // RGB white
 SoilIconMorph.prototype.fontSize = 9;
 
-// SoilIconMorph instance creation:
-
+// Soil Icon instance creation:
 function SoilIconMorph(aSoil, aTemplate) {
 	this.init(aSoil, aTemplate);
 }
 
+// soil icon init function
 SoilIconMorph.prototype.init = function (aSoil, aTemplate) {
 	var colors, action, query, myself = this;
 	

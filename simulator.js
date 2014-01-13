@@ -126,8 +126,8 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.cropSystem = null;
 	this.soilSystem = null;
 	this.weatherSystem = null;
-	this.diseaseSystem = null;
-	this.pestSystem = null;
+	this.diseaseSystem = null; // not implimented yet
+	this.pestSystem = null;    // not implimented yet
 	
 	// gui settings:
 	this.isAutoFill = isAutoFill || true;
@@ -174,6 +174,7 @@ SimulatorMorph.prototype.buildPanes = function() {
 	this.createSystemSelectBar();
 	this.createCropSystem();
 	this.createSoilSystem();
+	this.createWeatherSystem();
 };
 	
 SimulatorMorph.prototype.createLogo = function() {
@@ -309,7 +310,7 @@ SimulatorMorph.prototype.createSystemSelectBar = function () {
     }
 
 	// TODO: Systems should probably be moved!
-	['farm ops', 'crops', 'soils', 'weather', 'equipment', 'markets'].forEach(function(system) {
+	['farm ops', 'crops', 'soils', 'weathers', 'equipment', 'markets'].forEach(function(system) {
 		addSystemButton(system);
 	});
     fixSystemSelectBarLayout();
@@ -319,6 +320,7 @@ SimulatorMorph.prototype.createSystemSelectBar = function () {
     this.add(this.systemSelectBar);
 };
 
+// This funciton creates the crop system to be displayed on the main page.
 SimulatorMorph.prototype.createCropSystem = function() {
 	// assumes systemSelectBar has already been created
 	var myself = this;
@@ -334,6 +336,7 @@ SimulatorMorph.prototype.createCropSystem = function() {
 	if(this.currentSystem !== 'crops') this.cropSystem.hide();
 };
 
+// This funciton creates the soil system to be displayed on the main page.
 SimulatorMorph.prototype.createSoilSystem = function() {
 	
 	console.log("create soil system.");
@@ -348,9 +351,30 @@ SimulatorMorph.prototype.createSoilSystem = function() {
 
 	this.add(this.soilSystem); // add soil system to the main system
 	
-	if( this.currentSystem != 'soils') this.soilSystem.hide(); // if soil system isn't selected, hide it.
+	if( this.currentSystem != 'soils') {
+		this.soilSystem.hide(); // if soil system isn't selected, hide it.
+	}
 }
 
+// this function creates the weather systems to be displayed on the main page.
+SimulatorMorph.prototype.createWeatherSystem = function() {
+	
+	console.log("create weather system.");
+	
+	var mysel = this;
+	
+	// remove any already created weather systems.
+	if( this.weatherSystem) {
+		this.weatherSystem.destroy();
+	}
+	
+	this.weatherSystem = new WeatherSystemMorph(undefined); // pass in undefined for the default weather.
+	
+	this.add(this.weatherSystem);
+	if( this.currentSystem != 'weathers') {
+		this.weatherSystem.hide(); // if the weather system isn't selected, hide it.
+	}
+};
 
 // SimulatorMorph layout
 
@@ -410,16 +434,18 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	
 	this.cropSystem.hide();
 	this.soilSystem.hide();
+	this.weatherSystem.hide();
 	
 	switch (system) {
 		case 'crops':
 			this.cropSystem.show();
-			console.log("switch to crop system");
 			break;
 		case 'soils':
 			this.soilSystem.show();
-			console.log("switch to soil system");
 			break;
+		case 'weathers':
+			this.weatherSystem.show();
+		break;
 	}
 	
 	this.fixLayout();
