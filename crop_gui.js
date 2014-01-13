@@ -330,9 +330,9 @@ SimulatorMorph.prototype.createCropSystem = function() {
 	this.cropSystem = new CropIDE_Morph(undefined);
 	this.cropSystem.fixLayout = function () {
 		if(this.systemSelectBar){
-		this.setPosition(this.systemSelectBar.bottomLeft());
-		this.setWidth(this.systemSelectBar.width());
-		this.setHeight(this.height() - this.systemSelectBar.bottom());
+			this.setPosition(this.systemSelectBar.bottomLeft());
+			this.setWidth(this.systemSelectBar.width());
+			this.setHeight(this.height() - this.systemSelectBar.bottom());
 		}
 	}
 	this.add(this.cropSystem);
@@ -342,16 +342,20 @@ SimulatorMorph.prototype.createCropSystem = function() {
 // SimulatorMorph layout
 
 SimulatorMorph.prototype.fixLayout = function (situation) {
+	var padding = 10;
+	console.log("SimulatorMorph fixLayout");
 
 	Morph.prototype.trackChanges = false;
 	
 	// system select bar
-	if (this.systemSelectBar) {
-		this.systemSelectBar.setWidth(this.width());
-		this.systemSelectBar.fixLayout();
-	}
+	this.systemSelectBar.setWidth(this.width());
+	this.systemSelectBar.fixLayout();
 	
-	if(this.cropSystem) this.cropSystem.fixLayout();
+	// crop system
+	this.cropSystem.setPosition(this.systemSelectBar.bottomLeft());
+	this.cropSystem.setWidth(this.systemSelectBar.width());
+	this.cropSystem.setHeight(this.height() - this.systemSelectBar.bottom());
+	this.cropSystem.fixLayout();
 	
 	Morph.prototype.trackChanges = true;
 	this.changed();
@@ -370,7 +374,9 @@ SimulatorMorph.prototype.setExtent = function (point) {
 
 	ext = point.max(minExt);
 	SimulatorMorph.uber.setExtent.call(this, ext);
-	this.fixLayout();
+	
+	// avoid fixing layout before panels have been created
+	if(this.logo) this.fixLayout();
 };
 
 // SimulatorMorph events
@@ -382,7 +388,7 @@ SimulatorMorph.prototype.reactToWorldResize = function(rect) {
 	}
 };
 
-SimulatorMorph.prototype.rectToSystemSelect = function(system) {
+SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	this.currentSystem = system;
 	
 	this.cropSystem.hide();
@@ -392,6 +398,8 @@ SimulatorMorph.prototype.rectToSystemSelect = function(system) {
 			this.cropSystem.show();
 			break;
 	}
+	
+	this.fixLayout();
 };
 	
 	
