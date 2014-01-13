@@ -993,7 +993,8 @@ IDE_Morph.prototype.createCropSubsystemEditor = function() {
 		this.cropSubsystemEditor.destroy();
 	}
 	
-	this.cropSubsystemEditor = new Morph();
+	this.cropSubsystemEditor = new CropIDE_Morph(undefined);
+	/*
 	this.cropSubsystemEditor.color = this.groupColor;
 	
 	// Crop stage
@@ -1001,18 +1002,7 @@ IDE_Morph.prototype.createCropSubsystemEditor = function() {
     this.cropSubsystemEditor.stage = new StageMorph(this.globalVariables);
 	this.cropSubsystemEditor.stage.setExtent(new Point(480, 360)); // dimensions are fixed
     this.cropSubsystemEditor.add(this.cropSubsystemEditor.stage);
-	
-	this.cropSubsystemEditor.fixLayout = function() {
-		myself.cropSubsystemEditor.setPosition(myself.subsystemBar.bottomLeft());
-		myself.cropSubsystemEditor.setWidth(myself.width());
-		myself.cropSubsystemEditor.setHeight(
-			myself.height() - myself.subsystemBar.bottom()
-		);
-		myself.cropSubsystemEditor.stage.setPosition(
-			myself.cropSubsystemEditor.topLeft()
-		);
-	}
-	
+	*/
 	this.add(this.cropSubsystemEditor);
 	if(this.currentSubsystem !== 'crops') this.cropSubsystemEditor.hide();
 };
@@ -1728,11 +1718,19 @@ IDE_Morph.prototype.fixLayout = function (situation) {
 
     Morph.prototype.trackChanges = false;
 	
-	// Subsystems
+	// Subsystem Bar
 	this.subsystemBar.setPosition(this.logo.bottomLeft());
 	this.subsystemBar.fixLayout();
 	
+	// Crop Editor
+	this.cropSubsystemEditor.setPosition(this.subsystemBar.bottomLeft());
+	this.cropSubsystemEditor.setWidth(this.width());
+	this.cropSubsystemEditor.setHeight(
+		this.height() - this.subsystemBar.bottom()
+	);
 	this.cropSubsystemEditor.fixLayout();
+	
+	
 	this.soilSubsystemEditor.fixLayout();
 	
 	// ModelBar
@@ -6413,3 +6411,4 @@ JukeboxMorph.prototype.reactToDropOf = function (icon) {
     this.sprite.sounds.add(costume, idx);
     this.updateList();
 };
+
