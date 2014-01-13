@@ -125,6 +125,9 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.systemSelectBar = null;
 	this.cropSystem = null;
 	this.soilSystem = null;
+	this.weatherSystem = null;
+	this.diseaseSystem = null;
+	this.pestSystem = null;
 	
 	// gui settings:
 	this.isAutoFill = isAutoFill || true;
@@ -406,6 +409,7 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	this.currentSystem = system;
 	
 	this.cropSystem.hide();
+	this.soilSystem.hide();
 	
 	switch (system) {
 		case 'crops':
