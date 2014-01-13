@@ -110,8 +110,7 @@ function SimulatorMorph(isAutoFill) {
 };
 
 SimulatorMorph.prototype.init = function (isAutoFill) {
-	console.log("init");
-	
+
 	// global font setting
 	MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
 	
@@ -143,7 +142,6 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 };
 
 SimulatorMorph.prototype.openIn = function(world) {
-	console.log("open in world");
 	var myself = this;
 	
 	this.buildPanes();
@@ -170,7 +168,6 @@ SimulatorMorph.prototype.openIn = function(world) {
 // SimulatorMorph construction
 
 SimulatorMorph.prototype.buildPanes = function() {
-	console.log("build panes");
 	this.createLogo();
 	this.createSystemSelectBar();
 	this.createCropSystem();
@@ -328,13 +325,6 @@ SimulatorMorph.prototype.createCropSystem = function() {
 	}
 	
 	this.cropSystem = new CropIDE_Morph(undefined);
-	this.cropSystem.fixLayout = function () {
-		if(this.systemSelectBar){
-			this.setPosition(this.systemSelectBar.bottomLeft());
-			this.setWidth(this.systemSelectBar.width());
-			this.setHeight(this.height() - this.systemSelectBar.bottom());
-		}
-	}
 	this.add(this.cropSystem);
 	if(this.currentSystem !== 'crops') this.cropSystem.hide();
 };
@@ -343,7 +333,6 @@ SimulatorMorph.prototype.createCropSystem = function() {
 
 SimulatorMorph.prototype.fixLayout = function (situation) {
 	var padding = 10;
-	console.log("SimulatorMorph fixLayout");
 
 	Morph.prototype.trackChanges = false;
 	
@@ -364,7 +353,6 @@ SimulatorMorph.prototype.fixLayout = function (situation) {
 // SimulatorMorph resizing
 
 SimulatorMorph.prototype.setExtent = function (point) {
-	console.log("setExent");
 	var minExt,
 		ext;
 		
