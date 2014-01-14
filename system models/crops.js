@@ -188,7 +188,7 @@ CropSystemMorph.prototype.createCorral = function () {
 	};
 	
 	this.crops.asArray().forEach(function(morph) {
-		template = new CropSpriteIconMorph(morph, template);
+		template = new CropIconMorph(morph, template);
 		this.corral.contents.add(template);
 	});
 	
@@ -232,7 +232,7 @@ CropSystemMorph.prototype.createCorral = function () {
 	};
 	
 	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof cropIconMorph;
+		return morph instanceof CropIconMorph;
 	};
 	
 	this.corral.reactToDropOf = function (cropIcon) {

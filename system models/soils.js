@@ -108,13 +108,14 @@ SoilSystemMorph.prototype.init = function(aSoil){
 	this.currentTab = 'scripts';
 	this.stageDimensions = new Point(240, 160);
 	
+	// The morphs associated with this system
 	this.stageBar = null;
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;
-	this.editorBar = null;
-	this.tabBar = null;
+	this.pallette = null;  // not in use.
+	this.editorBar = null; // not in use.
+	this.tabBar = null;    // not in use.
 	this.soilEditor = null;
 	
 	this.setWidth(910);
@@ -132,15 +133,13 @@ SoilSystemMorph.prototype.init = function(aSoil){
 	this.createStage();
 	this.createCorralBar();
 	this.createCorral();
-	//this.createSoilEditor();
+	this.createSoilEditor();
 	
 };
 
-// Define and create the stage bar for the soil page.
+// This function creates the stage bar morph.
 SoilSystemMorph.prototype.createStageBar = function() {
-	
-	console.log("create soil stage bar");
-	
+		
 	// remove any previous stage bars.
 	if(this.stageBar){
 		this.stageBar.destroy();
@@ -159,12 +158,10 @@ SoilSystemMorph.prototype.createStageBar = function() {
 	
 };
 
-// Define and create the stage for the soil page.
+// This function creates the stage window morph.
 SoilSystemMorph.prototype.createStage = function(){
 	
-	console.log("create soil stage");
-	
-	// start with a clean slate, by removing the old stage as necessary.
+	// remove any old stages.
 	if(this.stage){
 		this.stage.destroy();
 	}
@@ -181,12 +178,10 @@ SoilSystemMorph.prototype.createStage = function(){
 	
 };
 
-// define and create the corral bar for the soil page.
+// This function creates the corral bar morph.
 SoilSystemMorph.prototype.createCorralBar = function(){
-	
-	console.log("create soil corral bar");
-	
-	// if there is already a corral bar, remove it.
+
+	// remove any old corral bars
 	if(this.corralBar){
 		this.corralBar.destroy();
 	}
@@ -195,26 +190,21 @@ SoilSystemMorph.prototype.createCorralBar = function(){
 	this.corralBar = new ControlBarMorph();
 	
 	// define its properties.
-	this.corralBar.add( new StringMorph("Soils") );
+	this.corralBar.add( new StringMorph("    Soils") );
 	this.corralBar.setWidth(this.stageDimensions.x);
 	this.corralBar.setHeight(30);
-	
-	
 	
 	// add the new corral bar to the soil system.
 	this.add(this.corralBar);
 	
-	
 };
 
-// define and create the corral window.
+// This function creates the corral window morph.
 SoilSystemMorph.prototype.createCorral = function(){
-	
-	console.log("create corral");
-	
+
 	var frame, template, padding = 5, myself = this;
 	
-	// If it exists, remove the previous corral morph.
+	// remove any old corrals
 	if(this.corral){
 		this.corral.Destroy();
 	}
@@ -236,7 +226,7 @@ SoilSystemMorph.prototype.createCorral = function(){
 	};
 	
 	this.soils.asArray().forEach( function(morph) {
-		template = new SoilSpriteIconMorph( morph, template);
+		template = new SoilIconMorph( morph, template);
 		this.corral.contents.add(template);
 	});
 	
@@ -269,8 +259,8 @@ SoilSystemMorph.prototype.createCorral = function(){
 		this.contents.adjustBounds();
 	};
 	
-	this.corral.addSoil = function() {
-		this.contents.add( SoilIconMorph(soil) );
+	this.corral.addSoil = function(soil) {
+		this.contents.add( new SoilIconMorph(soil) );
 		this.fixLayout();
 	};
 	
@@ -281,7 +271,7 @@ SoilSystemMorph.prototype.createCorral = function(){
 	};
 	
 	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof soildIconMorph;
+		return morph instanceof SoilIconMorph;
 	};
 	
 	this.corral.reactToDropOf = function (soilIcon) {
@@ -303,16 +293,48 @@ SoilSystemMorph.prototype.createCorral = function(){
 	
 };
 
-
-/*
-SoilSystemMorph.prototype.createSoilEditor = function(){
+// This function creates the soil editor window morph.
+SoilSystemMorph.prototype.createSoilEditor = function() {
+	var scripts = undefined;
+	var myself = this;
+	
+	// remove any old soil editors.
 	if(this.soilEditor){
-		this.soilEditor.Destroy();
+		this.soilEditor.destroy();
 	}
+	
+	// if the current tab is on scripts. probably should use a switch case when 
+	// the editor tabs get finalized
+	if(this.currentTab === 'scripts') {
+		
+		// create new soil editor.
+		this.soilEditor = new ScrollFrameMorph(
+			scripts,
+			null,
+			this.sliderColor
+		);
+		
+		// soil editor parameters
+		this.soilEditor.padding = 10;
+		this.soilEditor.growth = 50;
+		this.soilEditor.isDraggable = false;
+		this.soilEditor.acceptsDrops = false;
+		this.soilEditor.contents.acceptsDrops = true;
+		
+		// add the soil editor to the soil system
+		this.add(this.soilEditor);
+		
+		this.soilEditor.scrollX(this.soilEditor.padding);
+		this.soilEditor.scrollY(this.soilEditor.padding);		
+	} else if(this.currentTab === 'stages') {
+		// wardrobe
+	}
+	
+	
+	
 };
-*/
 
-
+// This function places all the morphs in the correct place on the page.
 SoilSystemMorph.prototype.fixLayout = function() {
 
 	this.stageBar.setPosition(this.topLeft().add(5));
@@ -324,44 +346,33 @@ SoilSystemMorph.prototype.fixLayout = function() {
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
+<<<<<<< HEAD:soils.js
+=======
+	
+>>>>>>> e6bfd08a69cd60cf7960afb4fed10f5a26d5c37e:system models/soils.js
 	/*
 	this.tabBar.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
 	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
 	this.tabBar.setHeight(30);
+<<<<<<< HEAD:soils.js
 	this.soilEditor.setPosition(this.tabBar.bottomLeft());
 	this.soilEditor.setWidth(this.width() - this.stageBar.width() - 30);
 	this.soilEditor.setHeight(this.height() - this.tabBar.height() - 10);
+=======
+>>>>>>> e6bfd08a69cd60cf7960afb4fed10f5a26d5c37e:system models/soils.js
 	*/
 	
+	// ??? had to kinda hack soil editor's position because tab bar is being reinvented.
+	this.soilEditor.setPosition( this.stageBar.topRight().add( new Point(10, 18) ) ); // right 10 down 30
+	this.soilEditor.setWidth(this.width() - this.stageBar.width() - 30);
+	this.soilEditor.setHeight(this.height() - 30 - 10);
+	
+	
 	console.log("fixLayout");
-	//console.log(this);
-	//console.log(this.children);
 	
 }
 
-SoilSystemMorph.prototype.createCropEditor = function() {
-	var scripts = undefined;
-	var myself = this;
-	
-	if(this.soilEditor){
-		this.soilEditor.destroy();
-	}
-	
-	if(this.currentTab === 'scripts') {
-		// scripts.isDraggable = false;
-		
-		this.soilEditor = new ScrollFrameMorph
-	
-	}
-	
-	
-	
-};
-
-
-
-
-// SoilIconMorph ////////////////////////////////////////////////////
+// SoiilIconMorph ////////////////////////////////////////////////////
 
 /*
     I am a selectable element in the SoilEditor's "Soils" tab, keeping
@@ -377,19 +388,18 @@ SoilIconMorph.prototype = new ToggleButtonMorph();
 SoilIconMorph.prototype.constructor = SoilIconMorph;
 SoilIconMorph.uber = ToggleButtonMorph.prototype;
 
-// CSoilIconMorph settings
-
+// SoilIconMorph settings
 SoilIconMorph.prototype.thumbSize = new Point(80, 60);
 SoilIconMorph.prototype.labelShadowOffset = null;
-SoilIconMorph.prototype.labelColor = new Color(255, 255, 255);
+SoilIconMorph.prototype.labelColor = new Color(255, 255, 255); // RGB white
 SoilIconMorph.prototype.fontSize = 9;
 
-// SoilIconMorph instance creation:
-
+// Soil Icon instance creation:
 function SoilIconMorph(aSoil, aTemplate) {
 	this.init(aSoil, aTemplate);
 }
 
+// soil icon init function
 SoilIconMorph.prototype.init = function (aSoil, aTemplate) {
 	var colors, action, query, myself = this;
 	
