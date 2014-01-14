@@ -324,11 +324,10 @@ SoilSystemMorph.prototype.fixLayout = function() {
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
-	
+	/*
 	this.tabBar.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
 	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
 	this.tabBar.setHeight(30);
-	/*
 	this.soilEditor.setPosition(this.tabBar.bottomLeft());
 	this.soilEditor.setWidth(this.width() - this.stageBar.width() - 30);
 	this.soilEditor.setHeight(this.height() - this.tabBar.height() - 10);

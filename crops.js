@@ -1,5 +1,4 @@
 /*
-
     crops.js
 
     a sumulation programming environment
@@ -100,7 +99,7 @@ CropSystemMorph.prototype.init = function (aCrop) {
 	this.globalVariables = new VariableFrame();
 	this.crops = new List([]);
 	this.currentCategory = 'motion';
-	this.currentTab = 'scripts';
+	this.currentTab = 'description';
 	this.stageDimensions = new Point(240, 160);
 	
 	this.stageBar = null;
@@ -127,7 +126,6 @@ CropSystemMorph.prototype.init = function (aCrop) {
 	this.createStage();
 	this.createCorralBar();
 	this.createCorral();
-	this.createTabBar();
 	this.createCropEditor();
 };
 
@@ -201,7 +199,7 @@ CropSystemMorph.prototype.createCorral = function () {
 		console.log(this.height());
 		this.arrangeIcons();
 		this.refresh();
-	}
+	};
 	
 	this.corral.arrangeIcons = function() {
 		var x = this.left(),
@@ -252,85 +250,6 @@ CropSystemMorph.prototype.createCorral = function () {
 	};
 };
 
-CropSystemMorph.prototype.createEditorBar = function() {
-	var myself = this;
-	
-	if (this.editorBar) {
-		this.editorBar.destroy();
-	}
-	
-	
-}
-
-CropSystemMorph.prototype.createTabBar = function() {
-	var tab,
-		tabCorner = 15,
-		tabColors = SimulatorMorph.prototype.tabColors,
-		myself = this;
-		
-	if (this.tabBar) {
-		this.tabBar.destroy();
-	}
-	
-	this.tabBar = new AlignmentMorph('row', -tabCorner * 2);
-	
-	this.tabBar.tabTo = function (tabString) {
-		var active;
-		myself.currentTab = tabString;
-		this.children.forEach(function (each) {
-			each.refresh();
-			if(each.state) {active = each;}
-		});
-		active.refresh(); // needed when programmatically tabbing
-		myself.createCropEditor();
-		myself.fixLayout('tabEditor');
-	};
-	
-	tab = new TabMorph(
-		tabColors,
-		null, // target
-		function () {myself.tabBar.tabTo('scripts');},
-		localize('Scripts'), // label
-		function () { // query
-			return myself.currentTab === 'stages';
-		}
-	);
-	tab.padding = 3;
-	tab.corner = tabCorner;
-	tab.edge = 1;
-	tab.labelShadowOffset = new Point(-1, -1);
-	tab.labelShadowColor = tabColors[1];
-	tab.labelColor = this.buttonLabelColor;
-	tab.drawNew();
-	tab.fixLayout();
-	//this.tabBar.add(tab);
-	
-	tab = new TabMorph(
-		tabColors,
-		null, // target
-		function () {this.tabBar.tabTo('stages');},
-		localize('Costumes'), // label
-		function () { // query
-			return myself.currentTab === 'stages';
-		}
-	);
-	tab.padding = 3;
-	tab.corner = tabCorner;
-	tab.edge = 1;
-	tab.labelShadowOffset = new Point(-1, -1);
-	tab.labelShadowColor = tabColors[1];
-	tab.labelColor = this.buttonLabelColor;
-	tab.drawNew();
-	tab.fixLayout();
-	this.tabBar.add(tab);
-	
-	this.tabBar.fixLayout();
-	this.tabBar.children.forEach(function (each) {
-		each.refresh();
-	});
-	//this.add(this.tabBar);
-}
-
 CropSystemMorph.prototype.createCropEditor = function() {
 	// assumes the stage has already been created
 	var scripts = undefined; //this.currentCrop.scripts,
@@ -340,27 +259,25 @@ CropSystemMorph.prototype.createCropEditor = function() {
 		this.cropEditor.destroy();
 	}
 	
-	if (this.currentTab === 'scripts') {
-		//scripts.isDraggable = false;
-		
-		this.cropEditor = new ScrollFrameMorph(
-			scripts,
-			null,
-			this.sliderColor
-		);
-		this.cropEditor.padding = 10;
-		this.cropEditor.growth = 50;
-		this.cropEditor.isDraggable = false;
-		this.cropEditor.acceptsDrops = false;
-		this.cropEditor.contents.acceptsDrops = true;
-		
-		//scripts.scrollFrame = this.cropEditor
-		this.add(this.cropEditor);
-		this.cropEditor.scrollX(this.cropEditor.padding);
-		this.cropEditor.scrollY(this.cropEditor.padding);
-	} else if (this.currentTab === 'stages') {
-		// Wardrobe
-	}
+	//scripts.isDraggable = false;
+	
+	this.cropEditor = new TabPanelMorph();
+	this.cropEditor.setWidth(this.width() - this.stage.left() - 20);
+	this.cropEditor.setHeight(this.height());
+	
+	descEditor = new Morph();
+	descEditor.setColor(new Color(20, 20, 200));
+	this.cropEditor.addTab('description', descEditor);
+	
+	scriptEditor = new Morph();
+	scriptEditor.setColor(new Color(233, 20,20));
+	this.cropEditor.addTab('scripts', scriptEditor);
+	
+	costumeEditor = new Morph();
+	costumeEditor.setColor(new Color(20, 233, 233));
+	this.cropEditor.addTab('costumes', costumeEditor);
+	
+	this.add(this.cropEditor);
 };
 
 
@@ -368,17 +285,17 @@ CropSystemMorph.prototype.fixLayout = function () {
 	
 	this.stageBar.setPosition(this.topLeft().add(5));
 	this.stage.setPosition(this.stageBar.bottomLeft());
+	
 	this.corralBar.setPosition(this.stage.bottomLeft().add(new Point(0,10)));
 	this.corral.setPosition(this.corralBar.bottomLeft());
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
-	this.tabBar.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
-	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
-	this.tabBar.setHeight(30);
-	this.cropEditor.setPosition(this.tabBar.bottomLeft());
+	
+	this.cropEditor.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
 	this.cropEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.cropEditor.setHeight(this.height() - this.tabBar.height() - 10);
+	this.cropEditor.setHeight(this.height() - 10);
+	this.cropEditor.fixLayout();
 	
 	console.log("fixLayout");
 	//console.log(this);
@@ -412,7 +329,7 @@ CropIconMorph.prototype.fontSize = 9;
 
 function CropIconMorph(aCrop, aTemplate) {
 	this.init(aCrop, aTemplate);
-}
+};
 
 CropIconMorph.prototype.init = function (aCrop, aTemplate) {
 	var colors, action, query, myself = this;
@@ -424,4 +341,4 @@ CropIconMorph.prototype.init = function (aCrop, aTemplate) {
 			IDE_Morph.prototype.frameColor
 		];
 	}
-}
+};

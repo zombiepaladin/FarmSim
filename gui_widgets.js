@@ -69,6 +69,7 @@ modules.gui_widgets = '2014-January-13';
 // Declarations
 
 var ControlBarMorph;
+var TabPanelMorph;
 
 
 // ControlBarMorph ///////////////////////////////////////
@@ -132,3 +133,179 @@ ControlBarMorph.prototype.outlinePath = function (context, radius, inset) {
         h - inset
     );
 };
+
+
+// TabPanelMorph ///////////////////////////////////////
+
+// I am a panel that allows you to tab through multiple morphs
+
+// TabPanelMorph inherits from Morph:
+
+TabPanelMorph.prototype = new Morph();
+TabPanelMorph.prototype.constructor = TabPanelMorph;
+TabPanelMorph.uber = Morph.prototype;
+
+// TabPanelMorph instance creation:
+
+function TabPanelMorph(tabNames, tabMorphs){
+	this.init(tabNames, tabMorphs);
+};
+
+TabPanelMorph.prototype.init = function(tabNames, tabMorphs) {
+	var myself = this;
+	
+	// additional properties
+	this.currentTab = 'description';
+	this.tabs = [];
+	this.panels = {};
+	this.tabBar = null;
+	
+	// initialize inherited properties
+	TabPanelMorph.uber.init.call(this);
+	
+	// create layout
+	this.createTabBar();
+	this.createDisplayPanel();
+	
+	// populate tabs
+	if (tabNames !== undefined && tabMorphs !== undefined) {
+		tabNames.foreach( function(tab, index) {
+			myself.addTab(tab, tabMorphs[index]);
+		});
+	}
+};
+
+TabPanelMorph.prototype.createTabBar = function() {
+	
+	if (this.tabBar) {
+		this.tabBar.destroy();
+	}
+	
+	this.tabBar = new Morph();
+	this.tabBar.setPosition(this.position());
+	this.tabBar.setWidth(this.width());
+	this.tabBar.setHeight(30);
+	this.add(this.tabBar);
+};
+
+TabPanelMorph.prototype.createDisplayPanel = function() {
+	
+	if (this.displayPanel) {
+		this.displayPanel.destroy();
+	}
+	
+	this.displayPanel = new Morph();
+	this.displayPanel.setPosition(this.tabBar.bottomLeft());
+	this.displayPanel.setWidth(this.width());
+	this.displayPanel.setHeight(this.height() - this.tabBar.height());
+	this.add(this.displayPanel);
+};
+
+TabPanelMorph.prototype.fixLayout = function() {
+	var buttonHeight = 30,
+		border = 3,
+		xPadding = 2,
+		yPadding = 2,
+		l = this.left(),
+		t = this.top(),
+		i = 0,
+		myself = this;
+		
+	this.tabBar.setPosition(this.position());
+	this.tabBar.setWidth(this.width());
+	
+	this.tabBar.children.forEach(function (button) {
+		i += 1;
+		if(l + border + button.width() > myself.tabBar.width()) {
+			t += button.height() + 2 * border;
+			l = myself.tabBar.left();
+		}
+		button.setPosition(new Point(
+			l + border,
+			t + border
+		));
+		l += myself.tabBar.children[i-1].width() + 2 * border;
+	});
+
+	this.tabBar.setHeight(
+			t + buttonHeight + 2 * border - this.tabBar.top()
+	);
+	
+	this.displayPanel.setPosition(this.tabBar.bottomLeft());
+	this.displayPanel.setWidth(this.width());
+	this.displayPanel.setHeight(this.height() - this.tabBar.height());
+	
+	this.tabs.forEach( function(tab) {
+		myself.panels[tab].setPosition(myself.displayPanel.position());
+		myself.panels[tab].setExtent(myself.displayPanel.extent());
+	});
+}
+
+TabPanelMorph.prototype.addTab = function(tabName, tabMorph) {
+	var labelWidth = 75,
+		colors = [
+			new Color(244,244,200),
+			new Color(244,244,200).darker(50),
+			new Color(244,244,200).lighter(50)
+		],
+		button,
+		myself = this;
+
+	button = new ToggleButtonMorph(
+		colors,
+		myself, // the tabPanel is the target
+		function () {
+			myself.currentTab = tabName;
+			myself.tabBar.children.forEach(function (each) {
+				each.refresh();
+			});
+			//myself.refreshPalette(true);
+			// TODO: Refresh stuff
+			myself.reactToTabSelect(tabName);
+		},
+		tabName[0].toUpperCase().concat(tabName.slice(1)), // label
+		function () {  // query
+			return myself.currentTab === tabName;
+		},
+		null, // env
+		null, // hint
+		null, // template cache
+		labelWidth, // minWidth
+		true // has preview
+	);
+
+	button.corner = 8;
+	button.padding = 0;
+	button.labelShadowOffset = new Point(-1, -1);
+	button.labelShadowColor = colors[1];
+	button.labelColor = myself.buttonLabelColor;
+	button.outlinePath = ControlBarMorph.prototype.outlinePath;
+	button.fixLayout();
+	button.refresh();
+	this.tabBar.add(button);
+	
+	tabMorph.setPosition(this.tabBar.bottomLeft());
+	tabMorph.setHeight(this.height - this.tabBar.bottom());
+	tabMorph.setWidth(this.width());
+	this.displayPanel.add(tabMorph);
+	if (this.currentTab !== tabName) {
+		tabMorph.hide();
+	}
+	
+	this.tabs.push(tabName);
+	this.panels[tabName] = tabMorph;
+	
+	this.fixLayout();
+};
+
+TabPanelMorph.prototype.reactToTabSelect = function(tabName) {
+	var myself = this;
+	this.tabs.forEach( function(tab) {
+		if(tab !== tabName) {
+			myself.panels[tab].hide();
+		} else {
+			myself.currentTab = tabName;
+			myself.panels[tab].show();
+		}
+	});
+}
