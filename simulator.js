@@ -64,7 +64,7 @@ sb, CommentMorph, CommandBlockMorph, BlockLabelPlaceHolderMorph*/
 
 // Global stuff ////////////////////////////////////////////////////////
 
-modules.crop_gui = '2013-November-07';
+modules.simulator = '2014-January-14';
 
 // Declarations
 
@@ -126,8 +126,8 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.cropSystem = null;
 	this.soilSystem = null;
 	this.weatherSystem = null;
-	this.diseaseSystem = null; // not implimented yet
-	this.pestSystem = null;    // not implimented yet
+	this.diseaseSystem = null; 
+	this.pestSystem = null;  
 	
 	// gui settings:
 	this.isAutoFill = isAutoFill || true;
@@ -175,6 +175,8 @@ SimulatorMorph.prototype.buildPanes = function() {
 	this.createCropSystem();
 	this.createSoilSystem();
 	this.createWeatherSystem();
+	this.createDiseaseSystem();
+	this.createPestSystem();
 };
 	
 SimulatorMorph.prototype.createLogo = function() {
@@ -310,7 +312,7 @@ SimulatorMorph.prototype.createSystemSelectBar = function () {
     }
 
 	// TODO: Systems should probably be moved!
-	['farm ops', 'crops', 'soils', 'weathers', 'equipment', 'markets'].forEach(function(system) {
+	['farm ops', 'crops', 'soils', 'weathers', 'pests', 'diseases', 'equipment', 'markets'].forEach(function(system) {
 		addSystemButton(system);
 	});
     fixSystemSelectBarLayout();
@@ -351,7 +353,7 @@ SimulatorMorph.prototype.createSoilSystem = function() {
 
 	this.add(this.soilSystem); // add soil system to the main system
 	
-	if( this.currentSystem != 'soils') {
+	if( this.currentSystem !== 'soils') {
 		this.soilSystem.hide(); // if soil system isn't selected, hide it.
 	}
 }
@@ -361,8 +363,6 @@ SimulatorMorph.prototype.createWeatherSystem = function() {
 	
 	console.log("create weather system.");
 	
-	var mysel = this;
-	
 	// remove any already created weather systems.
 	if( this.weatherSystem) {
 		this.weatherSystem.destroy();
@@ -371,8 +371,54 @@ SimulatorMorph.prototype.createWeatherSystem = function() {
 	this.weatherSystem = new WeatherSystemMorph(undefined); // pass in undefined for the default weather.
 	
 	this.add(this.weatherSystem);
-	if( this.currentSystem != 'weathers') {
+	if( this.currentSystem !== 'weathers') {
 		this.weatherSystem.hide(); // if the weather system isn't selected, hide it.
+	}
+};
+
+// This function creates the disease system to be displayed on the main page.
+SimulatorMorph.prototype.createDiseaseSystem = function() {
+	
+	console.log("create disease system.");
+	
+	// remove any already created disease system.
+	if( this.diseaseSystem) {
+		this.diseaseSystem.destroy();
+	}
+	
+	// create new disease
+	this.diseaseSystem = new DiseaseSystemMorph(undefined);// pass in undefined for the default disease.
+	
+	// add it to the simulator
+	this.add(this.diseaseSystem);
+	
+	// hide if not currently selected system.
+	if( this.currentSystem !== 'diseases') {
+		this.diseaseSystem.hide();// if the disease system isn't selected, hide it.
+	}
+	
+};
+
+
+// this function creates the pest system to be displayed on the main page.
+SimulatorMorph.prototype.createPestSystem = function() {
+	
+	console.log("create pest system.");
+	
+	// remove any previous pest systems.
+	if( this.pestSystem) {
+		this.pestSystem.destroy();
+	}
+	
+	// create new pest system.
+	this.pestSystem = new PestSystemMorph(undefined); // pass in undefined for the default pests.
+	
+	// add new pest system.
+	this.add(this.pestSystem);
+	
+	// leave displayed if current system.
+	if( this.currentSystem !== 'pests') {
+		this.pestSystem.hide(); // if the pest system isn't selected, hide it.
 	}
 };
 
@@ -383,22 +429,40 @@ SimulatorMorph.prototype.fixLayout = function (situation) {
 
 	Morph.prototype.trackChanges = false;
 	
-	// system select bar
+	// system select bar layout
 	this.systemSelectBar.setWidth(this.width());
 	this.systemSelectBar.fixLayout();
 	
-	// crop system
+	// crop system layout
 	this.cropSystem.setPosition(this.systemSelectBar.bottomLeft());
 	this.cropSystem.setWidth(this.systemSelectBar.width());
 	this.cropSystem.setHeight(this.height() - this.systemSelectBar.bottom());
 	this.cropSystem.fixLayout();
 	
-	// soil system
+	// soil system layout
 	this.soilSystem.setPosition(this.systemSelectBar.bottomLeft());
 	this.soilSystem.setWidth(this.systemSelectBar.width());
 	this.soilSystem.setHeight(this.height() - this.systemSelectBar.bottom());
 	this.soilSystem.fixLayout();
 	
+	// weather system layout
+	this.weatherSystem.setPosition(this.systemSelectBar.bottomLeft());
+	this.weatherSystem.setWidth(this.systemSelectBar.width());
+	this.weatherSystem.setHeight(this.height() - this.systemSelectBar.bottom());
+	this.weatherSystem.fixLayout();
+	
+	// disease system layout
+	this.diseaseSystem.setPosition(this.systemSelectBar.bottomLeft());
+	this.diseaseSystem.setWidth(this.systemSelectBar.width());
+	this.diseaseSystem.setHeight(this.height() - this.systemSelectBar.bottom());
+	this.diseaseSystem.fixLayout();
+
+	// pest system layout
+	this.pestSystem.setPosition(this.systemSelectBar.bottomLeft());
+	this.pestSystem.setWidth(this.systemSelectBar.width());
+	this.pestSystem.setHeight(this.height() - this.systemSelectBar.bottom());
+	this.pestSystem.fixLayout();
+
 	Morph.prototype.trackChanges = true;
 	this.changed();
 };
@@ -435,6 +499,8 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	this.cropSystem.hide();
 	this.soilSystem.hide();
 	this.weatherSystem.hide();
+	this.diseaseSystem.hide();
+	this.pestSystem.hide();
 	
 	switch (system) {
 		case 'crops':
@@ -445,6 +511,12 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 			break;
 		case 'weathers':
 			this.weatherSystem.show();
+		break;
+		case 'diseases':
+			this.diseaseSystem.show();
+		break;
+		case 'pests':
+			this.pestSystem.show();
 		break;
 	}
 	

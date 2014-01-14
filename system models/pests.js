@@ -1,6 +1,6 @@
 /*
 
-    weathers.js
+    pests.js
 
     a sumulation programming environment
     based on morphic.js, blocks.js, threads.js and objects.js
@@ -37,8 +37,8 @@
     the following list shows the order in which all constructors are
     defined. Use this list to locate code in this document:
 
-		WeaterSystemMorph
-		WeatherIconMorph
+		PestSystemMorph
+		PestIconMorph
 
 
     credits
@@ -65,46 +65,46 @@ sb, CommentMorph, CommandBlockMorph, BlockLabelPlaceHolderMorph*/
 
 // Global stuff ////////////////////////////////////////////////////////
 
-modules.weathers = '2014-January-13';
+modules.pests = '2014-January-14';
 
 // Declarations
 
-var WeatherSystemMorph;
-var WeatherIconMorph;
+var PestSystemMorph;
+var PestIconMorph;
 
-// WeatherSystemMorph /////////////////////////////////////////////////////////
+// PestSystemMorph /////////////////////////////////////////////////////////
 
-// I am FarmSim's weather system editor panel
+// I am FarmSim's pest system editor panel
 
-// WeatherSystemMorph inherits from Morph:
+// Pest SystemMorph inherits from Morph:
 
-WeatherSystemMorph.prototype = new Morph();
-WeatherSystemMorph.prototype.constructor = WeatherSystemMorph;
-WeatherSystemMorph.uber = Morph.prototype;
+PestSystemMorph.prototype = new Morph();
+PestSystemMorph.prototype.constructor = PestSystemMorph;
+PestSystemMorph.uber = Morph.prototype;
 
-// WeatherSystemMorph preferences settings and skings
+// PestSystemMorph preferences settings and skings
 
 // ... to follow ...
 
-// Weather system morph instance creation:
+// Pest system morph instance creation:
 
 
-// Weather system constructor
-function WeatherSystemMorph(aWeather){
-	this.init(aWeather);
+// Pest system constructor
+function PestSystemMorph(aPest){
+	this.init(aPest);
 };
 
-// Weather system init function
-WeatherSystemMorph.prototype.init = function(aWeather){
+// Pest system init function
+PestSystemMorph.prototype.init = function(aPest){
 	
-	console.log("Weather system init");
+	console.log("Pest system init");
 	
 	// additional properties
-	this.weather = aWeather; // current weather selected
-	// should create a new WeatherSpriteMorph() if one is not passed in.
+	this.pest = aPest; // current pest selected
+	// should create a new PestSpriteMorph() if one is not passed in.
 	
 	this.globalVariables = new VariableFrame();
-	this.weathers = new List([]); // list of weathers
+	this.pests = new List([]); // list of pests
 	this.currentCategory = 'motion'; // not sure what this is ???
 	this.currentTab = 'scripts';
 	this.stageDimensions = new Point(240, 160);
@@ -117,13 +117,13 @@ WeatherSystemMorph.prototype.init = function(aWeather){
 	this.pallette = null;  // not in use.
 	this.editorBar = null; // not in use.
 	this.tabBar = null;    // not in use.
-	this.weatherEditor = null;
+	this.pestEditor = null;
 	
 	this.setWidth(910);
 	this.setHeight(429);
 	
 	//  initialize inherited properties
-	WeatherSystemMorph.uber.init.call(this);
+	PestSystemMorph.uber.init.call(this);
 	
 	// configure inherited properties
 	this.fps = 2;
@@ -134,14 +134,14 @@ WeatherSystemMorph.prototype.init = function(aWeather){
 	this.createStage();
 	this.createCorralBar();
 	this.createCorral();
-	this.createWeatherEditor();
+	this.createPestEditor();
 	
 };
 
 // This function creates the stage bar morph.
-WeatherSystemMorph.prototype.createStageBar = function() {
+PestSystemMorph.prototype.createStageBar = function() {
 	
-	console.log("create weather stage bar");
+	console.log("create pest stage bar");
 	
 	// remove any previous stage bars.
 	if(this.stageBar){
@@ -157,15 +157,15 @@ WeatherSystemMorph.prototype.createStageBar = function() {
 	this.stageBar.corner = 10;
 	this.stageBar.setColor( new Color( 244, 20, 20) );
 	
-	// add the stage bar to the weather system.
+	// add the stage bar to the pest system.
 	this.add(this.stageBar);
 	
 };
 
 // This function creates the stage window morph.
-WeatherSystemMorph.prototype.createStage = function() {
+PestSystemMorph.prototype.createStage = function() {
 	
-		console.log("create weather stage");
+		console.log("create pest stage");
 	
 	// remove any previous stages.
 	if(this.stage){
@@ -181,14 +181,14 @@ WeatherSystemMorph.prototype.createStage = function() {
 	// define its parameters.
 	this.stage.setExtent(this.stageDimensions);
 	
-	// add the stage  to the weather system.
+	// add the stage  to the pest system.
 	this.add(this.stage);
 };
 
 // This function creates the corral bar morph.
-WeatherSystemMorph.prototype.createCorralBar = function() {
+PestSystemMorph.prototype.createCorralBar = function() {
 	
-		console.log("create weather corral bar");
+		console.log("create pest corral bar");
 	
 	// remove any previous stage bars.
 	if(this.corralBar){
@@ -199,20 +199,20 @@ WeatherSystemMorph.prototype.createCorralBar = function() {
 	this.corralBar = new ControlBarMorph();
 	
 	// define its parameters.
-	this.corralBar.add( new StringMorph("    Weathers") );
+	this.corralBar.add( new StringMorph("    Pests") );
 	this.corralBar.setWidth(this.stageDimensions.x);
 	this.corralBar.setHeight(30);
 	
-	// add the corral bar to the weather system.
+	// add the corral bar to the pest system.
 	this.add(this.corralBar);
 	
 };
 
 // This function creates the corral window morph.
-WeatherSystemMorph.prototype.createCorral = function() {
+PestSystemMorph.prototype.createCorral = function() {
 	var frame, template, padding = 5, myself = this;
 	
-		console.log("create weather corral");
+		console.log("create pest corral");
 	
 	// remove any previous stage bars.
 	if(this.corral){
@@ -228,16 +228,16 @@ WeatherSystemMorph.prototype.createCorral = function() {
 	
 	// support functions for the contents of the corral.
 	this.corral.contents.wantsDropOf = function (morph) {
-		return morph instanceof WeatherSpriteIconMorph;
+		return morph instanceof PestSpriteIconMorph;
 	};
 	
-	this.corral.contents.reactToDropOf = function (WeatherIcon) {
-		myself.corral.reactToDropOf(weatherIcon);
+	this.corral.contents.reactToDropOf = function (PestIcon) {
+		myself.corral.reactToDropOf(pestIcon);
 	};
 	
-	// support function for list of weathers.
-	this.weathers.asArray().forEach( function(morph) {
-		template = new WeatherIconMorph( morph, template);
+	// support function for list of pests.
+	this.pests.asArray().forEach( function(morph) {
+		template = new PestIconMorph( morph, template);
 		this.corral.contents.add(template);
 	});
 	
@@ -268,8 +268,8 @@ WeatherSystemMorph.prototype.createCorral = function() {
 		this.contents.adjustBounds();
 	};
 	
-	this.corral.addWeather = function(weather) {
-		this.contents.add( new WeatherIconMorph(weather) );
+	this.corral.addPest = function(pest) {
+		this.contents.add( new PestIconMorph(pest) );
 		this.fixLayout();
 	};
 	
@@ -280,72 +280,72 @@ WeatherSystemMorph.prototype.createCorral = function() {
 	};
 	
 	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof WeatherIconMorph;
+		return morph instanceof PestIconMorph;
 	};
 	
-	this.corral.reactToDropOf = function (weatherIcon) {
+	this.corral.reactToDropOf = function (pestIcon) {
 		var idx = 1;
-		var pos = weatherIcon.position();
-		weatherIcon.destroy();
+		var pos = pestIcon.position();
+		pestIcon.destroy();
 		this.contents.children.forEach( function (icon) {
 			if( pos.gt(icon.position()) || pos.y > icon.bottom()) { // ??? should it be pos.get
 				idx += 1;
 			}
 		});
 		
-		myself.weathers.add(spriteIcon.object, idx); // ??? spriteIcon
+		myself.pests.add(spriteIcon.object, idx); // ??? spriteIcon
 		myself.createCorral();
 		myself.fixLayout();
 	};
 	
 	
-	// add the stage bar to the weather system.
+	// add the stage bar to the pest system.
 	this.add(this.corral);
 };
 
-// This funciton creates the weather editor window morph.
-WeatherSystemMorph.prototype.createWeatherEditor = function() {
+// This funciton creates the pest editor window morph.
+PestSystemMorph.prototype.createPestEditor = function() {
 	var scripts = undefined;
 	var myself = this;
 	
-		console.log("create weather editor");
+		console.log("create pest editor");
 	
 	// remove any previous stage bars.
-	if(this.weatherEditor){
-		this.weatherEditor.destroy();
+	if(this.pestEditor){
+		this.pestEditor.destroy();
 	}
 	
 	// if the current tab is on scripts. probably should use a switch case when 
 	// the editor tabs get finalized
 	if(this.currentTab === 'scripts') {
 		
-		// create new weather editor.
-		this.weatherEditor = new ScrollFrameMorph(
+		// create new pest editor.
+		this.pestEditor = new ScrollFrameMorph(
 			scripts,
 			null,
 			this.sliderColor
 		);
 		
-		// weather editor parameters
-		this.weatherEditor.padding = 10;
-		this.weatherEditor.growth = 50;
-		this.weatherEditor.isDraggable = false;
-		this.weatherEditor.acceptsDrops = false;
-		this.weatherEditor.contents.acceptsDrops = true;
+		// pest editor parameters
+		this.pestEditor.padding = 10;
+		this.pestEditor.growth = 50;
+		this.pestEditor.isDraggable = false;
+		this.pestEditor.acceptsDrops = false;
+		this.pestEditor.contents.acceptsDrops = true;
 		
-		// add the weather editor to the weather system
-		this.add(this.weatherEditor);
+		// add the pest editor to the pest system
+		this.add(this.pestEditor);
 		
-		// finish the weather editor parameters
-		this.weatherEditor.scrollX(this.weatherEditor.padding);
-		this.weatherEditor.scrollY(this.weatherEditor.padding);		
+		// finish the pest editor parameters
+		this.pestEditor.scrollX(this.pestEditor.padding);
+		this.pestEditor.scrollY(this.pestEditor.padding);		
 	} else if(this.currentTab === 'stages') {	// other tabs
 		// wardrobe
 	}
 };
 
 // This function places all of this systems morphs in the correct place on the page.
-WeatherSystemMorph.prototype.fixLayout = function() {
+PestSystemMorph.prototype.fixLayout = function() {
 	
 	this.stageBar.setPosition(this.topLeft().add(5));
 	this.stage.setPosition(this.stageBar.bottomLeft());
@@ -363,45 +363,45 @@ WeatherSystemMorph.prototype.fixLayout = function() {
 	this.tabBar.setHeight(30);
 	*/
 	
-	// ??? had to kinda hack weather editor's position because tab bar is being reinvented.
-	this.weatherEditor.setPosition( this.stageBar.topRight().add( new Point(10, 18) ) ); // right 10 down 30
-	this.weatherEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.weatherEditor.setHeight(this.height() - 30 - 10);
+	// ??? had to kinda hack pest editor's position because tab bar is being reinvented.
+	this.pestEditor.setPosition( this.stageBar.topRight().add( new Point(10, 18) ) ); // right 10 down 30
+	this.pestEditor.setWidth(this.width() - this.stageBar.width() - 30);
+	this.pestEditor.setHeight(this.height() - 30 - 10);
 	
 	
 	console.log("fixLayout");
 
 };
 
-// WeatherIconMorph /////////////////////////////////////////////////////////
+// PestIconMorph /////////////////////////////////////////////////////////
 
 /*
-    I am a selectable element in the WeatherEditor's "Weathers" tab, keeping
-    a self-updating thumbnail of the Weather I'm respresenting, and a
-    self-updating label of the Weather's name (in case it is changed
+    I am a selectable element in the PestEditor's "Pests" tab, keeping
+    a self-updating thumbnail of the Pest I'm respresenting, and a
+    self-updating label of the Pest's name (in case it is changed
     elsewhere)
 */
 
-// WeatherIconMorph inherits from ToggleButtonMorph (Widgets)
+// PestIconMorph inherits from ToggleButtonMorph (Widgets)
 // ... and copies methods from SpriteIconMorph
 
-WeatherIconMorph.prototype = new ToggleButtonMorph();
-WeatherIconMorph.prototype.constructor = WeatherIconMorph;
-WeatherIconMorph.uber = ToggleButtonMorph.prototype;
+PestIconMorph.prototype = new ToggleButtonMorph();
+PestIconMorph.prototype.constructor = PestIconMorph;
+PestIconMorph.uber = ToggleButtonMorph.prototype;
 
-// weatherIconMorph settings
-WeatherIconMorph.prototype.thumbSize = new Point(80, 60);
-WeatherIconMorph.prototype.labelShadowOffset = null;
-WeatherIconMorph.prototype.labelColor = new Color(255, 255, 255);
-WeatherIconMorph.prototype.fontSize = 9;
+// pestIconMorph settings
+PestIconMorph.prototype.thumbSize = new Point(80, 60);
+PestIconMorph.prototype.labelShadowOffset = null;
+PestIconMorph.prototype.labelColor = new Color(255, 255, 255);
+PestIconMorph.prototype.fontSize = 9;
 
-// Weather Icon instance creation:
-function WeatherIconMorph(aWeather, aTemplate) {
-	this.init(aWeather, aTemplate);
+// Pest Icon instance creation:
+function PestIconMorph(aPest, aTemplate) {
+	this.init(aPest, aTemplate);
 }
 
-// weather icon init function
-WeatherIconMorph.prototype.init = function (aWeather, aTemplate) {
+// pest icon init function
+PestIconMorph.prototype.init = function (aPest, aTemplate) {
 	var colors, action, query, myself = this;
 	
 	if(!aTemplate) {
