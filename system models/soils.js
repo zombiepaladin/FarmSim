@@ -346,21 +346,6 @@ SoilSystemMorph.prototype.fixLayout = function() {
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
-<<<<<<< HEAD:soils.js
-=======
-	
->>>>>>> e6bfd08a69cd60cf7960afb4fed10f5a26d5c37e:system models/soils.js
-	/*
-	this.tabBar.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
-	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
-	this.tabBar.setHeight(30);
-<<<<<<< HEAD:soils.js
-	this.soilEditor.setPosition(this.tabBar.bottomLeft());
-	this.soilEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.soilEditor.setHeight(this.height() - this.tabBar.height() - 10);
-=======
->>>>>>> e6bfd08a69cd60cf7960afb4fed10f5a26d5c37e:system models/soils.js
-	*/
 	
 	// ??? had to kinda hack soil editor's position because tab bar is being reinvented.
 	this.soilEditor.setPosition( this.stageBar.topRight().add( new Point(10, 18) ) ); // right 10 down 30

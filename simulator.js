@@ -505,12 +505,6 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	switch (system) {
 		case 'crops':
 			this.cropSystem.show();
-<<<<<<< HEAD
-			this.cropSystem.cropEditor.fixLayout();
-			console.log("switch to crop system");
-			console.log(this.cropSystem.cropEditor);
-=======
->>>>>>> e6bfd08a69cd60cf7960afb4fed10f5a26d5c37e
 			break;
 		case 'soils':
 			this.soilSystem.show();
