@@ -322,7 +322,7 @@ SimulatorMorph.prototype.createSystemSelectBar = function () {
     this.add(this.systemSelectBar);
 };
 
-// This funciton creates the crop system to be displayed on the main page.
+// This function creates the crop system to be displayed on the main page.
 SimulatorMorph.prototype.createCropSystem = function() {
 	// assumes systemSelectBar has already been created
 	var myself = this;
@@ -332,13 +332,12 @@ SimulatorMorph.prototype.createCropSystem = function() {
 	if (this.cropSystem) {
 		this.cropSystem.destroy();
 	}
-	
 	this.cropSystem = new CropSystemMorph(undefined);
 	this.add(this.cropSystem);
 	if(this.currentSystem !== 'crops') this.cropSystem.hide();
 };
 
-// This funciton creates the soil system to be displayed on the main page.
+// This function creates the soil system to be displayed on the main page.
 SimulatorMorph.prototype.createSoilSystem = function() {
 	
 	console.log("create soil system.");

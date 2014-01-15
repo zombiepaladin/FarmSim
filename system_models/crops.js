@@ -88,7 +88,7 @@ CropSystemMorph.uber = Morph.prototype;
 // CropSystemMorph instance creation:
 
 function CropSystemMorph(aCrop) {
-    this.init(aCrop);
+    this.init(aCrop);;
 }
 
 CropSystemMorph.prototype.init = function (aCrop) {
@@ -188,15 +188,13 @@ CropSystemMorph.prototype.createCorral = function () {
 	};
 	
 	this.crops.asArray().forEach(function(morph) {
-		template = new CropIconMorph(morph, template);
+		template = new CropSpriteIconMorph(morph, template);
 		this.corral.contents.add(template);
 	});
 	
 	this.add(this.corral);
 	
 	this.corral.fixLayout = function() {
-		console.log(this.width());
-		console.log(this.height());
 		this.arrangeIcons();
 		this.refresh();
 	};
@@ -232,7 +230,7 @@ CropSystemMorph.prototype.createCorral = function () {
 	};
 	
 	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof CropIconMorph;
+		return morph instanceof cropIconMorph;
 	};
 	
 	this.corral.reactToDropOf = function (cropIcon) {
@@ -269,7 +267,7 @@ CropSystemMorph.prototype.createCropEditor = function() {
 	descEditor.setColor(new Color(20, 20, 200));
 	this.cropEditor.addTab('description', descEditor);
 	
-	scriptEditor = new Morph();
+	scriptEditor = new ScriptEditorMorph();
 	scriptEditor.setColor(new Color(233, 20,20));
 	this.cropEditor.addTab('scripts', scriptEditor);
 	
