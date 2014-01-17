@@ -250,25 +250,39 @@ CropSystemMorph.prototype.createCorral = function () {
 
 CropSystemMorph.prototype.createCropEditor = function() {
 	// assumes the stage has already been created
-	var scripts = undefined; //this.currentCrop.scripts,
+		var scripts = undefined; //this.currentCrop.scripts,
 		myself = this;
+	
+	var	colors = [
+			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+			new Color(20, 233, 233) 			// this is the color of the slected panel
+		];
+		
 		
 	if(this.cropEditor) {
 		this.cropEditor.destroy();
 	}
 	
 	//scripts.isDraggable = false;
+	var cropWidth = (this.width() - this.stage.left() - 20);
+	var cropHeight = this.height();
 	
-	this.cropEditor = new TabPanelMorph();
+	this.cropEditor = new TabPanelMorph(colors);
 	this.cropEditor.setWidth(this.width() - this.stage.left() - 20);
 	this.cropEditor.setHeight(this.height());
 	
-	descEditor = new Morph();
-	descEditor.setColor(new Color(20, 20, 200));
+	var descEditor = new Morph();
+	descEditor.setColor(new Color(20, 233, 233));
 	this.cropEditor.addTab('description', descEditor);
 	
+	// TODO: impliment scriptMorph();
+	var tempMorph = new Morph();
+	tempMorph.scrM = {};
+	tempMorph.scrM = 
+	
 	scriptEditor = new ScriptEditorMorph();
-	scriptEditor.setColor(new Color(233, 20,20));
+	scriptEditor.setColor(new Color(20, 233, 233));
 	this.cropEditor.addTab('scripts', scriptEditor);
 	
 	costumeEditor = new Morph();

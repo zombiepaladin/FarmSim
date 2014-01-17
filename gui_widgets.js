@@ -147,168 +147,262 @@ TabPanelMorph.uber = Morph.prototype;
 
 // TabPanelMorph instance creation:
 
-function TabPanelMorph(tabNames, tabMorphs){
-	this.init(tabNames, tabMorphs);
+function TabPanelMorph(tabColor){
+	this.init(tabColor);
 };
 
-TabPanelMorph.prototype.init = function(tabNames, tabMorphs) {
+// The initialize function.
+TabPanelMorph.prototype.init = function(tabColors) {
 	var myself = this;
 	
 	// additional properties
 	this.currentTab = 'description';
+	this.colors = tabColors;
+	this.TabHeight = 30;
+	
+	// collections of tabs and panels.
 	this.tabs = [];
-	this.panels = {};
+	this.panels = [];
+	
+	// display morphs.
 	this.tabBar = null;
+	this.displayPanel = null;
+		
 	
 	// initialize inherited properties
 	TabPanelMorph.uber.init.call(this);
+	
 	
 	// create layout
 	this.createTabBar();
 	this.createDisplayPanel();
 	
-	// populate tabs
-	if (tabNames !== undefined && tabMorphs !== undefined) {
-		tabNames.foreach( function(tab, index) {
-			myself.addTab(tab, tabMorphs[index]);
-		});
-	}
+
 };
 
+// Create the tab bar.
 TabPanelMorph.prototype.createTabBar = function() {
 	
+	// check if there is already a tab bar
 	if (this.tabBar) {
 		this.tabBar.destroy();
 	}
 	
+	// create a new tab bar
 	this.tabBar = new Morph();
-	this.tabBar.setPosition(this.position());
-	this.tabBar.setWidth(this.width());
-	this.tabBar.setHeight(30);
+	
+	// assign color property to tab bar.
+	this.tabBar.color = this.colors[0];
+	
+	// add the tab bar to the TabPanelMorph
 	this.add(this.tabBar);
 };
 
+// Create the display panel
 TabPanelMorph.prototype.createDisplayPanel = function() {
 	
+	// check if there is already a displayPanel
 	if (this.displayPanel) {
 		this.displayPanel.destroy();
 	}
 	
+	// create a new morph for the panel area
 	this.displayPanel = new Morph();
-	this.displayPanel.setPosition(this.tabBar.bottomLeft());
-	this.displayPanel.setWidth(this.width());
-	this.displayPanel.setHeight(this.height() - this.tabBar.height());
+
+	// assign the color property
+	this.displayPanel.color = this.colors[0];
+
+	// add the display panel to the TabPanelMorph
 	this.add(this.displayPanel);
 };
 
+// Arrange the layout.
 TabPanelMorph.prototype.fixLayout = function() {
-	var buttonHeight = 30,
+	var buttonHeight = this.TabHeight,
 		border = 3,
-		xPadding = 2,
-		yPadding = 2,
 		l = this.left(),
-		t = this.top(),
+		t = 0,
 		i = 0,
 		myself = this;
 		
-	this.tabBar.setPosition(this.position());
-	this.tabBar.setWidth(this.width());
 	
-	this.tabBar.children.forEach(function (button) {
-		i += 1;
-		if(l + border + button.width() > myself.tabBar.width()) {
-			t += button.height() + 2 * border;
-			l = myself.tabBar.left();
-		}
-		button.setPosition(new Point(
-			l + border,
-			t + border
-		));
-		l += myself.tabBar.children[i-1].width() + 2 * border;
-	});
-
-	this.tabBar.setHeight(
-			t + buttonHeight + 2 * border - this.tabBar.top()
-	);
+	// tab bar layout
+	this.tabBar.setWidth( this.width() );
+	this.tabBar.setHeight( this.tabBar.children[0].height() ) || 15; // 15 is pretty close. incase there arn't any tabs in this yet.
+	this.tabBar.setPosition( this.position() );
 	
-	this.displayPanel.setPosition(this.tabBar.bottomLeft());
+	
+	// display panel layout
 	this.displayPanel.setWidth(this.width());
 	this.displayPanel.setHeight(this.height() - this.tabBar.height());
+	this.displayPanel.setPosition(this.tabBar.bottomLeft());
+
+	// tabs on the tab bar.
+	this.tabBar.children.forEach(function (tab) {
+		i += 1;
+		if(l + border + tab.width() > myself.tabBar.width()) {
+			//t += tab.height() + 2 * border;
+			l = myself.tabBar.left();
+		}
+		
+		t = myself.tabBar.bottomLeft().asArray()[1] - tab.height();
+		
+		tab.setPosition( new Point( l + border, t) );
+		console.log(t);
+		l += myself.tabBar.children[i-1].width() + 2 * border;
+		
+	});
 	
+	// the display panels
 	this.tabs.forEach( function(tab) {
 		myself.panels[tab].setPosition(myself.displayPanel.position());
 		myself.panels[tab].setExtent(myself.displayPanel.extent());
 	});
+	this.outlineTabPanel();
+
 }
 
-TabPanelMorph.prototype.addTab = function(tabName, tabMorph) {
-	var labelWidth = 75,
-		colors = [
-			new Color(244,244,200),
-			new Color(244,244,200).darker(50),
-			new Color(244,244,200).lighter(50)
-		],
-		button,
-		myself = this;
-
-	button = new ToggleButtonMorph(
-		colors,
-		myself, // the tabPanel is the target
-		function () {
-			myself.currentTab = tabName;
-			myself.tabBar.children.forEach(function (each) {
-				each.refresh();
-			});
-			//myself.refreshPalette(true);
-			// TODO: Refresh stuff
-			myself.reactToTabSelect(tabName);
-		},
-		tabName[0].toUpperCase().concat(tabName.slice(1)), // label
-		function () {  // query
-			return myself.currentTab === tabName;
-		},
-		null, // env
-		null, // hint
-		null, // template cache
-		labelWidth, // minWidth
-		true // has preview
-	);
-
-	button.corner = 8;
-	button.padding = 0;
-	button.labelShadowOffset = new Point(-1, -1);
-	button.labelShadowColor = colors[1];
-	button.labelColor = myself.buttonLabelColor;
-	button.outlinePath = ControlBarMorph.prototype.outlinePath;
-	button.fixLayout();
-	button.refresh();
-	this.tabBar.add(button);
+// Add new tab to the collection.
+TabPanelMorph.prototype.addTab = function(tabName, panelMorph) {
+	var	myself = this;
+	var tab;
 	
-	tabMorph.setPosition(this.tabBar.bottomLeft());
-	tabMorph.setHeight(this.height - this.tabBar.bottom());
-	tabMorph.setWidth(this.width());
-	this.displayPanel.add(tabMorph);
+	// TODO: check for duplicate tab. 
+
+	
+	// create new tab
+	tab = new TabMorph(
+		[															// color <array>: [normal, highlight, pressed]
+			this.colors[1],
+			this.colors[1].lighter(45),
+			this.colors[2]
+		],    											
+		this.tabBar,    											// tab bar
+		function () {											    // action
+			myself.currentTab = tabName;
+			myself.tabBar.children.forEach( function (each) { each.refresh(); } );			
+			myself.reactToTabSelect(tabName);
+			//myself.outlineTab(tabName);
+		}, 			 
+		tabName[0].toUpperCase().concat(tabName.slice(1)),			// labelString
+		function () { return myself.currentTab === tabName; },		// query		 			 
+		null,            											// enviroment
+		null             											// hint
+	);
+	
+	// set up tab properties.
+	tab.corner = 5;
+	tab.edge = 1; // controls the edge line thickness.
+	
+	tab.drawEdges = function(
+							context,    // context to the canvas
+							color, 		// primary color
+							topColor,   // top color
+							bottomColor // bottom color
+							) {
+		if (MorphicPreferences.isFlat && !this.is3D) {return; }
+
+		var w = this.width(),
+			h = this.height(),
+			c = this.corner,
+			e = this.edge,
+			eh = e / 2,
+			gradient;
+
+		nop(color); // argument not needed here
+
+		context.lineCap = 'round';
+		context.lineWidth = e;
+
+		context.beginPath();
+		context.moveTo(0, h + eh);
+		context.bezierCurveTo(c, h, c, 0, c * 2, eh);
+		context.lineTo(w - c * 2, eh);
+		context.bezierCurveTo(w - c, 0, w - c, h, w, h + eh);
+		context.stroke();
+	};
+		
+	tab.fixLayout();
+	tab.refresh();
+	
+	// add tab to the tabBar.
+	this.tabBar.add(tab);
+	
+	this.displayPanel.add(panelMorph);
 	if (this.currentTab !== tabName) {
-		tabMorph.hide();
+		panelMorph.hide();
 	}
 	
 	this.tabs.push(tabName);
-	this.panels[tabName] = tabMorph;
+	this.panels[tabName] = panelMorph;
 	
 	this.fixLayout();
 };
+
+
 
 TabPanelMorph.prototype.reactToTabSelect = function(tabName) {
 	var myself = this;
 	this.tabs.forEach( function(tab) {
 		if(tab !== tabName) {
 			myself.panels[tab].hide();
+			tab.color = myself.colors[1] // the color of the unselected tab
 		} else {
 			myself.currentTab = tabName;
+			tab.color = myself.colors[2]; // same as the selected panel
 			myself.panels[tab].show();
+			myself.outlineTabPanel();
 		}
 	});
 }
+
+TabPanelMorph.prototype.outlineTabPanel = function() {
+	
+	var myself = this;
+	var curTab = null;
+	var tabName = this.currentTab;
+	
+	this.tabBar.children.forEach( function(tab) {
+	
+		if(tab.labelString.toLowerCase() === tabName.toLowerCase()) {
+			curTab = tab;
+		}
+	});
+
+	// get the top-most canvas to draw on.
+	this.image = newCanvas(this.panels[tabName].extent());  
+	var context = this.panels[tabName].image.getContext('2d');
+	
+	var x1 = 0;
+	var	y1 = 0;
+	var	x2 = curTab.bottomLeft().asArray()[0] - this.topLeft().asArray()[0];
+	var	x3 = curTab.width()+x2;
+	var	x4 = this.panels[tabName].width();
+	var	y2 = this.panels[tabName].height();
+	
+	
+	/*
+	(x1,y1)--------(x2,y1)  "tab"   (x3,y1)------(x4,y1)
+	|                                                  |
+	|                                                  |
+	|                                                  |
+	|                                                  |
+	(x1,y2)--------------------------------------(x4,y2)
+	*/
+	
+	context.strokeStyle = new Color(0,0,0);
+	context.lineWidth = 1;
+	
+	context.beginPath();
+	context.moveTo(x3,y1);
+	context.lineTo(x4,y1);
+	context.lineTo(x4,y2);
+	context.lineTo(x1,y2);
+	context.lineTo(x1,y1);
+	context.lineTo(x2,y1);
+	context.stroke();
+	
+};
 
 // ScriptEditorMorph ///////////////////////////////////////
 
@@ -491,13 +585,14 @@ ScriptEditorMorph.prototype.createEditor = function() {
 	scripts.color = this.groupColor;
 	
 	this.editor = new Morph();
-	this.editor.color = new Color(20,70,100);
 	
 	this.editor = new ScrollFrameMorph(
 		scripts,
 		null,
 		this.sliderColor
 	);
+	
+	this.editor.color = new Color(20,70,100);
 	this.editor.padding = 10;
 	this.editor.growth = 50;
 	this.editor.isDraggable = false;
@@ -522,16 +617,15 @@ ScriptEditorMorph.prototype.refreshPalette = function (shouldIgnorePosition) {
 
 ScriptEditorMorph.prototype.fixLayout = function() {
 	// palette
-	this.palette.setPosition(this.categories.bottomLeft());
 	this.palette.setHeight(this.bottom() - this.palette.top());
+	this.palette.setPosition(this.categories.bottomLeft());
 	
 	// editor
-	this.editor.setLeft(this.palette.right());
-	this.editor.setWidth(this.width() - this.palette.width());
 	this.editor.setHeight(this.height());
+	this.editor.setWidth(this.width() - this.palette.width());
+	this.editor.setPosition(new Point(460,90));
+
 }
 
 ScriptEditorMorph.prototype.setExtent = function (point) {
-	ScriptEditorMorph.uber.setExtent.call(this, point);
-	this.fixLayout();
-}
+};

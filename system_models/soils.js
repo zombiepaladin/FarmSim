@@ -298,37 +298,49 @@ SoilSystemMorph.prototype.createSoilEditor = function() {
 	var scripts = undefined;
 	var myself = this;
 	
-	// remove any old soil editors.
+// remove any old soil editors.
 	if(this.soilEditor){
 		this.soilEditor.destroy();
 	}
 	
-	// if the current tab is on scripts. probably should use a switch case when 
-	// the editor tabs get finalized
-	if(this.currentTab === 'scripts') {
-		
-		// create new soil editor.
-		this.soilEditor = new ScrollFrameMorph(
-			scripts,
-			null,
-			this.sliderColor
-		);
-		
-		// soil editor parameters
-		this.soilEditor.padding = 10;
-		this.soilEditor.growth = 50;
-		this.soilEditor.isDraggable = false;
-		this.soilEditor.acceptsDrops = false;
-		this.soilEditor.contents.acceptsDrops = true;
-		
-		// add the soil editor to the soil system
-		this.add(this.soilEditor);
-		
-		this.soilEditor.scrollX(this.soilEditor.padding);
-		this.soilEditor.scrollY(this.soilEditor.padding);		
-	} else if(this.currentTab === 'stages') {
-		// wardrobe
-	}
+
+	// assumes the stage has already been created
+	var scripts = undefined; 
+		myself = this;
+	
+	var	colors = [
+			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+			new Color(20, 233, 233) 			// this is the color of the slected panel
+		];
+
+	
+	//scripts.isDraggable = false;
+	var soilWidth = (this.width() - this.stage.left() - 20);
+	var soilHeight = this.height();
+	
+	this.soilEditor = new TabPanelMorph(colors);
+	this.soilEditor.setWidth(this.width() - this.stage.left() - 20);
+	this.soilEditor.setHeight(this.height());
+	
+	var descEditor = new Morph();
+	descEditor.setColor(new Color(20, 233, 233));
+	this.soilEditor.addTab('description', descEditor);
+	
+	// TODO: impliment scriptMorph();
+	var tempMorph = new Morph();
+	tempMorph.scrM = {};
+	tempMorph.scrM = 
+	
+	scriptEditor = new ScriptEditorMorph();
+	scriptEditor.setColor(new Color(20, 233, 233));
+	this.soilEditor.addTab('scripts', scriptEditor);
+	
+	costumeEditor = new Morph();
+	costumeEditor.setColor(new Color(20, 233, 233));
+	this.soilEditor.addTab('costumes', costumeEditor);
+	
+	this.add(this.soilEditor);
 	
 	
 	
