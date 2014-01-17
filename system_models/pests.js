@@ -305,71 +305,70 @@ PestSystemMorph.prototype.createCorral = function() {
 
 // This funciton creates the pest editor window morph.
 PestSystemMorph.prototype.createPestEditor = function() {
-	var scripts = undefined;
-	var myself = this;
+	var scripts = undefined; 
+		myself = this;
 	
-		console.log("create pest editor");
-	
-	// remove any previous stage bars.
-	if(this.pestEditor){
+	var	colors = [
+			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+			new Color(20, 233, 233) 			// this is the color of the slected panel
+		];
+		
+		
+	if(this.pestEditor) {
 		this.pestEditor.destroy();
 	}
 	
-	// if the current tab is on scripts. probably should use a switch case when 
-	// the editor tabs get finalized
-	if(this.currentTab === 'scripts') {
-		
-		// create new pest editor.
-		this.pestEditor = new ScrollFrameMorph(
-			scripts,
-			null,
-			this.sliderColor
-		);
-		
-		// pest editor parameters
-		this.pestEditor.padding = 10;
-		this.pestEditor.growth = 50;
-		this.pestEditor.isDraggable = false;
-		this.pestEditor.acceptsDrops = false;
-		this.pestEditor.contents.acceptsDrops = true;
-		
-		// add the pest editor to the pest system
-		this.add(this.pestEditor);
-		
-		// finish the pest editor parameters
-		this.pestEditor.scrollX(this.pestEditor.padding);
-		this.pestEditor.scrollY(this.pestEditor.padding);		
-	} else if(this.currentTab === 'stages') {	// other tabs
-		// wardrobe
-	}
+	// create the tab panel to hold the pest editor.
+	this.pestEditor = new TabPanelMorph(colors);
+	
+	// add the tabs to the tab panel
+	
+	// description tab
+	var descEditor = new Morph();
+	descEditor.setColor(new Color(20, 233, 233));
+	this.pestEditor.addTab('description', descEditor);
+
+	// script tab
+	var scriptEditor = new ScriptEditorMorph();
+	scriptEditor.setColor(new Color(20, 233, 233));
+	this.pestEditor.addTab('scripts', scriptEditor);
+	
+	// costume tab
+	var costumeEditor = new Morph();
+	costumeEditor.setColor(new Color(20, 233, 233));
+	this.pestEditor.addTab('costumes', costumeEditor);
+	
+	// add the pest editor to the pest system morph
+	this.add(this.pestEditor);
+
 };
 
 // This function places all of this systems morphs in the correct place on the page.
 PestSystemMorph.prototype.fixLayout = function() {
 	
+	// stage bar
 	this.stageBar.setPosition(this.topLeft().add(5));
+	
+	// stage
 	this.stage.setPosition(this.stageBar.bottomLeft());
 	
+	// corral bar
 	this.corralBar.setPosition(this.stage.bottomLeft().add(new Point(0,10)));
 	
+	// corral
 	this.corral.setPosition(this.corralBar.bottomLeft());
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
 	
-	/*
-	this.tabBar.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
-	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
-	this.tabBar.setHeight(30);
-	*/
-	
-	// ??? had to kinda hack pest editor's position because tab bar is being reinvented.
-	this.pestEditor.setPosition( this.stageBar.topRight().add( new Point(10, 18) ) ); // right 10 down 30
+	// pest editor
+	this.pestEditor.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
 	this.pestEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.pestEditor.setHeight(this.height() - 30 - 10);
+	this.pestEditor.setHeight(this.height() - 10);
+	this.pestEditor.fixLayout();
 	
-	
-	console.log("fixLayout");
+	console.log("fixLayout - pest system");
 
 };
 

@@ -305,71 +305,68 @@ WeatherSystemMorph.prototype.createCorral = function() {
 
 // This funciton creates the weather editor window morph.
 WeatherSystemMorph.prototype.createWeatherEditor = function() {
-	var scripts = undefined;
+
 	var myself = this;
 	
-		console.log("create weather editor");
-	
-	// remove any previous stage bars.
-	if(this.weatherEditor){
+	var	colors = [
+			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+			new Color(20, 233, 233) 			// this is the color of the slected panel
+		];
+		
+	if(this.weatherEditor) {
 		this.weatherEditor.destroy();
 	}
 	
-	// if the current tab is on scripts. probably should use a switch case when 
-	// the editor tabs get finalized
-	if(this.currentTab === 'scripts') {
-		
-		// create new weather editor.
-		this.weatherEditor = new ScrollFrameMorph(
-			scripts,
-			null,
-			this.sliderColor
-		);
-		
-		// weather editor parameters
-		this.weatherEditor.padding = 10;
-		this.weatherEditor.growth = 50;
-		this.weatherEditor.isDraggable = false;
-		this.weatherEditor.acceptsDrops = false;
-		this.weatherEditor.contents.acceptsDrops = true;
-		
-		// add the weather editor to the weather system
-		this.add(this.weatherEditor);
-		
-		// finish the weather editor parameters
-		this.weatherEditor.scrollX(this.weatherEditor.padding);
-		this.weatherEditor.scrollY(this.weatherEditor.padding);		
-	} else if(this.currentTab === 'stages') {	// other tabs
-		// wardrobe
-	}
+	// create the tab panel to hold the weather editor.
+	this.weatherEditor = new TabPanelMorph(colors);
+	
+	// add tabs to the editor.
+	
+	// description tab
+	var descEditor = new Morph();
+	descEditor.setColor(new Color(20, 233, 233));
+	this.weatherEditor.addTab('description', descEditor);
+
+	// script tab
+	var scriptEditor = new ScriptEditorMorph();
+	scriptEditor.setColor(new Color(20, 233, 233));
+	this.weatherEditor.addTab('scripts', scriptEditor);
+	
+	// costume tab
+	var costumeEditor = new Morph();
+	costumeEditor.setColor(new Color(20, 233, 233));
+	this.weatherEditor.addTab('costumes', costumeEditor);
+	
+	// add the editor to the weather system
+	this.add(this.weatherEditor);
 };
 
 // This function places all of this systems morphs in the correct place on the page.
 WeatherSystemMorph.prototype.fixLayout = function() {
 	
+	// stage bar
 	this.stageBar.setPosition(this.topLeft().add(5));
+	
+	// stage
 	this.stage.setPosition(this.stageBar.bottomLeft());
 	
+	// corral bar
 	this.corralBar.setPosition(this.stage.bottomLeft().add(new Point(0,10)));
 	
+	// corral
 	this.corral.setPosition(this.corralBar.bottomLeft());
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
-	
-	/*
-	this.tabBar.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
-	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
-	this.tabBar.setHeight(30);
-	*/
-	
-	// ??? had to kinda hack weather editor's position because tab bar is being reinvented.
-	this.weatherEditor.setPosition( this.stageBar.topRight().add( new Point(10, 18) ) ); // right 10 down 30
+		
+	// weather editor
+	this.weatherEditor.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
 	this.weatherEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.weatherEditor.setHeight(this.height() - 30 - 10);
+	this.weatherEditor.setHeight(this.height() - 10);
+	this.weatherEditor.fixLayout();
 	
-	
-	console.log("fixLayout");
+	console.log("fixLayout - weather system");
 
 };
 

@@ -108,8 +108,6 @@ DiseaseSystemMorph.prototype.init = function (aDisease) {
 	this.corralBar = null;
 	this.corral = null;
 	this.pallette = null;
-	this.editorBar = null;
-	this.tabBar = null;
 	this.diseaseEditor = null;
 	
 	this.setWidth(910);
@@ -127,10 +125,10 @@ DiseaseSystemMorph.prototype.init = function (aDisease) {
 	this.createStage();
 	this.createCorralBar();
 	this.createCorral();
-	this.createTabBar();
 	this.createDiseaseEditor();
 };
 
+// this function creates the stage bar.
 DiseaseSystemMorph.prototype.createStageBar = function () {
 	if(this.stageBar) {
 		this.stageBar.destroy();
@@ -145,6 +143,7 @@ DiseaseSystemMorph.prototype.createStageBar = function () {
 	this.add(this.stageBar);
 };
 
+// this funciton creates the stage.
 DiseaseSystemMorph.prototype.createStage = function () {
 	// assumes stageBar has already been created
 	if(this.stage) {
@@ -156,6 +155,7 @@ DiseaseSystemMorph.prototype.createStage = function () {
 	this.add(this.stage);
 };
 
+// this funciton creates the corral bar.
 DiseaseSystemMorph.prototype.createCorralBar = function () {
 	// assumes stage has already been created
 	if(this.corralBar) {
@@ -169,6 +169,7 @@ DiseaseSystemMorph.prototype.createCorralBar = function () {
 	this.add(this.corralBar);
 };
 
+// this function creates the corral
 DiseaseSystemMorph.prototype.createCorral = function () {
 	// assumes corralBar has already been created
 	var frame, template, padding = 5, myself = this;
@@ -252,137 +253,72 @@ DiseaseSystemMorph.prototype.createCorral = function () {
 	};
 };
 
-DiseaseSystemMorph.prototype.createEditorBar = function() {
+// creates the disease editor window.
+DiseaseSystemMorph.prototype.createDiseaseEditor = function() {
+
 	var myself = this;
 	
-	if (this.editorBar) {
-		this.editorBar.destroy();
-	}
-	
-	
-}
-
-DiseaseSystemMorph.prototype.createTabBar = function() {
-	var tab,
-		tabCorner = 15,
-		tabColors = SimulatorMorph.prototype.tabColors,
-		myself = this;
+	var	colors = [
+			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+			new Color(20, 233, 233) 			// this is the color of the slected panel
+		];
 		
-	if (this.tabBar) {
-		this.tabBar.destroy();
-	}
-	
-	this.tabBar = new AlignmentMorph('row', -tabCorner * 2);
-	
-	this.tabBar.tabTo = function (tabString) {
-		var active;
-		myself.currentTab = tabString;
-		this.children.forEach(function (each) {
-			each.refresh();
-			if(each.state) {active = each;}
-		});
-		active.refresh(); // needed when programmatically tabbing
-		myself.createDiseaseEditor();
-		myself.fixLayout('tabEditor');
-	};
-	
-	tab = new TabMorph(
-		tabColors,
-		null, // target
-		function () {myself.tabBar.tabTo('scripts');},
-		localize('Scripts'), // label
-		function () { // query
-			return myself.currentTab === 'stages';
-		}
-	);
-	tab.padding = 3;
-	tab.corner = tabCorner;
-	tab.edge = 1;
-	tab.labelShadowOffset = new Point(-1, -1);
-	tab.labelShadowColor = tabColors[1];
-	tab.labelColor = this.buttonLabelColor;
-	tab.drawNew();
-	tab.fixLayout();
-	//this.tabBar.add(tab);
-	
-	tab = new TabMorph(
-		tabColors,
-		null, // target
-		function () {this.tabBar.tabTo('stages');},
-		localize('Costumes'), // label
-		function () { // query
-			return myself.currentTab === 'stages';
-		}
-	);
-	tab.padding = 3;
-	tab.corner = tabCorner;
-	tab.edge = 1;
-	tab.labelShadowOffset = new Point(-1, -1);
-	tab.labelShadowColor = tabColors[1];
-	tab.labelColor = this.buttonLabelColor;
-	tab.drawNew();
-	tab.fixLayout();
-	this.tabBar.add(tab);
-	
-	this.tabBar.fixLayout();
-	this.tabBar.children.forEach(function (each) {
-		each.refresh();
-	});
-	//this.add(this.tabBar);
-}
-
-DiseaseSystemMorph.prototype.createDiseaseEditor = function() {
-	// assumes the stage has already been created
-	var scripts = undefined; //this.currentDisease.scripts,
-		myself = this;
-		
+	// check if there is aready one and take care of it.
 	if(this.diseaseEditor) {
 		this.diseaseEditor.destroy();
 	}
 	
-	if (this.currentTab === 'scripts') {
-		//scripts.isDraggable = false;
-		
-		this.diseaseEditor = new ScrollFrameMorph(
-			scripts,
-			null,
-			this.sliderColor
-		);
-		this.diseaseEditor.padding = 10;
-		this.diseaseEditor.growth = 50;
-		this.diseaseEditor.isDraggable = false;
-		this.diseaseEditor.acceptsDrops = false;
-		this.diseaseEditor.contents.acceptsDrops = true;
-		
-		//scripts.scrollFrame = this.diseaseEditor
-		this.add(this.diseaseEditor);
-		this.diseaseEditor.scrollX(this.diseaseEditor.padding);
-		this.diseaseEditor.scrollY(this.diseaseEditor.padding);
-	} else if (this.currentTab === 'stages') {
-		// Wardrobe
-	}
+	// create the tab panel to hold the disease editor.
+	this.diseaseEditor = new TabPanelMorph(colors);
+	
+	// add tabs to the tab panel
+	
+	// description tab
+	var descEditor = new Morph();
+	descEditor.setColor(new Color(20, 233, 233));
+	this.diseaseEditor.addTab('description', descEditor);
+
+	// script tab
+	var scriptEditor = new ScriptEditorMorph();
+	scriptEditor.setColor(new Color(20, 233, 233));
+	this.diseaseEditor.addTab('scripts', scriptEditor);
+	
+	// costume tab
+	var costumeEditor = new Morph();
+	costumeEditor.setColor(new Color(20, 233, 233));
+	this.diseaseEditor.addTab('costumes', costumeEditor);
+	
+	// add disease editor to the disease system
+	this.add(this.diseaseEditor);
 };
 
-
+// this function sets the position / layout of all the system morphs.
 DiseaseSystemMorph.prototype.fixLayout = function () {
 	
+	// stage bar
 	this.stageBar.setPosition(this.topLeft().add(5));
+	
+	// stage
 	this.stage.setPosition(this.stageBar.bottomLeft());
+	
+	// corral bar
 	this.corralBar.setPosition(this.stage.bottomLeft().add(new Point(0,10)));
+	
+	// corral
 	this.corral.setPosition(this.corralBar.bottomLeft());
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
-	this.tabBar.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
-	this.tabBar.setWidth(this.width() - this.stageBar.width() - 30);
-	this.tabBar.setHeight(30);
-	this.diseaseEditor.setPosition(this.tabBar.bottomLeft());
-	this.diseaseEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.diseaseEditor.setHeight(this.height() - this.tabBar.height() - 10);
 	
-	console.log("fixLayout");
-	//console.log(this);
-	//console.log(this.children);
+	// disease editor
+	this.diseaseEditor.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
+	this.diseaseEditor.setWidth(this.width() - this.stageBar.width() - 30);
+	this.diseaseEditor.setHeight(this.height() - 10);
+	this.diseaseEditor.fixLayout();
+	
+	console.log("fixLayout - disease system");
+
 };
 
 // DiseaseIconMorph ////////////////////////////////////////////////////

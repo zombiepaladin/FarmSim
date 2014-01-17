@@ -295,18 +295,12 @@ SoilSystemMorph.prototype.createCorral = function(){
 
 // This function creates the soil editor window morph.
 SoilSystemMorph.prototype.createSoilEditor = function() {
-	var scripts = undefined;
 	var myself = this;
 	
-// remove any old soil editors.
+	// remove any old soil editors.
 	if(this.soilEditor){
 		this.soilEditor.destroy();
 	}
-	
-
-	// assumes the stage has already been created
-	var scripts = undefined; 
-		myself = this;
 	
 	var	colors = [
 			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
@@ -314,58 +308,55 @@ SoilSystemMorph.prototype.createSoilEditor = function() {
 			new Color(20, 233, 233) 			// this is the color of the slected panel
 		];
 
-	
-	//scripts.isDraggable = false;
-	var soilWidth = (this.width() - this.stage.left() - 20);
-	var soilHeight = this.height();
-	
+	// create the tab panel morph to hold the soil editor.
 	this.soilEditor = new TabPanelMorph(colors);
-	this.soilEditor.setWidth(this.width() - this.stage.left() - 20);
-	this.soilEditor.setHeight(this.height());
 	
+	// add the tabs to the tab panel
+	
+	// description tab
 	var descEditor = new Morph();
 	descEditor.setColor(new Color(20, 233, 233));
 	this.soilEditor.addTab('description', descEditor);
 	
-	// TODO: impliment scriptMorph();
-	var tempMorph = new Morph();
-	tempMorph.scrM = {};
-	tempMorph.scrM = 
-	
-	scriptEditor = new ScriptEditorMorph();
+	// script tab
+	scriptEditor = new Morph(); //new ScriptEditorMorph();
 	scriptEditor.setColor(new Color(20, 233, 233));
 	this.soilEditor.addTab('scripts', scriptEditor);
 	
+	// costume tab
 	costumeEditor = new Morph();
 	costumeEditor.setColor(new Color(20, 233, 233));
 	this.soilEditor.addTab('costumes', costumeEditor);
 	
+	// add the editor to the soil system
 	this.add(this.soilEditor);
-	
-	
-	
 };
 
 // This function places all the morphs in the correct place on the page.
 SoilSystemMorph.prototype.fixLayout = function() {
 
+	// stage bar
 	this.stageBar.setPosition(this.topLeft().add(5));
+	
+	// stage
 	this.stage.setPosition(this.stageBar.bottomLeft());
 	
+	// corral bar
 	this.corralBar.setPosition(this.stage.bottomLeft().add(new Point(0,10)));
 	
+	// corral
 	this.corral.setPosition(this.corralBar.bottomLeft());
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
 	
-	// ??? had to kinda hack soil editor's position because tab bar is being reinvented.
-	this.soilEditor.setPosition( this.stageBar.topRight().add( new Point(10, 18) ) ); // right 10 down 30
+	// soil editor
+	this.soilEditor.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
 	this.soilEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.soilEditor.setHeight(this.height() - 30 - 10);
+	this.soilEditor.setHeight(this.height() - 10);
+	this.soilEditor.fixLayout();
 	
-	
-	console.log("fixLayout");
+	console.log("fixLayout - soil system");
 	
 }
 

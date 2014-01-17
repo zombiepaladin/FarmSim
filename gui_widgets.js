@@ -167,17 +167,13 @@ TabPanelMorph.prototype.init = function(tabColors) {
 	// display morphs.
 	this.tabBar = null;
 	this.displayPanel = null;
-		
 	
 	// initialize inherited properties
 	TabPanelMorph.uber.init.call(this);
 	
-	
 	// create layout
 	this.createTabBar();
 	this.createDisplayPanel();
-	
-
 };
 
 // Create the tab bar.
@@ -339,8 +335,7 @@ TabPanelMorph.prototype.addTab = function(tabName, panelMorph) {
 	this.fixLayout();
 };
 
-
-
+// this function is the response to a tab being selected.
 TabPanelMorph.prototype.reactToTabSelect = function(tabName) {
 	var myself = this;
 	this.tabs.forEach( function(tab) {
@@ -429,7 +424,7 @@ ScriptEditorMorph.prototype.init = function (aSprite) {
 	this.currentCategory = 'motion';
 	this.categories = null;
 	this.palette = null;
-	this.editor = null;
+	this.editor = null;	
 	
 	// initialize inherited properties
 	ScriptEditorMorph.uber.init.call(this);
@@ -616,16 +611,19 @@ ScriptEditorMorph.prototype.refreshPalette = function (shouldIgnorePosition) {
 };
 
 ScriptEditorMorph.prototype.fixLayout = function() {
+		
 	// palette
-	this.palette.setHeight(this.bottom() - this.palette.top());
+	this.palette.setHeight(this.height() - this.categories.height());
 	this.palette.setPosition(this.categories.bottomLeft());
-	
+		
 	// editor
 	this.editor.setHeight(this.height());
 	this.editor.setWidth(this.width() - this.palette.width());
-	this.editor.setPosition(new Point(460,90));
+	this.editor.setPosition( this.categories.topRight() );
 
 }
 
 ScriptEditorMorph.prototype.setExtent = function (point) {
+	ScriptEditorMorph.uber.setExtent.call(this, point);
+	if(this.palette) this.fixLayout();
 };

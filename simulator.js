@@ -96,6 +96,7 @@ SimulatorMorph.prototype.setDefaultDesign = function () {
 		SimulatorMorph.prototype.groupColor.lighter(60),
 		SimulatorMorph.prototype.groupColor
 	];
+
 };
 
 // SimulatorMorph instance creation:

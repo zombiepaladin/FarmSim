@@ -249,8 +249,7 @@ CropSystemMorph.prototype.createCorral = function () {
 };
 
 CropSystemMorph.prototype.createCropEditor = function() {
-	// assumes the stage has already been created
-		var scripts = undefined; //this.currentCrop.scripts,
+
 		myself = this;
 	
 	var	colors = [
@@ -264,54 +263,56 @@ CropSystemMorph.prototype.createCropEditor = function() {
 		this.cropEditor.destroy();
 	}
 	
-	//scripts.isDraggable = false;
-	var cropWidth = (this.width() - this.stage.left() - 20);
-	var cropHeight = this.height();
-	
+	// create tab panel morph to hold the editor's pages
 	this.cropEditor = new TabPanelMorph(colors);
-	this.cropEditor.setWidth(this.width() - this.stage.left() - 20);
-	this.cropEditor.setHeight(this.height());
 	
+	// add pages to the tab panel
+	
+	// description page
 	var descEditor = new Morph();
 	descEditor.setColor(new Color(20, 233, 233));
 	this.cropEditor.addTab('description', descEditor);
-	
-	// TODO: impliment scriptMorph();
-	var tempMorph = new Morph();
-	tempMorph.scrM = {};
-	tempMorph.scrM = 
-	
-	scriptEditor = new ScriptEditorMorph();
+
+	// script page
+	var scriptEditor = new ScriptEditorMorph();
 	scriptEditor.setColor(new Color(20, 233, 233));
 	this.cropEditor.addTab('scripts', scriptEditor);
 	
-	costumeEditor = new Morph();
+	// costume page
+	var costumeEditor = new Morph();
 	costumeEditor.setColor(new Color(20, 233, 233));
 	this.cropEditor.addTab('costumes', costumeEditor);
 	
+	// add the crop editor to the system
 	this.add(this.cropEditor);
 };
 
 
 CropSystemMorph.prototype.fixLayout = function () {
 	
+	// stage bar
 	this.stageBar.setPosition(this.topLeft().add(5));
+	
+	// stage
 	this.stage.setPosition(this.stageBar.bottomLeft());
 	
+	// corral bar
 	this.corralBar.setPosition(this.stage.bottomLeft().add(new Point(0,10)));
+	
+	// corral
 	this.corral.setPosition(this.corralBar.bottomLeft());
 	this.corral.setWidth(this.corralBar.width());
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
 	
+	// crop editor
 	this.cropEditor.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
 	this.cropEditor.setWidth(this.width() - this.stageBar.width() - 30);
 	this.cropEditor.setHeight(this.height() - 10);
 	this.cropEditor.fixLayout();
 	
-	console.log("fixLayout");
-	//console.log(this);
-	//console.log(this.children);
+	console.log("fixLayout - crop system");
+
 };
 
 // CropIconMorph ////////////////////////////////////////////////////
