@@ -278,7 +278,6 @@ TabPanelMorph.prototype.addTab = function(tabName, panelMorph) {
 			myself.currentTab = tabName;
 			myself.tabBar.children.forEach( function (each) { each.refresh(); } );			
 			myself.reactToTabSelect(tabName);
-			//myself.outlineTab(tabName);
 		}, 			 
 		tabName[0].toUpperCase().concat(tabName.slice(1)),			// labelString
 		function () { return myself.currentTab === tabName; },		// query		 			 
@@ -349,6 +348,11 @@ TabPanelMorph.prototype.reactToTabSelect = function(tabName) {
 			myself.outlineTabPanel();
 		}
 	});
+}
+
+TabPanelMorph.prototype.drawNew = function() {
+	TabPanelMorph.uber.drawNew.call(this);
+	if(this.tabBar) this.outlineTabPanel();
 }
 
 TabPanelMorph.prototype.outlineTabPanel = function() {

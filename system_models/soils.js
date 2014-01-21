@@ -319,7 +319,7 @@ SoilSystemMorph.prototype.createSoilEditor = function() {
 	this.soilEditor.addTab('description', descEditor);
 	
 	// script tab
-	scriptEditor = new Morph(); //new ScriptEditorMorph();
+	scriptEditor = new ScriptEditorMorph();
 	scriptEditor.setColor(new Color(20, 233, 233));
 	this.soilEditor.addTab('scripts', scriptEditor);
 	

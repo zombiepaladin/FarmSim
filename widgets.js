@@ -1,7 +1,7 @@
 /*
 
-    widgets.js
 
+    widgets.js
     additional GUI elements for morphic.js
 
     written by Jens Mönig
