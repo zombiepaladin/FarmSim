@@ -99,6 +99,65 @@ SimulatorMorph.prototype.setDefaultDesign = function () {
 
 };
 
+// The systems preferences, settings, and skins
+SimulatorMorph.prototype.setSystemsDefaultDesign = function() {
+	
+	CropSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+	CropSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+	CropSystemMorph.prototype.stageColor = new Color(255,255,255);
+	CropSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+	CropSystemMorph.prototype.corralColor = new Color(255,255,255);
+	CropSystemMorph.prototype.cropEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+							
+	SoilSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+	SoilSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+	SoilSystemMorph.prototype.stageColor = new Color(255,255,255);
+	SoilSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+	SoilSystemMorph.prototype.corralColor = new Color(255,255,255);
+	SoilSystemMorph.prototype.soilEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+	
+	WeatherSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+	WeatherSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+	WeatherSystemMorph.prototype.stageColor = new Color(255,255,255);
+	WeatherSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+	WeatherSystemMorph.prototype.corralColor = new Color(255,255,255);
+	WeatherSystemMorph.prototype.weatherEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+							
+	PestSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+	PestSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+	PestSystemMorph.prototype.stageColor = new Color(255,255,255);
+	PestSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+	PestSystemMorph.prototype.corralColor = new Color(255,255,255);
+	PestSystemMorph.prototype.pestEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+	
+	DiseaseSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+	DiseaseSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+	DiseaseSystemMorph.prototype.stageColor = new Color(255,255,255);
+	DiseaseSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+	DiseaseSystemMorph.prototype.corralColor = new Color(255,255,255);
+	DiseaseSystemMorph.prototype.diseaseEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+};
+
 // SimulatorMorph instance creation:
 
 function SimulatorMorph(isAutoFill) {
@@ -112,6 +171,7 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	
 	// TODO: restore saved user preferences
 	this.setDefaultDesign();
+	this.setSystemsDefaultDesign();
 	
 	// additional properties:
 	this.serializer = new SnapSerializer();
@@ -399,7 +459,6 @@ SimulatorMorph.prototype.createDiseaseSystem = function() {
 	}
 	
 };
-
 
 // this function creates the pest system to be displayed on the main page.
 SimulatorMorph.prototype.createPestSystem = function() {

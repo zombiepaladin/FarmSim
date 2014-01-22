@@ -88,6 +88,17 @@ DiseaseSystemMorph.uber = Morph.prototype;
 
 // DiseaseSystemMorph instance creation:
 
+DiseaseSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+DiseaseSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+DiseaseSystemMorph.prototype.stageColor = new Color(255,255,255);
+DiseaseSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+DiseaseSystemMorph.prototype.corralColor = new Color(255,255,255);
+DiseaseSystemMorph.prototype.diseaseEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+
 function DiseaseSystemMorph(aDisease) {
     this.init(aDisease);
 }
@@ -118,7 +129,7 @@ DiseaseSystemMorph.prototype.init = function (aDisease) {
 	
 	// configure inherited properties
 	this.fps = 2;
-	this.setColor(new Color(20, 200, 20)); 
+	this.setColor( DiseaseSystemMorph.prototype.backgroundColor ); 
 	
 	// build panes
 	this.createStageBar();
@@ -137,7 +148,7 @@ DiseaseSystemMorph.prototype.createStageBar = function () {
 	this.stageBar.setWidth(this.stageDimensions.x);
 	this.stageBar.setHeight(30);
 	this.stageBar.corner = 10;
-	this.stageBar.setColor(new Color(244, 20, 20));
+	this.stageBar.setColor( DiseaseSystemMorph.prototype.stageBarColor );
 	
 	
 	this.add(this.stageBar);
@@ -151,7 +162,10 @@ DiseaseSystemMorph.prototype.createStage = function () {
 	}
 	StageMorph.prototype.framerate = 0;
 	this.stage = new StageMorph(this.globalVariables/* this.globalVariables? */);
+	
+	this.stage.setColor(DiseaseSystemMorph.prototype.stageColor);
 	this.stage.setExtent(this.stageDimensions); // dimensions are fixed
+	
 	this.add(this.stage);
 };
 
@@ -181,6 +195,7 @@ DiseaseSystemMorph.prototype.createCorral = function () {
 	this.corral = new ScrollFrameMorph(null, null, this.sliderColor);
 	this.corral.acceptsDrops = false;
 	this.corral.contents.acceptsDrops = false;
+	this.corral.setColor(DiseaseSystemMorph.prototype.corralColor);
 	
 	this.corral.contents.wantsDropOf = function (morph) {
 		return morph instanceof DiseaseSpriteIconMorph;
@@ -257,12 +272,6 @@ DiseaseSystemMorph.prototype.createCorral = function () {
 DiseaseSystemMorph.prototype.createDiseaseEditor = function() {
 
 	var myself = this;
-	
-	var	colors = [
-			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
-			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
-			new Color(20, 233, 233) 			// this is the color of the slected panel
-		];
 		
 	// check if there is aready one and take care of it.
 	if(this.diseaseEditor) {
@@ -270,23 +279,23 @@ DiseaseSystemMorph.prototype.createDiseaseEditor = function() {
 	}
 	
 	// create the tab panel to hold the disease editor.
-	this.diseaseEditor = new TabPanelMorph(colors);
+	this.diseaseEditor = new TabPanelMorph(DiseaseSystemMorph.prototype.diseaseEditorColors);
 	
 	// add tabs to the tab panel
 	
 	// description tab
 	var descEditor = new Morph();
-	descEditor.setColor(new Color(20, 233, 233));
+	descEditor.setColor( DiseaseSystemMorph.prototype.diseaseEditorColors[2] );
 	this.diseaseEditor.addTab('description', descEditor);
 
 	// script tab
 	var scriptEditor = new ScriptEditorMorph();
-	scriptEditor.setColor(new Color(20, 233, 233));
+	scriptEditor.setColor( DiseaseSystemMorph.prototype.diseaseEditorColors[2] );
 	this.diseaseEditor.addTab('scripts', scriptEditor);
 	
 	// costume tab
 	var costumeEditor = new Morph();
-	costumeEditor.setColor(new Color(20, 233, 233));
+	costumeEditor.setColor( DiseaseSystemMorph.prototype.diseaseEditorColors[2] );
 	this.diseaseEditor.addTab('costumes', costumeEditor);
 	
 	// add disease editor to the disease system

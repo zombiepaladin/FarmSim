@@ -87,6 +87,17 @@ CropSystemMorph.uber = Morph.prototype;
 
 // CropSystemMorph instance creation:
 
+CropSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+CropSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+CropSystemMorph.prototype.stageColor = new Color(255,255,255);
+CropSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+CropSystemMorph.prototype.corralColor = new Color(255,255,255);
+CropSystemMorph.prototype.cropEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+
 function CropSystemMorph(aCrop) {
     this.init(aCrop);;
 }
@@ -119,7 +130,7 @@ CropSystemMorph.prototype.init = function (aCrop) {
 	
 	// configure inherited properties
 	this.fps = 2;
-	this.setColor(new Color(20, 200, 20)); 
+	this.setColor(CropSystemMorph.prototype.backgroundColor); 
 	
 	// build panes
 	this.createStageBar();
@@ -137,7 +148,7 @@ CropSystemMorph.prototype.createStageBar = function () {
 	this.stageBar.setWidth(this.stageDimensions.x);
 	this.stageBar.setHeight(30);
 	this.stageBar.corner = 10;
-	this.stageBar.setColor(new Color(244, 20, 20));
+	this.stageBar.setColor( CropSystemMorph.prototype.stageBarColor );
 	
 	
 	this.add(this.stageBar);
@@ -150,6 +161,9 @@ CropSystemMorph.prototype.createStage = function () {
 	}
 	StageMorph.prototype.framerate = 0;
 	this.stage = new StageMorph(this.globalVariables/* this.globalVariables? */);
+	
+	this.stage.setColor( CropSystemMorph.prototype.stageColor );
+	
 	this.stage.setExtent(this.stageDimensions); // dimensions are fixed
 	this.add(this.stage);
 };
@@ -178,6 +192,7 @@ CropSystemMorph.prototype.createCorral = function () {
 	this.corral = new ScrollFrameMorph(null, null, this.sliderColor);
 	this.corral.acceptsDrops = false;
 	this.corral.contents.acceptsDrops = false;
+	this.corral.setColor(CropSystemMorph.prototype.corralColor);
 	
 	this.corral.contents.wantsDropOf = function (morph) {
 		return morph instanceof CropSpriteIconMorph;
@@ -250,43 +265,35 @@ CropSystemMorph.prototype.createCorral = function () {
 
 CropSystemMorph.prototype.createCropEditor = function() {
 
-		myself = this;
+	var	myself = this;
 	
-	var	colors = [
-			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
-			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
-			new Color(20, 233, 233) 			// this is the color of the slected panel
-		];
-		
-		
 	if(this.cropEditor) {
 		this.cropEditor.destroy();
 	}
 	
 	// create tab panel morph to hold the editor's pages
-	this.cropEditor = new TabPanelMorph(colors);
+	this.cropEditor = new TabPanelMorph(CropSystemMorph.prototype.cropEditorColors);
 	
 	// add pages to the tab panel
 	
 	// description page
 	var descEditor = new Morph();
-	descEditor.setColor(new Color(20, 233, 233));
+	descEditor.setColor( CropSystemMorph.prototype.cropEditorColors[2] );
 	this.cropEditor.addTab('description', descEditor);
 
 	// script page
 	var scriptEditor = new ScriptEditorMorph();
-	scriptEditor.setColor(new Color(20, 233, 233));
+	scriptEditor.setColor( CropSystemMorph.prototype.cropEditorColors[2] );
 	this.cropEditor.addTab('scripts', scriptEditor);
 	
 	// costume page
 	var costumeEditor = new Morph();
-	costumeEditor.setColor(new Color(20, 233, 233));
+	costumeEditor.setColor( CropSystemMorph.prototype.cropEditorColors[2] );
 	this.cropEditor.addTab('costumes', costumeEditor);
 	
 	// add the crop editor to the system
 	this.add(this.cropEditor);
 };
-
 
 CropSystemMorph.prototype.fixLayout = function () {
 	
@@ -314,8 +321,6 @@ CropSystemMorph.prototype.fixLayout = function () {
 	console.log("fixLayout - crop system");
 
 };
-
-
 
 // CropIconMorph ////////////////////////////////////////////////////
 

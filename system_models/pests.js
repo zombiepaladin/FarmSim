@@ -88,6 +88,16 @@ PestSystemMorph.uber = Morph.prototype;
 
 // Pest system morph instance creation:
 
+PestSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+PestSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+PestSystemMorph.prototype.stageColor = new Color(255,255,255);
+PestSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+PestSystemMorph.prototype.corralColor = new Color(255,255,255);
+PestSystemMorph.prototype.pestEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
 
 // Pest system constructor
 function PestSystemMorph(aPest){
@@ -96,9 +106,7 @@ function PestSystemMorph(aPest){
 
 // Pest system init function
 PestSystemMorph.prototype.init = function(aPest){
-	
-	console.log("Pest system init");
-	
+		
 	// additional properties
 	this.pest = aPest; // current pest selected
 	// should create a new PestSpriteMorph() if one is not passed in.
@@ -127,7 +135,7 @@ PestSystemMorph.prototype.init = function(aPest){
 	
 	// configure inherited properties
 	this.fps = 2;
-	this.setColor( new Color( 20, 200, 20 ) );
+	this.setColor( PestSystemMorph.prototype.backgroundColor );
 	
 	// Build the different panes
 	this.createStageBar();
@@ -155,7 +163,7 @@ PestSystemMorph.prototype.createStageBar = function() {
 	this.stageBar.setWidth(this.stageDimensions.x);
 	this.stageBar.setHeight(30);
 	this.stageBar.corner = 10;
-	this.stageBar.setColor( new Color( 244, 20, 20) );
+	this.stageBar.setColor( PestSystemMorph.prototype.stageBarColor );
 	
 	// add the stage bar to the pest system.
 	this.add(this.stageBar);
@@ -180,6 +188,7 @@ PestSystemMorph.prototype.createStage = function() {
 	
 	// define its parameters.
 	this.stage.setExtent(this.stageDimensions);
+	this.stage.setColor( PestSystemMorph.prototype.stageColor );
 	
 	// add the stage  to the pest system.
 	this.add(this.stage);
@@ -221,6 +230,7 @@ PestSystemMorph.prototype.createCorral = function() {
 		
 	// create the new stage bar.
 	this.corral = new ScrollFrameMorph(null, null, this.sliderColor);
+	this.corral.setColor( PestSystemMorph.prototype.corralColor );
 	
 	// define its parameters.
 	this.corral.acceptsDrops = false;
@@ -307,36 +317,29 @@ PestSystemMorph.prototype.createCorral = function() {
 PestSystemMorph.prototype.createPestEditor = function() {
 	var scripts = undefined; 
 		myself = this;
-	
-	var	colors = [
-			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
-			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
-			new Color(20, 233, 233) 			// this is the color of the slected panel
-		];
-		
 		
 	if(this.pestEditor) {
 		this.pestEditor.destroy();
 	}
 	
 	// create the tab panel to hold the pest editor.
-	this.pestEditor = new TabPanelMorph(colors);
+	this.pestEditor = new TabPanelMorph(PestSystemMorph.prototype.pestEditorColors);
 	
 	// add the tabs to the tab panel
 	
 	// description tab
 	var descEditor = new Morph();
-	descEditor.setColor(new Color(20, 233, 233));
+	descEditor.setColor( PestSystemMorph.prototype.pestEditorColors[2] );
 	this.pestEditor.addTab('description', descEditor);
 
 	// script tab
 	var scriptEditor = new ScriptEditorMorph();
-	scriptEditor.setColor(new Color(20, 233, 233));
+	scriptEditor.setColor( PestSystemMorph.prototype.pestEditorColors[2] );
 	this.pestEditor.addTab('scripts', scriptEditor);
 	
 	// costume tab
 	var costumeEditor = new Morph();
-	costumeEditor.setColor(new Color(20, 233, 233));
+	costumeEditor.setColor( PestSystemMorph.prototype.pestEditorColors[2] );
 	this.pestEditor.addTab('costumes', costumeEditor);
 	
 	// add the pest editor to the pest system morph

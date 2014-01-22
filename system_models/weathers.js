@@ -88,6 +88,17 @@ WeatherSystemMorph.uber = Morph.prototype;
 
 // Weather system morph instance creation:
 
+WeatherSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+WeatherSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+WeatherSystemMorph.prototype.stageColor = new Color(255,255,255);
+WeatherSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+WeatherSystemMorph.prototype.corralColor = new Color(255,255,255);
+WeatherSystemMorph.prototype.weatherEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+						
 
 // Weather system constructor
 function WeatherSystemMorph(aWeather){
@@ -127,7 +138,7 @@ WeatherSystemMorph.prototype.init = function(aWeather){
 	
 	// configure inherited properties
 	this.fps = 2;
-	this.setColor( new Color( 20, 200, 20 ) );
+	this.setColor( WeatherSystemMorph.prototype.backgroundColor );
 	
 	// Build the different panes
 	this.createStageBar();
@@ -155,7 +166,7 @@ WeatherSystemMorph.prototype.createStageBar = function() {
 	this.stageBar.setWidth(this.stageDimensions.x);
 	this.stageBar.setHeight(30);
 	this.stageBar.corner = 10;
-	this.stageBar.setColor( new Color( 244, 20, 20) );
+	this.stageBar.setColor( WeatherSystemMorph.prototype.stageBarColor );
 	
 	// add the stage bar to the weather system.
 	this.add(this.stageBar);
@@ -180,6 +191,8 @@ WeatherSystemMorph.prototype.createStage = function() {
 	
 	// define its parameters.
 	this.stage.setExtent(this.stageDimensions);
+	this.stage.setColor( WeatherSystemMorph.prototype.stageColor );
+	
 	
 	// add the stage  to the weather system.
 	this.add(this.stage);
@@ -202,6 +215,8 @@ WeatherSystemMorph.prototype.createCorralBar = function() {
 	this.corralBar.add( new StringMorph("    Weathers") );
 	this.corralBar.setWidth(this.stageDimensions.x);
 	this.corralBar.setHeight(30);
+	
+	// this.corralBar.setColor( WeatherSystemMorph.prototype.stageColor ); // TODO: figure out the color for the corral bar
 	
 	// add the corral bar to the weather system.
 	this.add(this.corralBar);
@@ -307,35 +322,29 @@ WeatherSystemMorph.prototype.createCorral = function() {
 WeatherSystemMorph.prototype.createWeatherEditor = function() {
 
 	var myself = this;
-	
-	var	colors = [
-			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
-			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
-			new Color(20, 233, 233) 			// this is the color of the slected panel
-		];
 		
 	if(this.weatherEditor) {
 		this.weatherEditor.destroy();
 	}
 	
 	// create the tab panel to hold the weather editor.
-	this.weatherEditor = new TabPanelMorph(colors);
+	this.weatherEditor = new TabPanelMorph(WeatherSystemMorph.prototype.weatherEditorColors);
 	
 	// add tabs to the editor.
 	
 	// description tab
 	var descEditor = new Morph();
-	descEditor.setColor(new Color(20, 233, 233));
+	descEditor.setColor( WeatherSystemMorph.prototype.weatherEditorColors[2] );
 	this.weatherEditor.addTab('description', descEditor);
 
 	// script tab
 	var scriptEditor = new ScriptEditorMorph();
-	scriptEditor.setColor(new Color(20, 233, 233));
+	scriptEditor.setColor( WeatherSystemMorph.prototype.weatherEditorColors[2] );
 	this.weatherEditor.addTab('scripts', scriptEditor);
 	
 	// costume tab
 	var costumeEditor = new Morph();
-	costumeEditor.setColor(new Color(20, 233, 233));
+	costumeEditor.setColor( WeatherSystemMorph.prototype.weatherEditorColors[2] );
 	this.weatherEditor.addTab('costumes', costumeEditor);
 	
 	// add the editor to the weather system
