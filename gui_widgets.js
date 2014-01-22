@@ -161,7 +161,7 @@ TabPanelMorph.prototype.init = function(tabColors) {
 	this.TabHeight = 30;
 	
 	// collections of tabs and panels.
-	this.tabs = [];
+	this.tabs = []
 	this.panels = [];
 	
 	// display morphs.
@@ -206,7 +206,7 @@ TabPanelMorph.prototype.createDisplayPanel = function() {
 	this.displayPanel = new Morph();
 
 	// assign the color property
-	this.displayPanel.color = this.colors[0];
+	this.displayPanel.color = this.colors[2];
 
 	// add the display panel to the TabPanelMorph
 	this.add(this.displayPanel);
@@ -224,17 +224,17 @@ TabPanelMorph.prototype.fixLayout = function() {
 	
 	// tab bar layout
 	this.tabBar.setWidth( this.width() );
-	this.tabBar.setHeight( this.tabBar.children[0].height() ) || 15; // 15 is pretty close. incase there arn't any tabs in this yet.
+	this.tabBar.setHeight( this.tabs[0].height() ) || 15; // 15 is pretty close. incase there arn't any tabs in this yet.
 	this.tabBar.setPosition( this.position() );
 	
 	
 	// display panel layout
-	this.displayPanel.setWidth(this.width());
-	this.displayPanel.setHeight(this.height() - this.tabBar.height());
-	this.displayPanel.setPosition(this.tabBar.bottomLeft());
+	this.displayPanel.setWidth(this.width() );
+	this.displayPanel.setHeight(this.height() - this.tabBar.height() );
+	this.displayPanel.setPosition( this.tabBar.bottomLeft() );
 
 	// tabs on the tab bar.
-	this.tabBar.children.forEach(function (tab) {
+	this.tabs.forEach(function (tab) {
 		i += 1;
 		if(l + border + tab.width() > myself.tabBar.width()) {
 			//t += tab.height() + 2 * border;
@@ -245,14 +245,14 @@ TabPanelMorph.prototype.fixLayout = function() {
 		
 		tab.setPosition( new Point( l + border, t) );
 		console.log(t);
-		l += myself.tabBar.children[i-1].width() + 2 * border;
+		l += myself.tabs[i-1].width() + 2 * border;
 		
 	});
 	
 	// the display panels
 	this.tabs.forEach( function(tab) {
-		myself.panels[tab].setPosition(myself.displayPanel.position());
-		myself.panels[tab].setExtent(myself.displayPanel.extent());
+		myself.panels[tab.name].setPosition( myself.displayPanel.position().add( new Point(border, border) ) );
+		myself.panels[tab.name].setExtent( myself.displayPanel.extent().subtract( new Point( 2*border, 2*border ) ) );
 	});
 	this.outlineTabPanel();
 
@@ -276,7 +276,7 @@ TabPanelMorph.prototype.addTab = function(tabName, panelMorph) {
 		this.tabBar,    											// tab bar
 		function () {											    // action
 			myself.currentTab = tabName;
-			myself.tabBar.children.forEach( function (each) { each.refresh(); } );			
+			myself.tabs.forEach( function (each) { each.refresh(); } );			
 			myself.reactToTabSelect(tabName);
 		}, 			 
 		tabName[0].toUpperCase().concat(tabName.slice(1)),			// labelString
@@ -327,8 +327,8 @@ TabPanelMorph.prototype.addTab = function(tabName, panelMorph) {
 	if (this.currentTab !== tabName) {
 		panelMorph.hide();
 	}
-	
-	this.tabs.push(tabName);
+	tab.name = tabName;
+	this.tabs.push(tab);
 	this.panels[tabName] = panelMorph;
 	
 	this.fixLayout();
@@ -338,21 +338,16 @@ TabPanelMorph.prototype.addTab = function(tabName, panelMorph) {
 TabPanelMorph.prototype.reactToTabSelect = function(tabName) {
 	var myself = this;
 	this.tabs.forEach( function(tab) {
-		if(tab !== tabName) {
-			myself.panels[tab].hide();
+		if(tab.name !== tabName) {
+			myself.panels[tab.name].hide();
 			tab.color = myself.colors[1] // the color of the unselected tab
 		} else {
 			myself.currentTab = tabName;
 			tab.color = myself.colors[2]; // same as the selected panel
-			myself.panels[tab].show();
+			myself.panels[tab.name].show();
 			myself.outlineTabPanel();
 		}
 	});
-}
-
-TabPanelMorph.prototype.drawNew = function() {
-	TabPanelMorph.uber.drawNew.call(this);
-	if(this.tabBar) this.outlineTabPanel();
 }
 
 TabPanelMorph.prototype.outlineTabPanel = function() {
@@ -361,23 +356,23 @@ TabPanelMorph.prototype.outlineTabPanel = function() {
 	var curTab = null;
 	var tabName = this.currentTab;
 	
-	this.tabBar.children.forEach( function(tab) {
+	this.tabs.forEach( function(tab) {
 	
-		if(tab.labelString.toLowerCase() === tabName.toLowerCase()) {
+		if(tab.name === tabName) {
 			curTab = tab;
 		}
 	});
 
 	// get the top-most canvas to draw on.
-	this.image = newCanvas(this.panels[tabName].extent());  
-	var context = this.panels[tabName].image.getContext('2d');
+	this.image = newCanvas(this.displayPanel.extent());  
+	var context = this.displayPanel.image.getContext('2d');
 	
 	var x1 = 0;
 	var	y1 = 0;
 	var	x2 = curTab.bottomLeft().asArray()[0] - this.topLeft().asArray()[0];
 	var	x3 = curTab.width()+x2;
-	var	x4 = this.panels[tabName].width();
-	var	y2 = this.panels[tabName].height();
+	var	x4 = this.displayPanel.width();
+	var	y2 = this.displayPanel.height();
 	
 	
 	/*
@@ -389,7 +384,7 @@ TabPanelMorph.prototype.outlineTabPanel = function() {
 	(x1,y2)--------------------------------------(x4,y2)
 	*/
 	
-	context.strokeStyle = new Color(0,0,0);
+	context.strokeStyle = ( new Color(0,0,0) ).toString();
 	context.lineWidth = 1;
 	
 	context.beginPath();
@@ -400,6 +395,22 @@ TabPanelMorph.prototype.outlineTabPanel = function() {
 	context.lineTo(x1,y1);
 	context.lineTo(x2,y1);
 	context.stroke();
+	
+	context.strokeStyle = this.displayPanel.color.toString();
+	context.lineWidth = 5;
+	context.beginPath();
+	context.moveTo(x2,y1);
+	context.lineTo(x3,y1);
+	context.stroke();
+	
+};
+
+
+TabPanelMorph.prototype.show = function() {
+
+	TabPanelMorph.uber.show.call(this);
+	
+	this.reactToTabSelect(this.currentTab);
 	
 };
 

@@ -217,9 +217,10 @@ SimulatorMorph.prototype.createLogo = function() {
         );
         this.changed();
     };
-
+	
+	
     this.logo.mouseClickLeft = function () {
-        myself.snapMenu();
+		myself.snapMenu();
     };
 
     this.logo.color = new Color();
