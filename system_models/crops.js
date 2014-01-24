@@ -102,13 +102,22 @@ function CropSystemMorph(aCrop) {
     this.init(aCrop);;
 }
 
-CropSystemMorph.prototype.init = function (aCrop) {
-
+CropSystemMorph.prototype.init = function (aCropSprite) {
+	
+	var sprite2 = new SpriteMorph(),
+                sprite3 = new SpriteMorph(),
+                sprite4 = new SpriteMorph(),
+                sprite5 = new SpriteMorph();
+        sprite2.name = "Alpha";
+        sprite3.name = "Beta";
+        sprite4.name = "Delta";
+        sprite5.name = "Gamma";	
+	
     // additional properties
-	this.crop = aCrop; // || new CropSpriteMorph();
+	this.crop = aCrop || new SpriteMorph();
 	
 	this.globalVariables = new VariableFrame();
-	this.crops = new List([]);
+	this.crops = new List([this.currentCrop, sprite2, sprite3, sprite4, sprite5]);
 	this.currentCategory = 'motion';
 	this.currentTab = 'description';
 	this.stageDimensions = new Point(240, 160);
@@ -182,85 +191,19 @@ CropSystemMorph.prototype.createCorralBar = function () {
 };
 
 CropSystemMorph.prototype.createCorral = function () {
-	// assumes corralBar has already been created
-	var frame, template, padding = 5, myself = this;
-	
-	if (this.corral) {
-		this.corral.destroy();
-	}
-	
-	this.corral = new ScrollFrameMorph(null, null, this.sliderColor);
-	this.corral.acceptsDrops = false;
-	this.corral.contents.acceptsDrops = false;
-	this.corral.setColor(CropSystemMorph.prototype.corralColor);
-	
-	this.corral.contents.wantsDropOf = function (morph) {
-		return morph instanceof CropSpriteIconMorph;
-	};
-	
-	this.corral.contents.reactToDropOf = function (cropIcon) {
-		myself.corral.reactToDropOf(cropIcon);
-	};
-	
-	this.crops.asArray().forEach(function(morph) {
-		template = new CropSpriteIconMorph(morph, template);
-		this.corral.contents.add(template);
-	});
-	
-	this.add(this.corral);
-	
-	this.corral.fixLayout = function() {
-		this.arrangeIcons();
-		this.refresh();
-	};
-	
-	this.corral.arrangeIcons = function() {
-		var x = this.left(),
-			y = this.top(),
-			max = this.right(),
-			start = this.left();
-		
-		this.contents.children.forEach(function (icon) {
-			var w = icon.width();
-			
-			if (x + w > max) {
-				x = start;
-				y += icon.height(); 
-			}
-			icon.setPosition(new Point(x, y));
-			x += 2;
-		});
-		this.contents.adjustBounds();
-	};
-	
-	this.corral.addCrop = function (crop) {
-		this.contents.add(new CropIconMorph(crop));
-		this.fixLayout();
-	};
-	
-	this.corral.refresh = function () {
-		this.contents.children.forEach(function(icon) {
-			icon.refresh();
-		});
-	};
-	
-	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof cropIconMorph;
-	};
-	
-	this.corral.reactToDropOf = function (cropIcon) {
-		var idx = 1,
-			pos = cropIcon.position();
-		cropIcon.destroy();
-		this.contents.children.forEach(function (icon) {
-			if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
-				idx += 1;
-			}
-		});
-		myself.crops.add(spriteIcon.object, idx);
-		myself.createCorral();
-		myself.fixLayout();
-	};
+	        // assumes corralBar has already been created
+        var frame, template, padding = 5, sprites, myself = this;
+        
+        if (this.corral) {
+                this.corral.destroy();
+        }
+        
+        sprites = function () {
+                return myself.crops;
+        }
+        
+        this.corral = new SpriteCorralMorph(sprites, SpriteIconMorph);
+        this.add(this.corral);
 };
 
 CropSystemMorph.prototype.createCropEditor = function() {
@@ -361,4 +304,53 @@ CropIconMorph.prototype.init = function (aCrop, aTemplate) {
 			IDE_Morph.prototype.frameColor
 		];
 	}
+        
+        action = function () {
+                // make my sprite the current one
+                var crops = myself.parentThatIsA(CropSystemMorph);
+                
+                if (crops) {
+                        console.log("Selected sprite");
+                        //crops.selectSprite(myself.object);
+                }
+        };
+        
+        query = function () {
+                // answer if my sprite is the current one
+                var crops = myself.parentThatIsA(CropSystemMorph);
+                
+                if (crops) {
+                        return crops.currentCrop === myself.object;
+                }
+                return false;
+        };
+        
+        // additional properties
+        this.object = aCropSprite || new SpriteMorph();
+        this.version = this.object.version;
+        this.thumbnail = null;
+        
+        // initialize inherited properties
+        SpriteIconMorph.uber.init.call(
+        this,
+        colors, // color overrides, <array>: [normal, highlight, pressed]
+        null, // target - not needed here
+        action, // a toggle function
+        this.object.name, // label string
+        query, // predicate/selector
+        null, // environment
+        null, // hint
+        aTemplate // optional, for cached background images
+    );
+        
+    // override defaults and build additional components
+    this.isDraggable = true;
+    this.createThumbnail();
+    this.padding = 2;
+    this.corner = 8;
+    this.fixLayout();
+    this.fps = 1;
 };
+
+CropIconMorph.prototype.createThumbnail = function () {
+}
