@@ -1,0 +1,12 @@
+'widgets': [
+	'push_button_morph',
+	'toggle_button_morph',
+	'tab_morph',
+	'toggle_morph',
+	'toggle_element_morph',
+	'dialog_box_morph'
+	'alignment_morph'
+	'input_file_field_morph',
+	'control_bar_morph',
+	'tab_panel_morph'
+] 
