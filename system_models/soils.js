@@ -87,6 +87,17 @@ SoilSystemMorph.uber = Morph.prototype;
 
 // SoilSystemMorph instance creation:
 
+SoilSystemMorph.prototype.backgroundColor = new Color(20, 200, 20);
+SoilSystemMorph.prototype.stageBarColor = new Color(244, 20, 20);
+SoilSystemMorph.prototype.stageColor = new Color(255,255,255);
+SoilSystemMorph.prototype.corralBarColor = new Color (0,0,0); // TODO : implement, currently its the default
+SoilSystemMorph.prototype.corralColor = new Color(255,255,255);
+SoilSystemMorph.prototype.soilEditorColors = [
+							new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
+							new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
+							new Color(20, 233, 233) 			// this is the color of the slected panel
+							];
+							
 // Soil system constructor
 function SoilSystemMorph(aSoil){
 
@@ -126,7 +137,7 @@ SoilSystemMorph.prototype.init = function(aSoil){
 	
 	// configure inherited properties
 	this.fps = 2;
-	this.setColor( new Color( 20, 200, 20 ) );
+	this.setColor( PestSystemMorph.prototype.backgroundColor );
 	
 	// Build the different panes
 	this.createStageBar();
@@ -151,7 +162,7 @@ SoilSystemMorph.prototype.createStageBar = function() {
 	this.stageBar.setWidth(this.stageDimensions.x);
 	this.stageBar.setHeight(30);
 	this.stageBar.corner = 10;
-	this.stageBar.setColor( new Color( 244, 20, 20 ) );
+	this.stageBar.setColor( PestSystemMorph.prototype.stageBarColor );
 	
 	// add the stage bar to the soil system.
 	this.add(this.stageBar);
@@ -171,6 +182,8 @@ SoilSystemMorph.prototype.createStage = function(){
 	
 	// set the stage properties.
 	this.stage = new StageMorph(this.globalVariables);
+	this.stage.setColor( PestSystemMorph.prototype.stageColor );
+	
 	this.stage.setExtent(this.stageDimensions); 
 	
 	// add the stage to the soil system page.
@@ -193,6 +206,8 @@ SoilSystemMorph.prototype.createCorralBar = function(){
 	this.corralBar.add( new StringMorph("    Soils") );
 	this.corralBar.setWidth(this.stageDimensions.x);
 	this.corralBar.setHeight(30);
+	
+	//this.corralBar.setColor(PestSystemMorph.prototype.corralBarColor);
 	
 	// add the new corral bar to the soil system.
 	this.add(this.corralBar);
@@ -301,31 +316,26 @@ SoilSystemMorph.prototype.createSoilEditor = function() {
 	if(this.soilEditor){
 		this.soilEditor.destroy();
 	}
-	
-	var	colors = [
-			new Color(20, 200, 20),              // background color of tabBar and the background color for the display morph.
-			new Color(20, 233, 233).darker(15), // this is the color of the unselected tabs
-			new Color(20, 233, 233) 			// this is the color of the slected panel
-		];
+
 
 	// create the tab panel morph to hold the soil editor.
-	this.soilEditor = new TabPanelMorph(colors);
+	this.soilEditor = new TabPanelMorph( PestSystemMorph.prototype.pestEditorColors );
 	
 	// add the tabs to the tab panel
 	
 	// description tab
 	var descEditor = new Morph();
-	descEditor.setColor(new Color(20, 233, 233));
+	descEditor.setColor( PestSystemMorph.prototype.pestEditorColors[2] );
 	this.soilEditor.addTab('description', descEditor);
 	
 	// script tab
 	scriptEditor = new ScriptEditorMorph();
-	scriptEditor.setColor(new Color(20, 233, 233));
+	scriptEditor.setColor( PestSystemMorph.prototype.pestEditorColors[2] );
 	this.soilEditor.addTab('scripts', scriptEditor);
 	
 	// costume tab
 	costumeEditor = new Morph();
-	costumeEditor.setColor(new Color(20, 233, 233));
+	costumeEditor.setColor( PestSystemMorph.prototype.pestEditorColors[2] );
 	this.soilEditor.addTab('costumes', costumeEditor);
 	
 	// add the editor to the soil system
