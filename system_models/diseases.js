@@ -113,31 +113,27 @@ DiseaseSystemMorph.prototype.init = function (aDiseaseSprite) {
 	sprite3.name = 'dis 3';
 	sprite4.name = 'dis 4';
 	
-    // additional properties
-	this.currentDisease = aDiseaseSprite || new SpriteMorph();
+	// initialize inherited properties
+	DiseaseSystemMorph.uber.init.call(this);
 	
+    // add/modify properties
+	this.currentDisease = aDiseaseSprite || new SpriteMorph();
 	this.globalVariables = new VariableFrame();
 	this.diseases = [this.currentDisease, sprite2, sprite3, sprite4 ]; // list of diseases
 	this.currentCategory = 'motion';
 	this.currentTab = 'scripts';
+	
 	this.stageDimensions = new Point(240, 160);
+	this.fps = 2;
+	this.setColor( DiseaseSystemMorph.prototype.backgroundColor ); 
+	this.setWidth(910);
+	this.setHeight(429);
 	
 	this.stageBar = null;
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;
 	this.diseaseEditor = null;
-	
-	this.setWidth(910);
-	this.setHeight(429);
-	
-	// initialize inherited properties
-	DiseaseSystemMorph.uber.init.call(this);
-	
-	// configure inherited properties
-	this.fps = 2;
-	this.setColor( DiseaseSystemMorph.prototype.backgroundColor ); 
 	
 	// build panes
 	this.createStageBar();

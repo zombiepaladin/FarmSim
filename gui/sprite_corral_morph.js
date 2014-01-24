@@ -152,13 +152,3 @@ SpriteCorralMorph.prototype.reactToDropOf = function (spriteIcon) {
 	children.splice(idx, 0, children.splice(oldIdx, 1)[0]);
 	myself.fixLayout();
 };
-
-
-SpriteCorralMorph.prototype.show = function() {
-	console.log("sprite: " + this.sprites().reduce( function(acc, cur){  return acc + ", " + cur.name;  }, "") );
-	console.log("icons: " + this.frame.contents.children.reduce( function(acc, cur){  return acc + ", " + cur.object.name;  }, "") );
-	
-	//this.arrangeIcons();
-	//this.refresh();
-	SpriteCorralMorph.uber.show.call(this);
-};/**/

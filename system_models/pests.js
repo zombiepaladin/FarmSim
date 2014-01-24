@@ -107,7 +107,6 @@ function PestSystemMorph(aPestSprite){
 // Pest system init function
 PestSystemMorph.prototype.init = function(aPestSprite){
 		
-		
 	var sprite2 = new SpriteMorph(),
 	sprite3 = new SpriteMorph(),
 	sprite4 = new SpriteMorph(),
@@ -118,34 +117,28 @@ PestSystemMorph.prototype.init = function(aPestSprite){
 	sprite4.name = 'bug 4';
 	sprite5.name = 'bug 5';
 	
-	// additional properties
-	this.currentPest = aPestSprite || new SpriteMorph();
+	//  initialize inherited properties
+	PestSystemMorph.uber.init.call(this);
 	
+	// add/modify properties
+	this.currentPest = aPestSprite || new SpriteMorph();
 	this.globalVariables = new VariableFrame();
 	this.pests = [this.currentPest, sprite2, sprite3, sprite4, sprite5 ];
 	this.currentCategory = 'motion'; // not sure what this is ???
 	this.currentTab = 'scripts';
+	
+	this.fps = 2;
+	this.setColor( PestSystemMorph.prototype.backgroundColor );
 	this.stageDimensions = new Point(240, 160);
+	this.setWidth(910);
+	this.setHeight(429);
 	
 	// The morphs associated with this system.
 	this.stageBar = null;
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;  // not in use.
-	this.editorBar = null; // not in use.
-	this.tabBar = null;    // not in use.
 	this.pestEditor = null;
-	
-	this.setWidth(910);
-	this.setHeight(429);
-	
-	//  initialize inherited properties
-	PestSystemMorph.uber.init.call(this);
-	
-	// configure inherited properties
-	this.fps = 2;
-	this.setColor( PestSystemMorph.prototype.backgroundColor );
 	
 	// Build the different panes
 	this.createStageBar();

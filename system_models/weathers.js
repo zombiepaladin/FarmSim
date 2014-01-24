@@ -119,35 +119,30 @@ WeatherSystemMorph.prototype.init = function(aWeatherSprite){
 	sprite3.name = 'Hurricane';
 	sprite4.name = 'Rain';
 	sprite5.name = 'Sleet';
+		
+	//  initialize inherited properties
+	WeatherSystemMorph.uber.init.call(this);
 	
-	// additional properties
+	// add/modify properties
 	this.currentWeather = aWeatherSprite || new SpriteMorph();
-	
 	this.globalVariables = new VariableFrame();
 	this.weathers = [this.currentWeather, sprite2, sprite3, sprite4, sprite5 ]; // list of weathers
 	this.currentCategory = 'motion'; // not sure what this is ???
 	this.currentTab = 'scripts';
+	
 	this.stageDimensions = new Point(240, 160);
+	this.fps = 2;
+	this.setColor( WeatherSystemMorph.prototype.backgroundColor );
+	
+	this.setWidth(910);
+	this.setHeight(429);
 	
 	// The morphs associated with this system.
 	this.stageBar = null;
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;  // not in use.
-	this.editorBar = null; // not in use.
-	this.tabBar = null;    // not in use.
 	this.weatherEditor = null;
-	
-	this.setWidth(910);
-	this.setHeight(429);
-	
-	//  initialize inherited properties
-	WeatherSystemMorph.uber.init.call(this);
-	
-	// configure inherited properties
-	this.fps = 2;
-	this.setColor( WeatherSystemMorph.prototype.backgroundColor );
 	
 	// Build the different panes
 	this.createStageBar();

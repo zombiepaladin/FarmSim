@@ -109,24 +109,33 @@ SoilSystemMorph.prototype.init = function(aSoilSprite){
 	
 	console.log(" Soil System init function");
 	
-		var sprite2 = new SpriteMorph(),
-		sprite3 = new SpriteMorph(),
-		sprite4 = new SpriteMorph(),
-		sprite5 = new SpriteMorph();
-		
-		sprite2.name = 'Soil 2';
-		sprite3.name = 'Soil 3';
-		sprite4.name = "Soil 4";
-        sprite5.name = "Soil 5";	
+	var sprite2 = new SpriteMorph(),
+	sprite3 = new SpriteMorph(),
+	sprite4 = new SpriteMorph(),
+	sprite5 = new SpriteMorph();
+	
+	sprite2.name = 'Soil 2';
+	sprite3.name = 'Soil 3';
+	sprite4.name = "Soil 4";
+    sprite5.name = "Soil 5";	
+	
+	// initialize inherited properties
+	SoilSystemMorph.uber.init.call(this);
 	
 	// additional properties
 	this.currentSoil = aSoilSprite || new SpriteMorph();
-	
+
 	this.globalVariables = new VariableFrame();
 	this.soils = [ this.currentSoil, sprite2, sprite3, sprite4, sprite5,new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph() ];
 	this.currentCategory = 'motion';
 	this.currentTab = 'scripts';
+	
 	this.stageDimensions = new Point(240, 160);
+	this.fps = 2;
+	this.setColor( PestSystemMorph.prototype.backgroundColor );
+	
+	this.setWidth(910);
+	this.setHeight(429);
 	
 	// The morphs associated with this system
 	this.stageBar = null;
@@ -134,17 +143,7 @@ SoilSystemMorph.prototype.init = function(aSoilSprite){
 	this.corralBar = null;
 	this.corral = null;
 	this.soilEditor = null;
-	
-	this.setWidth(910);
-	this.setHeight(429);
-	
-	// initialize inherited properties
-	SoilSystemMorph.uber.init.call(this);
-	
-	// configure inherited properties
-	this.fps = 2;
-	this.setColor( PestSystemMorph.prototype.backgroundColor );
-	
+		
 	// Build the different panes
 	this.createStageBar();
 	this.createStage();
