@@ -99,7 +99,7 @@ CropSystemMorph.prototype.cropEditorColors = [
 							];
 
 function CropSystemMorph(aCrop) {
-    this.init(aCrop);;
+    this.init(aCrop);
 }
 
 CropSystemMorph.prototype.init = function (aCropSprite) {
@@ -114,10 +114,10 @@ CropSystemMorph.prototype.init = function (aCropSprite) {
         sprite5.name = "Gamma";	
 	
     // additional properties
-	this.crop = aCrop || new SpriteMorph();
+	this.currentCrop = aCropSprite || new SpriteMorph();
 	
 	this.globalVariables = new VariableFrame();
-	this.crops = new List([this.currentCrop, sprite2, sprite3, sprite4, sprite5]);
+	this.crops = [this.currentCrop, sprite2, sprite3, sprite4, sprite5];
 	this.currentCategory = 'motion';
 	this.currentTab = 'description';
 	this.stageDimensions = new Point(240, 160);
@@ -265,17 +265,17 @@ CropSystemMorph.prototype.fixLayout = function () {
 
 };
 
+
 // CropIconMorph ////////////////////////////////////////////////////
 
 /*
     I am a selectable element in the CropEditor's "Crops" tab, keeping
-    a self-updating thumbnail of the crop I'm respresenting, and a
+    a self-updating thumbnail of the crop I'm representing, and a
     self-updating label of the crop's name (in case it is changed
     elsewhere)
 */
 
-// CropIconMorph inherits from ToggleButtonMorph (Widgets)
-// ... and copies methods from SpriteIconMorph
+// CropIconMorph inherits from SpriteIconMorph
 
 CropIconMorph.prototype = new ToggleButtonMorph();
 CropIconMorph.prototype.constructor = CropIconMorph;
@@ -285,16 +285,17 @@ CropIconMorph.uber = ToggleButtonMorph.prototype;
 
 CropIconMorph.prototype.thumbSize = new Point(80, 60);
 CropIconMorph.prototype.labelShadowOffset = null;
+CropIconMorph.prototype.labelShadowColor = null;
 CropIconMorph.prototype.labelColor = new Color(255, 255, 255);
 CropIconMorph.prototype.fontSize = 9;
 
 // CropIconMorph instance creation:
 
-function CropIconMorph(aCrop, aTemplate) {
-	this.init(aCrop, aTemplate);
+function CropIconMorph(aCropSprite, aTemplate) {
+	this.init(aCropSprite, aTemplate);
 };
 
-CropIconMorph.prototype.init = function (aCrop, aTemplate) {
+CropIconMorph.prototype.init = function (aCropSprite, aTemplate) {
 	var colors, action, query, myself = this;
 	
 	if(!aTemplate) {
@@ -304,34 +305,34 @@ CropIconMorph.prototype.init = function (aCrop, aTemplate) {
 			IDE_Morph.prototype.frameColor
 		];
 	}
-        
-        action = function () {
-                // make my sprite the current one
-                var crops = myself.parentThatIsA(CropSystemMorph);
-                
-                if (crops) {
-                        console.log("Selected sprite");
-                        //crops.selectSprite(myself.object);
-                }
-        };
-        
-        query = function () {
-                // answer if my sprite is the current one
-                var crops = myself.parentThatIsA(CropSystemMorph);
-                
-                if (crops) {
-                        return crops.currentCrop === myself.object;
-                }
-                return false;
-        };
-        
-        // additional properties
-        this.object = aCropSprite || new SpriteMorph();
-        this.version = this.object.version;
-        this.thumbnail = null;
-        
-        // initialize inherited properties
-        SpriteIconMorph.uber.init.call(
+	
+	action = function () {
+		// make my sprite the current one
+		var crops = myself.parentThatIsA(CropSystemMorph);
+		
+		if (crops) {
+			console.log("Selected sprite");
+			//crops.selectSprite(myself.object);
+		}
+	};
+	
+	query = function () {
+		// answer if my sprite is the current one
+		var crops = myself.parentThatIsA(CropSystemMorph);
+		
+		if (crops) {
+			return crops.currentCrop === myself.object;
+		}
+		return false;
+	};
+	
+	// additional properties
+	this.object = aCropSprite || new SpriteMorph();
+	this.version = this.object.version;
+	this.thumbnail = null;
+	
+	// initialize inherited properties
+	SpriteIconMorph.uber.init.call(
         this,
         colors, // color overrides, <array>: [normal, highlight, pressed]
         null, // target - not needed here
@@ -342,7 +343,7 @@ CropIconMorph.prototype.init = function (aCrop, aTemplate) {
         null, // hint
         aTemplate // optional, for cached background images
     );
-        
+	
     // override defaults and build additional components
     this.isDraggable = true;
     this.createThumbnail();
