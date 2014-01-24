@@ -99,17 +99,25 @@ DiseaseSystemMorph.prototype.diseaseEditorColors = [
 							new Color(20, 233, 233) 			// this is the color of the slected panel
 							];
 
-function DiseaseSystemMorph(aDisease) {
-    this.init(aDisease);
+function DiseaseSystemMorph(aDiseaseSprite) {
+    this.init(aDiseaseSprite);
 }
 
-DiseaseSystemMorph.prototype.init = function (aDisease) {
-
+DiseaseSystemMorph.prototype.init = function (aDiseaseSprite) {
+	
+	var sprite2 = new SpriteMorph(),
+	sprite3 = new SpriteMorph(),
+	sprite4 = new SpriteMorph();
+	
+	sprite2.name = 'dis 2';
+	sprite3.name = 'dis 3';
+	sprite4.name = 'dis 4';
+	
     // additional properties
-	this.disease = aDisease; // || new DiseaseSpriteMorph();
+	this.currentDisease = aDiseaseSprite || new SpriteMorph();
 	
 	this.globalVariables = new VariableFrame();
-	this.diseases = new List([]);
+	this.diseases = [this.currentDisease, sprite2, sprite3, sprite4 ]; // list of diseases
 	this.currentCategory = 'motion';
 	this.currentTab = 'scripts';
 	this.stageDimensions = new Point(240, 160);
@@ -185,87 +193,23 @@ DiseaseSystemMorph.prototype.createCorralBar = function () {
 
 // this function creates the corral
 DiseaseSystemMorph.prototype.createCorral = function () {
-	// assumes corralBar has already been created
-	var frame, template, padding = 5, myself = this;
+	var frame, template, padding = 5, sprites, myself = this;
 	
-	if (this.corral) {
+		console.log("create disease corral");
+	
+	// remove any previous stage bars.
+	if(this.corral){
 		this.corral.destroy();
 	}
-	
-	this.corral = new ScrollFrameMorph(null, null, this.sliderColor);
-	this.corral.acceptsDrops = false;
-	this.corral.contents.acceptsDrops = false;
-	this.corral.setColor(DiseaseSystemMorph.prototype.corralColor);
-	
-	this.corral.contents.wantsDropOf = function (morph) {
-		return morph instanceof DiseaseSpriteIconMorph;
-	};
-	
-	this.corral.contents.reactToDropOf = function (diseaseIcon) {
-		myself.corral.reactToDropOf(diseaseIcon);
-	};
-	
-	this.diseases.asArray().forEach(function(morph) {
-		template = new DiseaseIconMorph(morph, template);
-		this.corral.contents.add(template);
-	});
-	
-	this.add(this.corral);
-	
-	this.corral.fixLayout = function() {
-		console.log(this.width());
-		console.log(this.height());
-		this.arrangeIcons();
-		this.refresh();
-	}
-	
-	this.corral.arrangeIcons = function() {
-		var x = this.left(),
-			y = this.top(),
-			max = this.right(),
-			start = this.left();
 		
-		this.contents.children.forEach(function (icon) {
-			var w = icon.width();
-			
-			if (x + w > max) {
-				x = start;
-				y += icon.height(); 
-			}
-			icon.setPosition(new Point(x, y));
-			x += 2;
-		});
-		this.contents.adjustBounds();
-	};
+		sprites = function () {
+                return myself.diseases;
+        }
+        
+        this.corral = new SpriteCorralMorph(sprites, SpriteIconMorph);	
 	
-	this.corral.addDisease = function (disease) {
-		this.contents.add(new DiseaseIconMorph(disease));
-		this.fixLayout();
-	};
-	
-	this.corral.refresh = function () {
-		this.contents.children.forEach(function(icon) {
-			icon.refresh();
-		});
-	};
-	
-	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof DiseaseIconMorph;
-	};
-	
-	this.corral.reactToDropOf = function (diseaseIcon) {
-		var idx = 1,
-			pos = diseaseIcon.position();
-		diseaseIcon.destroy();
-		this.contents.children.forEach(function (icon) {
-			if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
-				idx += 1;
-			}
-		});
-		myself.diseases.add(spriteIcon.object, idx);
-		myself.createCorral();
-		myself.fixLayout();
-	};
+	// add the stage bar to the disease system.
+	this.add(this.corral);
 };
 
 // creates the disease editor window.
@@ -358,8 +302,8 @@ DiseaseIconMorph.prototype.fontSize = 9;
 function DiseaseIconMorph(aDisease, aTemplate) {
 	this.init(aDisease, aTemplate);
 }
-
-DiseaseIconMorph.prototype.init = function (aDisease, aTemplate) {
+// Disease icon init function
+DiseaseIconMorph.prototype.init = function (aDiseaseSprite, aTemplate) {
 	var colors, action, query, myself = this;
 	
 	if(!aTemplate) {
@@ -369,4 +313,66 @@ DiseaseIconMorph.prototype.init = function (aDisease, aTemplate) {
 			IDE_Morph.prototype.frameColor
 		];
 	}
+	
+	action = function () {
+		// make my sprite the current one
+		var diseases = myself.parentThatIsA(DiseaseSystemMorph);
+		
+		if (diseases) {
+			console.log("Selected sprite disease: " + diseases);
+			//diseases.selectSprite(myself.object);
+		}
+	};
+	
+	query = function () {
+		// answer if my sprite is the current one
+		var diseases = myself.parentThatIsA(DiseaseSystemMorph);
+		
+		if (diseases) {
+			return diseases.currentDisease === myself.object;
+		}
+		return false;
+	};
+	
+	// additional properties
+	this.object = aDiseaseSprite || new SpriteMorph();
+	this.version = this.object.version;
+	this.thumbnail = null;
+	
+	// initialize inherited properties
+	SpriteIconMorph.uber.init.call(
+        this,
+        colors, // color overrides, <array>: [normal, highlight, pressed]
+        null, // target - not needed here
+        action, // a toggle function
+        this.object.name, // label string
+        query, // predicate/selector
+        null, // environment
+        null, // hint
+        aTemplate // optional, for cached background images
+    );
+	
+    // override defaults and build additional components
+    this.isDraggable = true;
+    this.createThumbnail();
+    this.padding = 2;
+    this.corner = 8;
+    this.fixLayout();
+    this.fps = 1;
+};
+
+DiseaseIconMorph.prototype.createThumbnail = function () {
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

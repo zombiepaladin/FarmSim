@@ -99,23 +99,32 @@ SoilSystemMorph.prototype.soilEditorColors = [
 							];
 							
 // Soil system constructor
-function SoilSystemMorph(aSoil){
+function SoilSystemMorph(aSoilSprite){
 
-	this.init(aSoil);
+	this.init(aSoilSprite);
 }
 
 // Soil system initializing function
-SoilSystemMorph.prototype.init = function(aSoil){
+SoilSystemMorph.prototype.init = function(aSoilSprite){
 	
 	console.log(" Soil System init function");
 	
+		var sprite2 = new SpriteMorph(),
+		sprite3 = new SpriteMorph(),
+		sprite4 = new SpriteMorph(),
+		sprite5 = new SpriteMorph();
+		
+		sprite2.name = 'Soil 2';
+		sprite3.name = 'Soil 3';
+		sprite4.name = "Soil 4";
+        sprite5.name = "Soil 5";	
+	
 	// additional properties
-	this.soil = aSoil; // or if there isn't a soil passed in create one. 
-	// || new SoilSpriteMorph();
+	this.currentSoil = aSoilSprite || new SpriteMorph();
 	
 	this.globalVariables = new VariableFrame();
-	this.soils = new List([]);
-	this.currentCategory = 'motion' //???
+	this.soils = [ this.currentSoil, sprite2, sprite3, sprite4, sprite5,new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph(),new SpriteMorph() ];
+	this.currentCategory = 'motion';
 	this.currentTab = 'scripts';
 	this.stageDimensions = new Point(240, 160);
 	
@@ -124,9 +133,6 @@ SoilSystemMorph.prototype.init = function(aSoil){
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;  // not in use.
-	this.editorBar = null; // not in use.
-	this.tabBar = null;    // not in use.
 	this.soilEditor = null;
 	
 	this.setWidth(910);
@@ -217,92 +223,19 @@ SoilSystemMorph.prototype.createCorralBar = function(){
 // This function creates the corral window morph.
 SoilSystemMorph.prototype.createCorral = function(){
 
-	var frame, template, padding = 5, myself = this;
+	var frame, template, padding = 5, sprites, myself = this;
 	
 	// remove any old corrals
 	if(this.corral){
-		this.corral.Destroy();
+		this.corral.destroy();
 	}
 	
+	sprites = function() {
+		return myself.soils;
+	};
+	
 	// create the new corral as a scrollable morph.
-	this.corral = new ScrollFrameMorph( null, null, this.sliderColor);
-	
-	// define its properties.
-	this.corral.acceptsDrops = false;
-	this.corral.contents.acceptsDrops = false;
-	
-	// define support functions for corral's contents.
-	this.corral.contents.wantsDropOf = function (morph) {
-		return morph instanceof SoilSpriteIconMorph;
-	};
-	
-	this.corral.contents.reactToDropOf = function (soilIcon) {
-		myself.corral.reactToDropOf(soilIcon);
-	};
-	
-	this.soils.asArray().forEach( function(morph) {
-		template = new SoilIconMorph( morph, template);
-		this.corral.contents.add(template);
-	});
-	
-	
-	
-	// define support functions for corral itself.
-	
-	this.corral.fixLayout = function() {
-		this.arrangeIcons();
-		this.refresh();
-	};
-	
-	this.corral.arrangeIcons = function() {
-		var x = this.left();
-		var y = this.top();
-		var max = this.right();
-		var start = this.left();
-		
-		this.contents.children.forEach( function (icon) {
-			var w = icon.width();
-			
-			if (x + w > max) {
-				x = start;
-				y += icon.height();
-			}
-			
-			icon.setPosition( new Point( x, y ) );
-			x += 2;
-		});
-		this.contents.adjustBounds();
-	};
-	
-	this.corral.addSoil = function(soil) {
-		this.contents.add( new SoilIconMorph(soil) );
-		this.fixLayout();
-	};
-	
-	this.corral.refresh = function() {
-		this.contents.children.forEach(function(icon) {
-			icon.refresh();
-		});
-	};
-	
-	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof SoilIconMorph;
-	};
-	
-	this.corral.reactToDropOf = function (soilIcon) {
-		var idx = 1;
-		var pos = soilIcon.position();
-		soilIcon.destroy();
-		this.contents.children.forEach( function (icon) {
-			if( pos.gt(icon.position()) || pos.y > icon.bottom()) { // ??? should it be pos.get
-				idx += 1;
-			}
-		});
-		
-		myself.soils.add(spriteIcon.object, idx); // ??? spriteIcon
-		myself.createCorral();
-		myself.fixLayout();
-	};
+	this.corral = new SpriteCorralMorph(sprites, SpriteIconMorph);
 	
 	this.add(this.corral);
 	
@@ -398,7 +331,7 @@ function SoilIconMorph(aSoil, aTemplate) {
 }
 
 // soil icon init function
-SoilIconMorph.prototype.init = function (aSoil, aTemplate) {
+SoilIconMorph.prototype.init = function (aSoilSprite, aTemplate) {
 	var colors, action, query, myself = this;
 	
 	if(!aTemplate) {
@@ -408,8 +341,57 @@ SoilIconMorph.prototype.init = function (aSoil, aTemplate) {
 			IDE_Morph.prototype.frameColor
 		];
 	}
-}
 
+	action = function () {
+		// make my sprite the current one
+		var soils = myself.parentThatIsA(SoilSystemMorph);
+		
+		if (soils) {
+			console.log("Selected sprite soil: " + soils);
+			//soils.selectSprite(myself.object);
+		}
+	};
+	
+	query = function () {
+		// answer if my sprite is the current one
+		var soils = myself.parentThatIsA(SoilSystemMorph);
+		
+		if (soils) {
+			return soils.currentSoil === myself.object;
+		}
+		return false;
+	};
+	
+	// additional properties
+	this.object = aSoilSprite || new SpriteMorph();
+	this.version = this.object.version;
+	this.thumbnail = null;
+	
+	// initialize inherited properties
+	SpriteIconMorph.uber.init.call(
+        this,
+        colors, // color overrides, <array>: [normal, highlight, pressed]
+        null, // target - not needed here
+        action, // a toggle function
+        this.object.name, // label string
+        query, // predicate/selector
+        null, // environment
+        null, // hint
+        aTemplate // optional, for cached background images
+    );
+	
+    // override defaults and build additional components
+    this.isDraggable = true;
+    this.createThumbnail();
+    this.padding = 2;
+    this.corner = 8;
+    this.fixLayout();
+    this.fps = 1;
+};
+
+SoilIconMorph.prototype.createThumbnail = function () {
+
+};
 
 
 

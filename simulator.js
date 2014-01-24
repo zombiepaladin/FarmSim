@@ -187,8 +187,8 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.cropSystem = null;
 	this.soilSystem = null;
 	this.weatherSystem = null;
-	this.diseaseSystem = null; 
 	this.pestSystem = null;  
+	this.diseaseSystem = null; 
 	
 	// gui settings:
 	this.isAutoFill = isAutoFill || true;
@@ -236,8 +236,8 @@ SimulatorMorph.prototype.buildPanes = function() {
 	this.createCropSystem();
 	this.createSoilSystem();
 	this.createWeatherSystem();
-	this.createDiseaseSystem();
 	this.createPestSystem();
+	this.createDiseaseSystem();
 };
 	
 SimulatorMorph.prototype.createLogo = function() {
@@ -511,17 +511,17 @@ SimulatorMorph.prototype.fixLayout = function (situation) {
 	this.weatherSystem.setHeight(this.height() - this.systemSelectBar.bottom());
 	this.weatherSystem.fixLayout();
 	
-	// disease system layout
-	this.diseaseSystem.setPosition(this.systemSelectBar.bottomLeft());
-	this.diseaseSystem.setWidth(this.systemSelectBar.width());
-	this.diseaseSystem.setHeight(this.height() - this.systemSelectBar.bottom());
-	this.diseaseSystem.fixLayout();
-
 	// pest system layout
 	this.pestSystem.setPosition(this.systemSelectBar.bottomLeft());
 	this.pestSystem.setWidth(this.systemSelectBar.width());
 	this.pestSystem.setHeight(this.height() - this.systemSelectBar.bottom());
 	this.pestSystem.fixLayout();
+	
+	// disease system layout
+	this.diseaseSystem.setPosition(this.systemSelectBar.bottomLeft());
+	this.diseaseSystem.setWidth(this.systemSelectBar.width());
+	this.diseaseSystem.setHeight(this.height() - this.systemSelectBar.bottom());
+	this.diseaseSystem.fixLayout();
 
 	Morph.prototype.trackChanges = true;
 	this.changed();
@@ -559,8 +559,8 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	this.cropSystem.hide();
 	this.soilSystem.hide();
 	this.weatherSystem.hide();
-	this.diseaseSystem.hide();
 	this.pestSystem.hide();
+	this.diseaseSystem.hide();
 	
 	switch (system) {
 		case 'crops':
@@ -572,11 +572,11 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 		case 'weathers':
 			this.weatherSystem.show();
 		break;
-		case 'diseases':
-			this.diseaseSystem.show();
-		break;
 		case 'pests':
 			this.pestSystem.show();
+		break;
+		case 'diseases':
+			this.diseaseSystem.show();
 		break;
 	}
 	
