@@ -104,17 +104,17 @@ function CropSystemMorph(aCrop) {
 
 CropSystemMorph.prototype.init = function (aCropSprite) {
 	
-	var sprite2 = new SpriteMorph(),
-                sprite3 = new SpriteMorph(),
-                sprite4 = new SpriteMorph(),
-                sprite5 = new SpriteMorph();
+	var sprite2 = new CropSpriteMorph(),
+                sprite3 = new CropSpriteMorph(),
+                sprite4 = new CropSpriteMorph(),
+                sprite5 = new CropSpriteMorph();
         sprite2.name = "Alpha";
         sprite3.name = "Beta";
         sprite4.name = "Delta";
         sprite5.name = "Gamma";	
 	
     // additional properties
-	this.currentCrop = aCropSprite || new SpriteMorph();
+	this.currentCrop = aCropSprite || new CropSpriteMorph();
 	
 	this.globalVariables = new VariableFrame();
 	this.crops = [this.currentCrop, sprite2, sprite3, sprite4, sprite5];
@@ -164,6 +164,8 @@ CropSystemMorph.prototype.createStageBar = function () {
 };
 
 CropSystemMorph.prototype.createStage = function () {
+	var myself = this;
+	
 	// assumes stageBar has already been created
 	if(this.stage) {
 		this.stage.destroy();
@@ -175,6 +177,10 @@ CropSystemMorph.prototype.createStage = function () {
 	
 	this.stage.setExtent(this.stageDimensions); // dimensions are fixed
 	this.add(this.stage);
+	
+	this.crops.forEach( function(sprite) {
+		myself.stage.add(sprite);
+	});
 };
 
 CropSystemMorph.prototype.createCorralBar = function () {
@@ -202,7 +208,7 @@ CropSystemMorph.prototype.createCorral = function () {
                 return myself.crops;
         }
         
-        this.corral = new SpriteCorralMorph(sprites, SpriteIconMorph);
+        this.corral = new SpriteCorralMorph(sprites, CropSpriteIconMorph);
         this.add(this.corral);
 };
 
