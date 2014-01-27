@@ -13,7 +13,7 @@ var CropSpriteIconMorph;
 CropSpriteIconMorph.prototype = new SpriteIconMorph();
 CropSpriteIconMorph.prototype.constructor = CropSpriteIconMorph;
 CropSpriteIconMorph.uber = SpriteIconMorph.prototype;
-console.log(SpriteIconMorph);
+
 // SpriteIconMorph instance creation:
 
 function CropSpriteIconMorph(aSprite, aTemplate) {
@@ -21,6 +21,5 @@ function CropSpriteIconMorph(aSprite, aTemplate) {
 };
 
 CropSpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
-	console.log(this.uber);
-    this.uber.init.call(this, aSprite, aTemplate);
+	CropSpriteIconMorph.uber.init.call(this, aSprite, aTemplate);
 };
