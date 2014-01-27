@@ -101,44 +101,48 @@ WeatherSystemMorph.prototype.weatherEditorColors = [
 						
 
 // Weather system constructor
-function WeatherSystemMorph(aWeather){
-	this.init(aWeather);
+function WeatherSystemMorph(aWeatherSprite){
+	this.init(aWeatherSprite);
 };
 
 // Weather system init function
-WeatherSystemMorph.prototype.init = function(aWeather){
+WeatherSystemMorph.prototype.init = function(aWeatherSprite){
 	
 	console.log("Weather system init");
 	
-	// additional properties
-	this.weather = aWeather; // current weather selected
-	// should create a new WeatherSpriteMorph() if one is not passed in.
+	var sprite2 = new SpriteMorph(),
+	sprite3 = new SpriteMorph(),
+	sprite4 = new SpriteMorph(),
+	sprite5 = new SpriteMorph();
 	
+	sprite2.name = 'Tornado';
+	sprite3.name = 'Hurricane';
+	sprite4.name = 'Rain';
+	sprite5.name = 'Sleet';
+		
+	//  initialize inherited properties
+	WeatherSystemMorph.uber.init.call(this);
+	
+	// add/modify properties
+	this.currentWeather = aWeatherSprite || new SpriteMorph();
 	this.globalVariables = new VariableFrame();
-	this.weathers = new List([]); // list of weathers
+	this.weathers = [this.currentWeather, sprite2, sprite3, sprite4, sprite5 ]; // list of weathers
 	this.currentCategory = 'motion'; // not sure what this is ???
 	this.currentTab = 'scripts';
+	
 	this.stageDimensions = new Point(240, 160);
+	this.fps = 2;
+	this.setColor( WeatherSystemMorph.prototype.backgroundColor );
+	
+	this.setWidth(910);
+	this.setHeight(429);
 	
 	// The morphs associated with this system.
 	this.stageBar = null;
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;  // not in use.
-	this.editorBar = null; // not in use.
-	this.tabBar = null;    // not in use.
 	this.weatherEditor = null;
-	
-	this.setWidth(910);
-	this.setHeight(429);
-	
-	//  initialize inherited properties
-	WeatherSystemMorph.uber.init.call(this);
-	
-	// configure inherited properties
-	this.fps = 2;
-	this.setColor( WeatherSystemMorph.prototype.backgroundColor );
 	
 	// Build the different panes
 	this.createStageBar();
@@ -225,7 +229,7 @@ WeatherSystemMorph.prototype.createCorralBar = function() {
 
 // This function creates the corral window morph.
 WeatherSystemMorph.prototype.createCorral = function() {
-	var frame, template, padding = 5, myself = this;
+	var frame, template, padding = 5, sprites, myself = this;
 	
 		console.log("create weather corral");
 	
@@ -234,85 +238,11 @@ WeatherSystemMorph.prototype.createCorral = function() {
 		this.corral.destroy();
 	}
 		
-	// create the new stage bar.
-	this.corral = new ScrollFrameMorph(null, null, this.sliderColor);
-	
-	// define its parameters.
-	this.corral.acceptsDrops = false;
-	this.corral.contents.acceptsDrops = false;
-	
-	// support functions for the contents of the corral.
-	this.corral.contents.wantsDropOf = function (morph) {
-		return morph instanceof WeatherSpriteIconMorph;
-	};
-	
-	this.corral.contents.reactToDropOf = function (WeatherIcon) {
-		myself.corral.reactToDropOf(weatherIcon);
-	};
-	
-	// support function for list of weathers.
-	this.weathers.asArray().forEach( function(morph) {
-		template = new WeatherIconMorph( morph, template);
-		this.corral.contents.add(template);
-	});
-	
-	
-	// support functions for the corral itself
-	this.corral.fixLayout = function() {
-		this.arrangeIcons();
-		this.refresh();
-	};
-	
-	this.corral.arrangeIcons = function() {
-		var x = this.left();
-		var y = this.top();
-		var max = this.right();
-		var start = this.left();
-		
-		this.contents.children.forEach( function (icon) {
-			var w = icon.width();
-			
-			if (x + w > max) {
-				x = start;
-				y += icon.height();
-			}
-			
-			icon.setPosition( new Point( x, y ) );
-			x += 2;
-		});
-		this.contents.adjustBounds();
-	};
-	
-	this.corral.addWeather = function(weather) {
-		this.contents.add( new WeatherIconMorph(weather) );
-		this.fixLayout();
-	};
-	
-	this.corral.refresh = function() {
-		this.contents.children.forEach(function(icon) {
-			icon.refresh();
-		});
-	};
-	
-	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof WeatherIconMorph;
-	};
-	
-	this.corral.reactToDropOf = function (weatherIcon) {
-		var idx = 1;
-		var pos = weatherIcon.position();
-		weatherIcon.destroy();
-		this.contents.children.forEach( function (icon) {
-			if( pos.gt(icon.position()) || pos.y > icon.bottom()) { // ??? should it be pos.get
-				idx += 1;
-			}
-		});
-		
-		myself.weathers.add(spriteIcon.object, idx); // ??? spriteIcon
-		myself.createCorral();
-		myself.fixLayout();
-	};
-	
+		sprites = function () {
+                return myself.weathers;
+        }
+        
+        this.corral = new SpriteCorralMorph(sprites, SpriteIconMorph);	
 	
 	// add the stage bar to the weather system.
 	this.add(this.corral);
@@ -406,8 +336,8 @@ function WeatherIconMorph(aWeather, aTemplate) {
 	this.init(aWeather, aTemplate);
 }
 
-// weather icon init function
-WeatherIconMorph.prototype.init = function (aWeather, aTemplate) {
+// Weather icon init function
+WeatherIconMorph.prototype.init = function (aWeatherSprite, aTemplate) {
 	var colors, action, query, myself = this;
 	
 	if(!aTemplate) {
@@ -417,6 +347,55 @@ WeatherIconMorph.prototype.init = function (aWeather, aTemplate) {
 			IDE_Morph.prototype.frameColor
 		];
 	}
+	
+	action = function () {
+		// make my sprite the current one
+		var weathers = myself.parentThatIsA(WeatherSystemMorph);
+		
+		if (weathers) {
+			console.log("Selected sprite weather: " + weathers);
+			//weathers.selectSprite(myself.object);
+		}
+	};
+	
+	query = function () {
+		// answer if my sprite is the current one
+		var weathers = myself.parentThatIsA(WeatherSystemMorph);
+		
+		if (weathers) {
+			return weathers.currentWeather === myself.object;
+		}
+		return false;
+	};
+	
+	// additional properties
+	this.object = aWeatherSprite || new SpriteMorph();
+	this.version = this.object.version;
+	this.thumbnail = null;
+	
+	// initialize inherited properties
+	SpriteIconMorph.uber.init.call(
+        this,
+        colors, // color overrides, <array>: [normal, highlight, pressed]
+        null, // target - not needed here
+        action, // a toggle function
+        this.object.name, // label string
+        query, // predicate/selector
+        null, // environment
+        null, // hint
+        aTemplate // optional, for cached background images
+    );
+	
+    // override defaults and build additional components
+    this.isDraggable = true;
+    this.createThumbnail();
+    this.padding = 2;
+    this.corner = 8;
+    this.fixLayout();
+    this.fps = 1;
+};
+
+WeatherIconMorph.prototype.createThumbnail = function () {
 }
 
 

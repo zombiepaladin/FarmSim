@@ -100,42 +100,45 @@ PestSystemMorph.prototype.pestEditorColors = [
 							];
 
 // Pest system constructor
-function PestSystemMorph(aPest){
-	this.init(aPest);
+function PestSystemMorph(aPestSprite){
+	this.init(aPestSprite);
 };
 
 // Pest system init function
-PestSystemMorph.prototype.init = function(aPest){
+PestSystemMorph.prototype.init = function(aPestSprite){
 		
-	// additional properties
-	this.pest = aPest; // current pest selected
-	// should create a new PestSpriteMorph() if one is not passed in.
+	var sprite2 = new SpriteMorph(),
+	sprite3 = new SpriteMorph(),
+	sprite4 = new SpriteMorph(),
+	sprite5 = new SpriteMorph();
 	
+	sprite2.name = 'bug 2';
+	sprite3.name = 'bug 3';
+	sprite4.name = 'bug 4';
+	sprite5.name = 'bug 5';
+	
+	//  initialize inherited properties
+	PestSystemMorph.uber.init.call(this);
+	
+	// add/modify properties
+	this.currentPest = aPestSprite || new SpriteMorph();
 	this.globalVariables = new VariableFrame();
-	this.pests = new List([]); // list of pests
+	this.pests = [this.currentPest, sprite2, sprite3, sprite4, sprite5 ];
 	this.currentCategory = 'motion'; // not sure what this is ???
 	this.currentTab = 'scripts';
+	
+	this.fps = 2;
+	this.setColor( PestSystemMorph.prototype.backgroundColor );
 	this.stageDimensions = new Point(240, 160);
+	this.setWidth(910);
+	this.setHeight(429);
 	
 	// The morphs associated with this system.
 	this.stageBar = null;
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;  // not in use.
-	this.editorBar = null; // not in use.
-	this.tabBar = null;    // not in use.
 	this.pestEditor = null;
-	
-	this.setWidth(910);
-	this.setHeight(429);
-	
-	//  initialize inherited properties
-	PestSystemMorph.uber.init.call(this);
-	
-	// configure inherited properties
-	this.fps = 2;
-	this.setColor( PestSystemMorph.prototype.backgroundColor );
 	
 	// Build the different panes
 	this.createStageBar();
@@ -219,95 +222,18 @@ PestSystemMorph.prototype.createCorralBar = function() {
 
 // This function creates the corral window morph.
 PestSystemMorph.prototype.createCorral = function() {
-	var frame, template, padding = 5, myself = this;
-	
-		console.log("create pest corral");
-	
+	var frame, template, padding = 5, sprites, myself = this;
+		
 	// remove any previous stage bars.
 	if(this.corral){
 		this.corral.destroy();
 	}
 		
-	// create the new stage bar.
-	this.corral = new ScrollFrameMorph(null, null, this.sliderColor);
-	this.corral.setColor( PestSystemMorph.prototype.corralColor );
-	
-	// define its parameters.
-	this.corral.acceptsDrops = false;
-	this.corral.contents.acceptsDrops = false;
-	
-	// support functions for the contents of the corral.
-	this.corral.contents.wantsDropOf = function (morph) {
-		return morph instanceof PestSpriteIconMorph;
-	};
-	
-	this.corral.contents.reactToDropOf = function (PestIcon) {
-		myself.corral.reactToDropOf(pestIcon);
-	};
-	
-	// support function for list of pests.
-	this.pests.asArray().forEach( function(morph) {
-		template = new PestIconMorph( morph, template);
-		this.corral.contents.add(template);
-	});
-	
-	
-	// support functions for the corral itself
-	this.corral.fixLayout = function() {
-		this.arrangeIcons();
-		this.refresh();
-	};
-	
-	this.corral.arrangeIcons = function() {
-		var x = this.left();
-		var y = this.top();
-		var max = this.right();
-		var start = this.left();
-		
-		this.contents.children.forEach( function (icon) {
-			var w = icon.width();
-			
-			if (x + w > max) {
-				x = start;
-				y += icon.height();
-			}
-			
-			icon.setPosition( new Point( x, y ) );
-			x += 2;
-		});
-		this.contents.adjustBounds();
-	};
-	
-	this.corral.addPest = function(pest) {
-		this.contents.add( new PestIconMorph(pest) );
-		this.fixLayout();
-	};
-	
-	this.corral.refresh = function() {
-		this.contents.children.forEach(function(icon) {
-			icon.refresh();
-		});
-	};
-	
-	this.corral.wantsDropOf = function(morph) {
-		return morph instanceof PestIconMorph;
-	};
-	
-	this.corral.reactToDropOf = function (pestIcon) {
-		var idx = 1;
-		var pos = pestIcon.position();
-		pestIcon.destroy();
-		this.contents.children.forEach( function (icon) {
-			if( pos.gt(icon.position()) || pos.y > icon.bottom()) { // ??? should it be pos.get
-				idx += 1;
-			}
-		});
-		
-		myself.pests.add(spriteIcon.object, idx); // ??? spriteIcon
-		myself.createCorral();
-		myself.fixLayout();
-	};
-	
+		sprites = function () {
+                return myself.pests;
+        }
+        
+        this.corral = new SpriteCorralMorph(sprites, SpriteIconMorph);	
 	
 	// add the stage bar to the pest system.
 	this.add(this.corral);
@@ -402,8 +328,8 @@ function PestIconMorph(aPest, aTemplate) {
 	this.init(aPest, aTemplate);
 }
 
-// pest icon init function
-PestIconMorph.prototype.init = function (aPest, aTemplate) {
+// Pest icon init function
+PestIconMorph.prototype.init = function (aPestSprite, aTemplate) {
 	var colors, action, query, myself = this;
 	
 	if(!aTemplate) {
@@ -413,8 +339,56 @@ PestIconMorph.prototype.init = function (aPest, aTemplate) {
 			IDE_Morph.prototype.frameColor
 		];
 	}
-}
+	
+	action = function () {
+		// make my sprite the current one
+		var pests = myself.parentThatIsA(PestSystemMorph);
+		
+		if (pests) {
+			console.log("Selected sprite pest: " + pests);
+			//pests.selectSprite(myself.object);
+		}
+	};
+	
+	query = function () {
+		// answer if my sprite is the current one
+		var pests = myself.parentThatIsA(PestSystemMorph);
+		
+		if (pests) {
+			return pests.currentPest === myself.object;
+		}
+		return false;
+	};
+	
+	// additional properties
+	this.object = aPestSprite || new SpriteMorph();
+	this.version = this.object.version;
+	this.thumbnail = null;
+	
+	// initialize inherited properties
+	SpriteIconMorph.uber.init.call(
+        this,
+        colors, // color overrides, <array>: [normal, highlight, pressed]
+        null, // target - not needed here
+        action, // a toggle function
+        this.object.name, // label string
+        query, // predicate/selector
+        null, // environment
+        null, // hint
+        aTemplate // optional, for cached background images
+    );
+	
+    // override defaults and build additional components
+    this.isDraggable = true;
+    this.createThumbnail();
+    this.padding = 2;
+    this.corner = 8;
+    this.fixLayout();
+    this.fps = 1;
+};
 
+PestIconMorph.prototype.createThumbnail = function () {
+}
 
 
 

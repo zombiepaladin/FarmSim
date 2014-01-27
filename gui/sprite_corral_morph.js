@@ -21,89 +21,134 @@ function SpriteCorralMorph(spriteCollection, spriteIconType){
 };
 
 SpriteCorralMorph.prototype.init = function (spriteCollection, spriteIconType) {
-	var frame, template, padding = 5, myself = this;
+	
+	var myself = this;
+	
+	SpriteCorralMorph.uber.init.call(this)
 	
 	this.sprites = spriteCollection;
+	this.frame = null;
 	
-	frame = new ScrollFrameMorph(null, null, this.sliderColor);
-	frame.acceptsDrops = false;
-	frame.contents.acceptsDrops = false;
+	this.createFrame(spriteIconType);
+	this.fixLayout();
+};
+
+// create frame
+
+SpriteCorralMorph.prototype.createFrame = function(spriteIconType) {
 	
-	frame.contents.wantsDropOf = function (morph) {
+	var myself = this,
+		template;
+	
+	if( this.frame ) {
+		this.frame.destroy();
+	}
+	
+	// create the new frame
+	this.frame = new ScrollFrameMorph( null, null, this.sliderColor );
+		
+	// assign the appropriate properties.
+	this.frame.acceptsDrops = false;
+	this.frame.contents.acceptsDrops = false;
+	this.frame.alpha = 0;
+	
+	// associated events:
+	this.frame.contents.wantsDropOf = function (morph) {
 		return morph instanceof spriteIconType;
 	};
 	
-	frame.contents.reactToDropOf = function (spriteIcon) {
-		myself.reactToDropOf(spriteIcon);
+	this.frame.contents.reactToDropOf = function (spriteIcon) {
+		myself.reactToDropOf(spriteIcon);		
 	};
-	
-	frame.alpha = 0;
 	
 	this.sprites().forEach(function (morph) {
+	
 		template = new spriteIconType(morph, template);
-		frame.contents.add(template);
+		
+		myself.frame.contents.add(template);
+		
 	});
 	
-	this.frame = frame;
-	this.add(frame);
+	// add the frame to the sprite corral morph
+	this.add(this.frame);
 	
-	this.fixLayout = function () {
+};
+
+// inherited functions
+SpriteCorralMorph.prototype.fixLayout = function() {
+	
 	console.log("fixing corral layout");
-		this.frame.setPosition(myself.position());
-		this.frame.setExtent(myself.extent());
-		this.arrangeIcons();
-		this.refresh();
-	};
 	
-	this.arrangeIcons = function () {
-		var x = this.frame.left(),
-			y = this.frame.top(),
-			max = this.frame.right(),
-			start = this.frame.left();
+	var myself = this;
+	
+	this.frame.setPosition(myself.position());
+	this.frame.setExtent(myself.extent());
+	this.arrangeIcons();
+	this.refresh();
+};
+
+SpriteCorralMorph.prototype.refresh = function() {
+	
+	this.frame.contents.children.forEach(function (icon) {
+		icon.refresh();
+	});
 		
-		this.frame.contents.children.forEach(function (icon) {
-			var w = icon.width();
-			
-			if (x + w > max) {
-				x = start;
-				y += icon.height();
-			}
-			icon.setPosition(new Point(x,y));
-			x += w;
-		});
-		this.frame.contents.adjustBounds();
-	};
+	this.sprites().forEach(function(morph) {
+		//morph.refresh();
+		console.log("Refresh Sprite: " + morph.name);
+	});
+};
+
+SpriteCorralMorph.prototype.arrangeIcons = function() {
 	
-	this.addSprite = function (sprite) {
-		this.frame.contents.add(new spriteIconType(sprite));
-		this.fixLayout();
-	};
+	var x = this.frame.left(),
+		y = this.frame.top(),
+		max = this.frame.right(),
+		start = this.frame.left();
+		
+	this.frame.contents.children.forEach(function (icon) {
+		var w = icon.width();
+		
+		if (x + w > max) {
+			x = start;
+			y += icon.height();
+		}
+		icon.setPosition(new Point(x,y));
+		x += w;
+	});
 	
-	this.refresh = function() {
-		this.frame.contents.children.forEach(function (icon) {
-			icon.refresh();
-		});
-	};
+	this.frame.contents.adjustBounds();
+};
+
+SpriteCorralMorph.prototype.addSprite = function() {
 	
-	this.wantsDropOf = function (morph) {
-		return morph instanceof spriteIconMorph;
-	};
+	this.frame.contents.add(new spriteIconType(sprite));
+	this.fixLayout();
 	
-	this.reactToDropOf = function (spriteIcon) {
-		var idx = 0,
-			oldIdx = this.frame.contents.children.indexOf(spriteIcon),
-			pos = spriteIcon.position(),
-			sprites = myself.sprites(),
-			children = myself.frame.contents.children;
-		// find the new position of the dropped sprite
-		this.frame.contents.children.forEach(function (icon) {
-			if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
-				idx += 1;
-			}
-		});
-		// rearrange both icons and sprites
-		sprites.splice(idx, 0, sprites.splice(oldIdx, 1)[0]);
-		children.splice(idx, 0, children.splice(oldIdx, 1)[0]);
-		myself.fixLayout();
-	};
+};
+
+// events
+SpriteCorralMorph.prototype.wantsDropOf = function( Morph ) {
+	return morph instanceof spriteIconMorph;
+};
+
+SpriteCorralMorph.prototype.reactToDropOf = function (spriteIcon) {
+	var myself = this,
+		idx = 0,
+		oldIdx = this.frame.contents.children.indexOf(spriteIcon),
+		pos = spriteIcon.position(),
+		sprites = myself.sprites(),
+		children = myself.frame.contents.children;
+	
+	// find the new position of the dropped sprite
+	this.frame.contents.children.forEach(function (icon) {
+		if (pos.gt(icon.position()) || pos.y > icon.bottom()) {
+			idx += 1;
+		}
+	});
+	
+	// rearrange both icons and sprites
+	sprites.splice(idx, 0, sprites.splice(oldIdx, 1)[0]);
+	children.splice(idx, 0, children.splice(oldIdx, 1)[0]);
+	myself.fixLayout();
 };

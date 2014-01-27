@@ -19,7 +19,10 @@ function ScriptEditorMorph(aSprite){
 ScriptEditorMorph.prototype.init = function (aSprite) {
 	var myself = this;
 	
-	// additional properties
+	// set the default properties.
+	ScriptEditorMorph.uber.init.call(this);
+	
+	// modify / add properties
 	this.currentSprite = aSprite || new SpriteMorph();
 	this.defaultWidth = 200;
 	this.currentCategory = 'motion';

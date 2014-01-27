@@ -113,33 +113,28 @@ CropSystemMorph.prototype.init = function (aCropSprite) {
         sprite4.name = "Delta";
         sprite5.name = "Gamma";	
 	
-    // additional properties
-	this.currentCrop = aCropSprite || new CropSpriteMorph();
+	// initialize inherited properties
+	CropSystemMorph.uber.init.call(this);
 	
+    // add/modify properties
+	
+	this.currentCrop = aCropSprite || new CropSpriteMorph();
 	this.globalVariables = new VariableFrame();
 	this.crops = [this.currentCrop, sprite2, sprite3, sprite4, sprite5];
 	this.currentCategory = 'motion';
 	this.currentTab = 'description';
-	this.stageDimensions = new Point(240, 160);
+	
+	this.fps = 2;
+	this.setColor(CropSystemMorph.prototype.backgroundColor); 
+	this.stageDimensions = new Point(240, 160);	
+	this.setWidth(910);
+	this.setHeight(429);
 	
 	this.stageBar = null;
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
-	this.pallette = null;
-	this.editorBar = null;
-	this.tabBar = null;
 	this.cropEditor = null;
-	
-	this.setWidth(910);
-	this.setHeight(429);
-	
-	// initialize inherited properties
-	CropSystemMorph.uber.init.call(this);
-	
-	// configure inherited properties
-	this.fps = 2;
-	this.setColor(CropSystemMorph.prototype.backgroundColor); 
 	
 	// build panes
 	this.createStageBar();

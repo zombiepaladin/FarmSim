@@ -18,7 +18,10 @@ function TabPanelMorph(tabColor){
 TabPanelMorph.prototype.init = function(tabColors) {
 	var myself = this;
 	
-	// additional properties
+	// initialize inherited properties
+	TabPanelMorph.uber.init.call(this);
+	
+	// add / modify properties
 	this.currentTab = 'description';
 	this.colors = tabColors;
 	this.TabHeight = 30;
@@ -31,8 +34,6 @@ TabPanelMorph.prototype.init = function(tabColors) {
 	this.tabBar = null;
 	this.displayPanel = null;
 	
-	// initialize inherited properties
-	TabPanelMorph.uber.init.call(this);
 	
 	// create layout
 	this.createTabBar();
