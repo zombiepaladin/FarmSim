@@ -215,8 +215,9 @@ CropSystemMorph.prototype.createCropEditor = function() {
 	// add pages to the tab panel
 	
 	// description page
-	var descEditor = new Morph();
-	descEditor.setColor( CropSystemMorph.prototype.cropEditorColors[2] );
+	var descEditor = new DescriptionEditorMorph();
+	//descEditor.groupColor = CropSystemMorph.prototype.cropEditorColors[1];
+	//descEditor.setColor( CropSystemMorph.prototype.cropEditorColors[1] );
 	this.cropEditor.addTab('description', descEditor);
 
 	// script page

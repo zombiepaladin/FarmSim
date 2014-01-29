@@ -92,11 +92,6 @@ SpriteCorralMorph.prototype.refresh = function() {
 	this.frame.contents.children.forEach(function (icon) {
 		icon.refresh();
 	});
-		
-	this.sprites().forEach(function(morph) {
-		//morph.refresh();
-		console.log("Refresh Sprite: " + morph.name);
-	});
 };
 
 SpriteCorralMorph.prototype.arrangeIcons = function() {

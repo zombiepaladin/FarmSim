@@ -29,10 +29,7 @@ ScriptEditorMorph.prototype.init = function (aSprite) {
 	this.categories = null;
 	this.palette = null;
 	this.editor = null;	
-	
-	// initialize inherited properties
-	ScriptEditorMorph.uber.init.call(this);
-	
+		
 	// create layout
 	this.createCategories();
 	this.createPalette();
@@ -182,8 +179,6 @@ ScriptEditorMorph.prototype.createEditor = function() {
 	
 	scripts.isDraggable = false;
 	scripts.color = this.groupColor;
-	
-	this.editor = new Morph();
 	
 	this.editor = new ScrollFrameMorph(
 		scripts,
