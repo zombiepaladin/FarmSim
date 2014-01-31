@@ -83,13 +83,13 @@ CropSystemMorph.uber = SpriteEditorMorph.prototype;
 // CropSystemMorph initialization
 
 function CropSystemMorph(universalVariables, cropSprites) {
-	console.log(arguments);
     this.init(universalVariables, cropSprites);
 }
 
 CropSystemMorph.prototype.init = function (universalVariables, cropSprites) {
 	
-	var sprite2 = new CropSpriteMorph(),
+	var cropSprites = [],
+				sprite2 = new CropSpriteMorph(),
                 sprite3 = new CropSpriteMorph(),
                 sprite4 = new CropSpriteMorph(),
                 sprite5 = new CropSpriteMorph();
@@ -99,10 +99,10 @@ CropSystemMorph.prototype.init = function (universalVariables, cropSprites) {
         sprite5.name = "Gamma";	
 		
 		
-	cropSprites << sprite2;
-	cropSprites << sprite3;
-	cropSprites << sprite4;
-	cropSprites << sprite5;
+	cropSprites.push(sprite2);
+	cropSprites.push(sprite3);
+	cropSprites.push(sprite4);
+	cropSprites.push(sprite5);
 	
 	// initialize inherited properties
 	CropSystemMorph.uber.init.call(this, universalVariables, cropSprites);

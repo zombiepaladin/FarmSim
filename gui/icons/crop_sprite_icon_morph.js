@@ -4,7 +4,7 @@ var CropSpriteIconMorph;
 
 /*
     I am a selectable element in the Sprite corral, keeping a self-updating
-    thumbnail of the sprite I'm respresenting, and a self-updating label
+    thumbnail of the sprite I'm representing, and a self-updating label
     of the sprite's name (in case it is changed elsewhere)
 */
 

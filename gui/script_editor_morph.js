@@ -204,6 +204,15 @@ ScriptEditorMorph.prototype.createEditor = function() {
 	this.editor.scrollY(this.editor.padding);
 }
 
+ScriptEditorMorph.prototype.loadSprite = function (aSprite) {
+	this.currentSprite = aSprite;
+	
+	// reload scripts and palette for new sprite
+	this.createEditor();
+	this.refreshPalette();
+	this.fixLayout();
+};
+
 ScriptEditorMorph.prototype.refreshPalette = function (shouldIgnorePosition) {
     var oldTop = this.palette.contents.top();
 

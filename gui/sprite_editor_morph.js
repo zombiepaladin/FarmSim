@@ -38,7 +38,12 @@ SpriteEditorMorph.prototype.init = function (universalVariables, sprites) {
 	this.modelSpriteType = SpriteMorph;
 	this.modelSpriteIconType = SpriteIconMorph;
 	this.globalVariables = new VariableFrame(universalVariables);
-	this.sprites = [new this.modelSpriteType(this.globalVariables)];
+	
+	if (sprites === undefined || sprites.size === 0) {
+		this.sprites = [new this.modelSpriteType(this.globalVariables)];
+	} else {
+		this.sprites = sprites;
+	}
 	
 	this.currentSprite = this.sprites[0];
 	this.currentCategory = 'motion';
@@ -54,6 +59,7 @@ SpriteEditorMorph.prototype.init = function (universalVariables, sprites) {
 	this.stage = null;
 	this.corralBar = null;
 	this.corral = null;
+	this.tabs = null;
 	this.scriptEditor = null;
 	
 	// build panes
@@ -61,7 +67,7 @@ SpriteEditorMorph.prototype.init = function (universalVariables, sprites) {
 	this.createStage();
 	this.createCorralBar();
 	this.createCorral();
-	this.createScriptEditor();
+	this.createTabs();
 };
 
 SpriteEditorMorph.prototype.createStageBar = function () {
@@ -93,7 +99,14 @@ SpriteEditorMorph.prototype.createStage = function () {
 	this.stage.setExtent(this.stageDimensions); // dimensions are fixed
 	this.add(this.stage);
 	
-	this.stage.add(this.currentSprite); // only 1 sprite on this stage at a time
+	this.sprites.forEach( function(sprite) {
+		myself.stage.add(sprite);
+		if (sprite === myself.currentSprite) { // only display the current sprite
+			sprite.show();
+		} else {
+			sprite.hide();
+		}
+	});
 	this.currentSprite.setCenter(this.stage.center());
 };
 
@@ -126,36 +139,39 @@ SpriteEditorMorph.prototype.createCorral = function () {
         this.add(this.corral);
 };
 
-SpriteEditorMorph.prototype.createScriptEditor = function() {
+SpriteEditorMorph.prototype.createTabs = function() {
 
 	var	myself = this;
 	
-	if(this.scriptEditor) {
-		this.scriptEditor.destroy();
+	if(this.tabs) {
+		this.tabs.destroy();
 	}
 	
 	// create tab panel morph to hold the editor's pages
-	this.scriptEditor = new TabPanelMorph(SpriteEditorMorph.prototype.scriptEditorColors);
+	this.tabs = new TabPanelMorph(SpriteEditorMorph.prototype.scriptEditorColors);
 	
 	// add pages to the tab panel
 	
 	// description page
 	var descEditor = new Morph();
 	descEditor.setColor( SpriteEditorMorph.prototype.scriptEditorColors[2] );
-	this.scriptEditor.addTab('description', descEditor);
+	this.tabs.addTab('description', descEditor);
 
 	// script page
-	var scriptEditor = new ScriptEditorMorph();
-	scriptEditor.setColor( SpriteEditorMorph.prototype.scriptEditorColors[2] );
-	this.scriptEditor.addTab('scripts', scriptEditor);
+	if(this.scriptEditor) {
+		this.scriptEditor.destroy();
+	}
+	this.scriptEditor = new ScriptEditorMorph();
+	this.scriptEditor.setColor( SpriteEditorMorph.prototype.scriptEditorColors[2] );
+	this.tabs.addTab('scripts', this.scriptEditor);
 	
 	// costume page
 	var costumeEditor = new Morph();
 	costumeEditor.setColor( SpriteEditorMorph.prototype.scriptEditorColors[2] );
-	this.scriptEditor.addTab('costumes', costumeEditor);
+	this.tabs.addTab('costumes', costumeEditor);
 	
 	// add the script editor to the system
-	this.add(this.scriptEditor);
+	this.add(this.tabs);
 };
 
 SpriteEditorMorph.prototype.fixLayout = function () {
@@ -175,11 +191,11 @@ SpriteEditorMorph.prototype.fixLayout = function () {
 	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
 	this.corral.fixLayout();
 	
-	// script editor
-	this.scriptEditor.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
-	this.scriptEditor.setWidth(this.width() - this.stageBar.width() - 30);
-	this.scriptEditor.setHeight(this.height() - 10);
-	this.scriptEditor.fixLayout();
+	// tabs
+	this.tabs.setPosition(this.stageBar.topRight().add(new Point(10, 0)));
+	this.tabs.setWidth(this.width() - this.stageBar.width() - 30);
+	this.tabs.setHeight(this.height() - 10);
+	this.tabs.fixLayout();
 	
 };
 
@@ -198,18 +214,12 @@ SpriteEditorMorph.prototype.addNewSprite = function () {
 	this.selectSprite(sprite);
 };
 
-
-
-
 SpriteEditorMorph.prototype.selectSprite = function (sprite) {
-    this.currentSprite = sprite;
-	console.log("Selected " + sprite.name);
-	/*
-    this.createPalette();
-    this.createSpriteBar();
-    this.createSpriteEditor();
-    this.corral.refresh();
-    this.fixLayout('selectSprite');
-    this.currentSprite.scripts.fixMultiArgs();
-	*/
+	this.currentSprite.hide();
+	this.currentSprite = sprite;
+	this.currentSprite.show();
+	
+	this.corral.refresh();
+	this.scriptEditor.loadSprite(this.currentSprite);
+	this.fixLayout();
 };
