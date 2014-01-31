@@ -28,7 +28,7 @@ DescriptionEditorMorph.prototype.init = function (aSprite) {
 	this.currentCategory = 'motion';
 	this.setColor( new Color( 0,0,0) ) ; //DescriptionEditorMorph.prototype.backgroundColor );
 	
-	
+	// create submorphs for the page
 	this.frame = null;
 	this.informationLabel = null;
 	this.titleLabel = null;
@@ -45,17 +45,9 @@ DescriptionEditorMorph.prototype.init = function (aSprite) {
 
 	
 	this.updateButton = null; // TODO: need to implement
-		
+	this.createFrame();	
+	
 	// create layout
-
-	this.createFrame();
-	
-	this.addToFrame(this.informationLabel, "Information: ", "label");
-	this.addToFrame(this.informationLabel, "Title: ", "label");
-	this.addToFrame(this.informationLabel, "<Enter Title Here>", "textbox");
-	this.addToFrame(this.informationLabel, "Author: ", "label");
-	
-	
 	this.fixLayout();
 };
 
@@ -80,112 +72,124 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 	}
 	
 	this.frame = new ScrollFrameMorph( null, null, null );
-	/*
-	this.informationLabel = new StringMorph("Information: ");
-	this.titleLabel = new StringMorph("Title: ");
-	this.titleTextBox = new TextMorph("<Enter Title Here>");
+
 	
-	this.titleTextBox.isEditable = true;
-	this.titleTextBox.backgroundColor = new Color(255, 255, 255);
+	this.informationLabel = new StringMorph("Information: ", null, null, true);         // bold
+
+	this.titleLabel = new StringMorph("Title : ", null, null, null, true);              // italic 
+	this.titleTextBox = new TextBoxMorph(null, null, null, "<Enter Title Here>");       
+	this.authorLabel = new StringMorph("Author : ", null, null, null, true);            // italic
+	this.authorTextBox = new TextBoxMorph(null, null, null, "<Enter Author Here>");      
+	this.updateButton = null;
+	this.updateLabel = new StringMorph("Last Updated: ", null, null, null, true);       // italic
+	this.updateText = new TextMorph("MM/DD/YYYY");
+	this.updateText.isEditable = true;
+	this.summaryLabel = new StringMorph("Summary: ", null, null, true);					// bold
+	this.summaryTextBox = new TextBoxMorph(null, null, null, "<Enter Summary Here>");   
+	this.commentLabel = new StringMorph("Comments: ", null, null, true);                // bold
+	this.commentTextBox = new TextBoxMorph(null, null, null, "<Enter Comments Here>");
+
 	
-	this.authorLabel = new StringMorph("Author: ");
-	this.authorTextBox = new TextMorph("<Enter Author Here>");
+	this.frame.contents.add( this.informationLabel );
+	this.frame.contents.add( this.titleLabel );
+	this.frame.contents.add( this.titleTextBox );
+	this.frame.contents.add( this.authorLabel );
+	this.frame.contents.add( this.authorTextBox );
+	//this.frame.contents.add( this.updateButton );
+	this.frame.contents.add( this.updateLabel );
+	this.frame.contents.add( this.updateText );
+	this.frame.contents.add( this.summaryLabel );
+	this.frame.contents.add( this.summaryTextBox );
+	this.frame.contents.add( this.commentLabel );
+	this.frame.contents.add( this.commentTextBox );
 	
+	this.frame.fixLayout = function() {
+		
+		var myselfFrame = this;
+		var padding = 3;
+		
+		// inforamtion label.
+		myself.informationLabel.setPosition( myself.frame.topLeft().add( new Point( padding, padding) ) );
+		
+		// title label.
+		myself.titleLabel.setPosition( new Point(myself.frame.left() + 6*padding, myself.informationLabel.bottom() + padding) );
+		
+		// title text box.
+		myself.titleTextBox.setWidth(200);
+		myself.titleTextBox.setHeight(myself.titleLabel.height()  + padding*2);
+		myself.titleTextBox.setPosition( new Point(myself.titleLabel.right() + 6*padding, myself.titleLabel.top() -padding) );
+		
+		// author label.
+		myself.authorLabel.setPosition( new Point( myself.titleLabel.left() ,myself.titleTextBox.bottom() + padding) );
+		
+		// author textbox.
+		myself.authorTextBox.setWidth(200);
+		myself.authorTextBox.setHeight(myself.authorLabel.height() + padding*2);
+		myself.authorTextBox.setPosition( new Point( myself.titleTextBox.left(), myself.authorLabel.top()) );
+		
+		// update button
+		// TODO: place button
+		
+		// update label
+		myself.updateLabel.setPosition( new Point( myself.frame.right() - myself.updateLabel.width() - 2*padding, myself.frame.top() + 2*padding) ) ;
+		
+		// update text box
+		myself.updateText.setPosition( myself.updateLabel.bottomLeft().add( new Point( 0, padding) ) );
+		
+		// summary label
+		myself.summaryLabel.setPosition( new Point( myself.frame.left() + padding, myself.authorTextBox.bottom() + padding) );
+		
+		// summary text box
+		myself.summaryTextBox.setWidth( myself.width() - 8*padding);
+		myself.summaryTextBox.setHeight( 3*myself.summaryLabel.height() + 2*padding);
+		myself.summaryTextBox.setPosition( new Point( myself.authorLabel.left(), myself.summaryLabel.bottom() + padding ) );
+		
+		// comments label
+		myself.commentLabel.setPosition( new Point( myself.frame.left()+ padding, myself.summaryTextBox.bottom() + padding) );
+		
+		// comments text box
+		myself.commentTextBox.setWidth( myself.width() - 8*padding);
+		myself.commentTextBox.setHeight( 3*myself.commentLabel.height() + 2*padding);
+		myself.commentTextBox.setPosition( new Point( myself.authorLabel.left() , myself.commentLabel.bottom() + padding) );
+		
+	};
+
+	// this is the event for when the user clicks anything
+	// this.titleLabel.mouseDownLeft = function(pos)	
+	// this.titleTextBox.mouseDownLeft = function(pos)
 	
-	
-	
-	this.frame.contents.add( this.informationLabel);
-	this.frame.contents.add( this.titleLabel);
-	this.frame.contents.add( this.titleTextBox);
-	this.frame.contents.add( this.authorLabel);
-	this.frame.contents.add( this.authorTextBox);
-	*/
-	
+	// this is the event for when a user presses a key
+	//this.titleTextBox.textContent.selection = function()
+
 	
 	
 	
 	// properties
 	this.frame.acceptsDrops = false;
 	this.frame.contents.acceptsDrops = false;
-	this.frame.setColor( new Color( 30, 30, 30 ).lighter(50) );
+	this.frame.setColor( new Color( 0, 100, 255 ).lighter(30) );
 	
 	
 	this.add(this.frame);
 	
 	
 };				
-
-DescriptionEditorMorph.prototype.addToFrame = function( item, name, stringKind ) {
-	if( this.frame)
-	{
-		switch(stringKind)
-		{
-			case "label":
-			
-				item = new StringMorph(name);
-				
-			break;
-			case "textbox":
-			
-				item = new TextMorph(name);
-				item.isEditable = true;
-				item.backgroundColor = new Color( 255, 255, 255);
-				
-			break;			
-		}
-		this.frame.contents.add(item);
-	}
-};
-												
+										
 
 DescriptionEditorMorph.prototype.fixLayout = function() {
 	var myself = this;
 	var padding = 2;
-	/*
-	// title
-	this.title.setWidth( this.width() -2*padding);
-	this.title.setHeight(60);
-	this.title.setPosition( this.topLeft().add( new Point( padding, padding ) ) );
-	this.title.fixLayout();
 	
-	// body
-	this.body.setWidth( this.width() - 2*padding );
-	this.body.setHeight( (this.height() - this.title.height() ) /2 - 2*padding );
-	this.body.setPosition( this.title.bottomLeft().add( new Point( 0, padding ) ) );
-	this.body.fixLayout();
-	
-	// notes
-	this.notes.setWidth( this.width() -2*padding);
-	this.notes.setHeight( (this.height() - this.title.height() ) /2 - 2*padding );
-	this.notes.setPosition( this.body.bottomLeft().add( new Point(0, padding) ) );
-	*/
-		
 	// frame
 	this.frame.setWidth( myself.width() - 2 * padding );
 	this.frame.setHeight( myself.height() - 2 * padding );
 	this.frame.setPosition( myself.topLeft().add( new Point( padding, padding) ) );
 	
 	
-	this.frame.contents.adjustBounds();
-	this.arrangeContents();
+	this.frame.fixLayout();
 	// this.refresh(); // may not be needed for just text boxes or labels but probably the button.
 };
 
-DescriptionEditorMorph.prototype.arrangeContents = function() {
-	
-	var padding = 3;
-	var myself = this;
-	var y = 0;
-	
-	this.frame.contents.children[0].setPosition( this.topLeft().add( padding, padding ) ); // information label
-	this.frame.contents.children.forEach( function( item) {
-		
-		item.setPosition( myself.topLeft().add( new Point( padding, y + padding ) ) );
-		y += item.height();
-	
-		
-	});
-};
 
 DescriptionEditorMorph.prototype.toggleTextBoxes = function() {
 	this.title.editButton.labelString = "save";

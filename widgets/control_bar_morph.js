@@ -20,7 +20,7 @@ function ControlBarMorph(edge, border, borderColor){
 	this.init(edge, border, borderColor);
 }
 
-ControlBarMorph.init = function(edge, border, borderColor) {
+ControlBarMorph.prototype.init = function(edge, border, borderColor) {
 	// initialize inherited properties
 	ControlBarMorph.uber.init.call(this, edge, border, borderColor);
 }
