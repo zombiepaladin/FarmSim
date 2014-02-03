@@ -1,4 +1,6 @@
 'gui' : [
 	'script_editor_morph',
-	'sprite_corral_morph'
+	'sprite_corral_morph',
+	'sprite_icon_morph',
+	'crop_sprite_icon_morph'
 ]

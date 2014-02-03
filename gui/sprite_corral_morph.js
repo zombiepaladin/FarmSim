@@ -76,9 +76,6 @@ SpriteCorralMorph.prototype.createFrame = function(spriteIconType) {
 
 // inherited functions
 SpriteCorralMorph.prototype.fixLayout = function() {
-	
-	console.log("fixing corral layout");
-	
 	var myself = this;
 	
 	this.frame.setPosition(myself.position());
@@ -88,7 +85,6 @@ SpriteCorralMorph.prototype.fixLayout = function() {
 };
 
 SpriteCorralMorph.prototype.refresh = function() {
-	
 	this.frame.contents.children.forEach(function (icon) {
 		icon.refresh();
 	});

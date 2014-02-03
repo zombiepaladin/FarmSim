@@ -176,7 +176,7 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	// additional properties:
 	this.serializer = new SnapSerializer();
 	
-	this.globalVariables = new VariableFrame();
+	this.universalVariables = new VariableFrame();
 	this.currentSystem = 'crops';
 	this.simulationName = '';
 	this.simulationNotes = '';
@@ -394,7 +394,7 @@ SimulatorMorph.prototype.createCropSystem = function() {
 	if (this.cropSystem) {
 		this.cropSystem.destroy();
 	}
-	this.cropSystem = new CropSystemMorph(undefined);
+	this.cropSystem = new CropSystemMorph(this.universalVariables, []);
 	this.add(this.cropSystem);
 	if(this.currentSystem !== 'crops') this.cropSystem.hide();
 };
