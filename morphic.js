@@ -4480,7 +4480,14 @@ CursorMorph.prototype.init = function (aStringOrTextMorph) {
 // CursorMorph event processing:
 
 CursorMorph.prototype.processKeyPress = function (event) {
-    // this.inspectKeyEvent(event);
+    
+	
+	if(this.target.key === 'textbox')
+	{
+		var temp = 0;
+	}
+	
+	// this.inspectKeyEvent(event);
     if (this.keyDownEventUsed) {
         this.keyDownEventUsed = false;
         return null;
@@ -4721,6 +4728,16 @@ CursorMorph.prototype.undo = function () {
 
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
     var text;
+	
+	if(this.target.key === 'textbox')
+	{
+		var temp = 0;
+		this.target.validateBounds();
+		
+			var temp2 = 0;
+		
+		
+	}
     if (aChar === '\u0009') {
         this.target.escalateEvent('reactToEdit', this.target);
         if (shiftKey) {

@@ -153,7 +153,7 @@ SpriteEditorMorph.prototype.createTabs = function() {
 	// add pages to the tab panel
 	
 	// description page
-	var descEditor = new Morph();
+	var descEditor = new DescriptionEditorMorph();
 	descEditor.setColor( SpriteEditorMorph.prototype.scriptEditorColors[2] );
 	this.tabs.addTab('description', descEditor);
 

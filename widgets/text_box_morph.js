@@ -31,11 +31,9 @@ TextBoxMorph.prototype.init = function( edge, border, borderColor, text) {
 	this.color = new Color( 255, 255, 255 ) ;
 	this.border = 3;
 	
-	
 	// create submorphs
 	this.createTextMorph(text);
-	
-	
+		
 	this.fixLayout();
 	
 };
@@ -50,7 +48,19 @@ TextBoxMorph.prototype.createTextMorph = function( text ){
 	
 	myself.textContent = new TextMorph(text);
 	
-	myself.textContent.isEditable = true
+	myself.textContent.isEditable = true;
+	myself.textContent.key = 'textbox';
+	
+	// events
+	
+	myself.textContent.mouseDownLeft = function(pos) 
+	{
+		myself.reactToClick(pos);
+	};
+	// TODO: add a method to check the bounds	
+	/*myself.textContent.validateBounds()
+	{
+	}*/
 	
 	myself.add( myself.textContent );
 };
@@ -81,4 +91,47 @@ TextBoxMorph.prototype.getText = function(){
 
 	return this.textContent.text;
 };
+
+TextBoxMorph.prototype.validateBounds = function() {
+	
+		var cursor;
+		
+		cursor = this.textContent.root().cursor;
+		
+		var pos = cursor.position();
+		return true;
+
+};
+
+TextBoxMorph.prototype.reactToClick = function(pos) {
+	var myself = this;
+	
+	if (this.textContent.isEditable) {
+        if (!this.textContent.currentlySelecting) {
+            this.textContent.edit(); // creates a new cursor
+        }
+        cursor = this.textContent.root().cursor;
+        if (cursor) {
+		
+			if( pos.asArray()[0] > myself.textContent.right())
+			{
+				pos = new Point(myself.textContent.right(), pos.asArray()[0]);
+			}
+            cursor.gotoPos(pos);
+        }
+        this.textContent.currentlySelecting = true;
+    } else {
+        this.textContent.escalateEvent('mouseClickLeft', pos);
+    }
+	
+};
+
+
+// events
+
+TextBoxMorph.prototype.mouseDownLeft = function(pos) {
+	this.reactToClick(pos);
+};
+
+
 

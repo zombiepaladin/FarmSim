@@ -153,15 +153,6 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 		myself.commentTextBox.setPosition( new Point( myself.authorLabel.left() , myself.commentLabel.bottom() + padding) );
 		
 	};
-
-	// this is the event for when the user clicks anything
-	// this.titleLabel.mouseDownLeft = function(pos)	
-	// this.titleTextBox.mouseDownLeft = function(pos)
-	
-	// this is the event for when a user presses a key
-	//this.titleTextBox.textContent.selection = function()
-
-	
 	
 	
 	// properties
@@ -196,6 +187,6 @@ DescriptionEditorMorph.prototype.toggleTextBoxes = function() {
 }
 
 DescriptionEditorMorph.prototype.setExtent = function (point) {
-	ScriptEditorMorph.uber.setExtent.call(this, point);
+	DescriptionEditorMorph.uber.setExtent.call(this, point);
 	this.fixLayout();
 };
