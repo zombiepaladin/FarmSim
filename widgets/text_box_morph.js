@@ -47,9 +47,8 @@ TextBoxMorph.prototype.createTextMorph = function( text ){
 	}
 	
 	myself.textContent = new TextMorph(text);
-	
+	myself.textContent.lineCount = 1;
 	myself.textContent.isEditable = true;
-	myself.textContent.key = 'textbox';
 	
 	// events
 	
@@ -57,20 +56,55 @@ TextBoxMorph.prototype.createTextMorph = function( text ){
 	{
 		myself.reactToClick(pos);
 	};
-	// TODO: add a method to check the bounds	
-	/*myself.textContent.validateBounds()
-	{
-	}*/
+
+	myself.textContent.checkBounds = function(pos, keyCode)
+	{	
+		// check to see if it went over the right bound
+		if( ( myself.right() - 4*myself.padding) < pos.asArray()[0] ) 
+		{
+			// check to see if it went over the bottom bound
+			if( (myself.bottom() - 2*myself.textContent.fontSize*1.2 ) < pos.asArray()[1] ) 
+			{
+				myself.textContent.lineCount++;
+				myself.fixLayout();
+			}
+			
+			return true; // move text to new line
+		}
+		// new line and the bottom is maxed out
+		if( keyCode === 13 && (myself.bottom() - 2*myself.textContent.fontSize ) < pos.asArray()[1] ) 
+		{
+			myself.textContent.lineCount++;
+			myself.fixLayout();
+		}
+		
+		
+		
+		return false; // don't do anything
+	}
+	
+	
+	
 	
 	myself.add( myself.textContent );
 };
 
-TextBoxMorph.prototype.fixLayout = function()
-{
+TextBoxMorph.prototype.fixLayout = function(){
 	var myself = this;
+
 	
+	myself.setHeight( myself.textContent.fontSize * 1.2 + myself.textContent.lineCount*myself.textContent.fontSize*1.2 );
 	myself.textContent.setPosition( myself.topLeft().add( new Point( myself.padding, myself.padding) ) );
+	
+	
 };
+
+TextBoxMorph.prototype.refresh = function(){
+	var myself = this;
+	myself.outlinePath();
+	myself.fixLayout();
+	
+}
 
 TextBoxMorph.prototype.outlinePath = function (context, radius, inset) {
     var offset = radius + inset,
@@ -92,17 +126,6 @@ TextBoxMorph.prototype.getText = function(){
 	return this.textContent.text;
 };
 
-TextBoxMorph.prototype.validateBounds = function() {
-	
-		var cursor;
-		
-		cursor = this.textContent.root().cursor;
-		
-		var pos = cursor.position();
-		return true;
-
-};
-
 TextBoxMorph.prototype.reactToClick = function(pos) {
 	var myself = this;
 	
@@ -110,14 +133,10 @@ TextBoxMorph.prototype.reactToClick = function(pos) {
         if (!this.textContent.currentlySelecting) {
             this.textContent.edit(); // creates a new cursor
         }
-        cursor = this.textContent.root().cursor;
+        cursor = this.textContent.root().root().cursor;
         if (cursor) {
 		
-			if( pos.asArray()[0] > myself.textContent.right())
-			{
-				pos = new Point(myself.textContent.right(), pos.asArray()[0]);
-			}
-            cursor.gotoPos(pos);
+			cursor.gotoPos(pos);
         }
         this.textContent.currentlySelecting = true;
     } else {

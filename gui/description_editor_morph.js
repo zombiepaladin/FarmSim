@@ -148,8 +148,8 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 		myself.commentLabel.setPosition( new Point( myself.frame.left()+ padding, myself.summaryTextBox.bottom() + padding) );
 		
 		// comments text box
-		myself.commentTextBox.setWidth( myself.width() - 8*padding);
-		myself.commentTextBox.setHeight( 3*myself.commentLabel.height() + 2*padding);
+		myself.commentTextBox.setWidth( 200 );//myself.width() - 8*padding);
+		//myself.commentTextBox.setHeight( 4*myself.commentLabel.height() + 2*padding);
 		myself.commentTextBox.setPosition( new Point( myself.authorLabel.left() , myself.commentLabel.bottom() + padding) );
 		
 	};

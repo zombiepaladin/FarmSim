@@ -4480,11 +4480,14 @@ CursorMorph.prototype.init = function (aStringOrTextMorph) {
 // CursorMorph event processing:
 
 CursorMorph.prototype.processKeyPress = function (event) {
-    
-	
-	if(this.target.key === 'textbox')
+    var newChar;
+	if( this.target.parent instanceof TextBoxMorph)
 	{
 		var temp = 0;
+		if( this.target.checkBounds(this.position(), event.keyCode) )
+		{
+			this.insert('\n');
+		}
 	}
 	
 	// this.inspectKeyEvent(event);
@@ -4729,15 +4732,11 @@ CursorMorph.prototype.undo = function () {
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
     var text;
 	
-	if(this.target.key === 'textbox')
+	if(this.target.parent instanceof TextBoxMorph)
 	{
 		var temp = 0;
-		this.target.validateBounds();
-		
-			var temp2 = 0;
-		
-		
 	}
+	
     if (aChar === '\u0009') {
         this.target.escalateEvent('reactToEdit', this.target);
         if (shiftKey) {
@@ -7737,6 +7736,7 @@ TextMorph.prototype.slotAt = function (aPoint) {
     }
     row = Math.max(row, 1);
     while (aPoint.x - this.left() > charX) {
+		if (!this.lines[row - 1]) break;
         charX += context.measureText(this.lines[row - 1][col]).width;
         col += 1;
     }
