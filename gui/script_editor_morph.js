@@ -37,7 +37,7 @@ ScriptEditorMorph.prototype.init = function (aSprite) {
 	this.createCategories();
 	this.createPalette();
 	this.createEditor();
-	
+		
 	this.fixLayout();
 };
 

@@ -17,8 +17,12 @@ SpriteIconMorph.uber = ToggleButtonMorph.prototype;
 SpriteIconMorph.prototype.thumbSize = new Point(40, 40);
 SpriteIconMorph.prototype.labelShadowOffset = null;
 SpriteIconMorph.prototype.labelShadowColor = null;
-SpriteIconMorph.prototype.labelColor = new Color(255, 255, 255);
+SpriteIconMorph.prototype.labelColor = new Color(240, 216, 156);
 SpriteIconMorph.prototype.fontSize = 9;
+
+SpriteIconMorph.prototype.normalColor = new Color(0, 0, 0, 0);
+SpriteIconMorph.prototype.highlightColor = new Color(240, 216, 156);
+SpriteIconMorph.prototype.pressedColor = new Color(135, 162, 89);
 
 // SpriteIconMorph instance creation:
 
@@ -31,9 +35,9 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
 
     if (!aTemplate) {
         colors = [
-            IDE_Morph.prototype.groupColor,
-            IDE_Morph.prototype.frameColor,
-            IDE_Morph.prototype.frameColor
+			this.normalColor,
+			this.highlightColor,
+			this.pressedColor
         ];
 
     }

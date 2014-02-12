@@ -105,11 +105,7 @@ CropSystemMorph.prototype.init = function (universalVariables, cropSprites) {
 	cropSprites.push(sprite5);
 	
 	// initialize inherited properties
-	CropSystemMorph.uber.init.call(this, universalVariables, cropSprites);
+	CropSystemMorph.uber.init.call(this, universalVariables, cropSprites, CropSpriteMorph, CropSpriteIconMorph);
 	
 	sprite2.setCenter(this.stage.center());
-	
-    // add/modify properties
-	this.modelSpriteType = CropSpriteMorph;
-	this.modelSpriteIconType = CropSpriteIconMorph;
 };

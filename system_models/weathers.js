@@ -33,9 +33,6 @@ WeatherSystemMorph.prototype.init = function (universalVariables, WeatherSprites
 	WeatherSprites.push(sprite4);
 	
 	// initialize inherited properties
-	WeatherSystemMorph.uber.init.call(this, universalVariables, WeatherSprites);
+	WeatherSystemMorph.uber.init.call(this, universalVariables, WeatherSprites, WeatherSpriteMorph, WeatherSpriteIconMorph);
 	
-    // add/modify properties
-	this.modelSpriteType = WeatherSpriteMorph;
-	this.modelSpriteIconType = WeatherSpriteIconMorph;
 };
