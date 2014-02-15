@@ -10,26 +10,31 @@ TextBoxMorph.uber = BoxMorph.prototype;
 
 // TextBoxMorph preference settings:
 
+TextBoxMorph.prototype.backColor = new Color( 255, 255, 255 );
+
 
 // TextBoxMorph instance creation:
 
-function TextBoxMorph( edge, border, borderColor, text){
-	this.init( edge, border, borderColor, text);
+function TextBoxMorph( edge, border, borderColor, text, numLines, owner){
+	this.init( edge, border, borderColor, text, numLines, owner);
 };
 
-TextBoxMorph.prototype.init = function( edge, border, borderColor, text) {
+TextBoxMorph.prototype.init = function( edge, border, borderColor, text, numLines, owner) {
 	
 	var myself = this;
 	
 	// initialize inherited properties
 	TextBoxMorph.uber.init.call(this, edge, border, borderColor);
 	
+	// declare sub-morph properties
 	this.textContent = null;
 	
 	// assign properties
 	this.padding = 3;
-	this.color = new Color( 255, 255, 255 ) ;
-	this.border = 3;
+	this.color = this.backColor;
+	this.lineCount = (numLines) ? numLines : 1; // if something was passed in we use that, otherwise we default to 1
+	this.owner = (owner) ? owner : null;
+	this.canGrow = true;
 	
 	// create submorphs
 	this.createTextMorph(text);
@@ -46,57 +51,66 @@ TextBoxMorph.prototype.createTextMorph = function( text ){
 		myself.textContent.destroy();
 	}
 	
+	// create textMorph
 	myself.textContent = new TextMorph(text);
-	myself.textContent.lineCount = 1;
+	
+	// assign textMorph properties
 	myself.textContent.isEditable = true;
 	
-	// events
-	
+	// set up user event handlers
+	// This event is triggered when the text is clicked
 	myself.textContent.mouseDownLeft = function(pos) 
 	{
 		myself.reactToClick(pos);
 	};
-
+	
+	// This event is triggered when newtext is typed
 	myself.textContent.checkBounds = function(pos, keyCode)
 	{	
-		// check to see if it went over the right bound
-		if( ( myself.right() - 4*myself.padding) < pos.asArray()[0] ) 
+		if(myself.canGrow)
 		{
-			// check to see if it went over the bottom bound
-			if( (myself.bottom() - 2*myself.textContent.fontSize*1.2 ) < pos.asArray()[1] ) 
+			// check to see if it went over the right bound
+			if( ( myself.right() - 4*myself.padding) < pos.asArray()[0] ) 
 			{
-				myself.textContent.lineCount++;
-				myself.fixLayout();
+				// check to see if it went over the bottom bound
+				if( (myself.bottom() - 2*myself.textContent.fontSize*1.2 ) < pos.asArray()[1] ) 
+				{
+					myself.lineCount++;
+					myself.fixLayout();
+					if( myself.owner)
+					{
+						myself.owner.fixLayout();
+					}
+				}
+				
+				return true; // move text to new line
 			}
-			
-			return true; // move text to new line
+			// new line and the bottom is maxed out
+			if( keyCode === 13 && (myself.bottom() - 2*myself.textContent.fontSize ) < pos.asArray()[1] ) 
+			{
+				myself.lineCount++;
+				myself.fixLayout();
+				if( myself.owner)
+				{
+					myself.owner.fixLayout();
+				}
+			}
 		}
-		// new line and the bottom is maxed out
-		if( keyCode === 13 && (myself.bottom() - 2*myself.textContent.fontSize ) < pos.asArray()[1] ) 
-		{
-			myself.textContent.lineCount++;
-			myself.fixLayout();
-		}
-		
-		
-		
 		return false; // don't do anything
 	}
 	
-	
-	
-	
+	// add textMorph to textboxmorph
 	myself.add( myself.textContent );
 };
 
 TextBoxMorph.prototype.fixLayout = function(){
 	var myself = this;
 
+	// resize the textBoxMorph to match the width of the text content.
+	myself.setHeight( myself.textContent.fontSize * 1.2 + myself.lineCount*myself.textContent.fontSize*1.2 );
 	
-	myself.setHeight( myself.textContent.fontSize * 1.2 + myself.textContent.lineCount*myself.textContent.fontSize*1.2 );
+	// align the text within the textBoxMorph
 	myself.textContent.setPosition( myself.topLeft().add( new Point( myself.padding, myself.padding) ) );
-	
-	
 };
 
 TextBoxMorph.prototype.refresh = function(){
@@ -119,6 +133,7 @@ TextBoxMorph.prototype.outlinePath = function (context, radius, inset) {
 
 TextBoxMorph.prototype.setText = function (words){
 	this.textContent.text = words;
+	this.fixLayout(); // refresh the layout.
 };
 
 TextBoxMorph.prototype.getText = function(){
@@ -147,10 +162,11 @@ TextBoxMorph.prototype.reactToClick = function(pos) {
 
 
 // events
-
 TextBoxMorph.prototype.mouseDownLeft = function(pos) {
 	this.reactToClick(pos);
 };
+
+// TODO: add event for clicking and dragging to select text
 
 
 

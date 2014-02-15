@@ -77,17 +77,18 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 	this.informationLabel = new StringMorph("Information: ", null, null, true);         // bold
 
 	this.titleLabel = new StringMorph("Title : ", null, null, null, true);              // italic 
-	this.titleTextBox = new TextBoxMorph(null, null, null, "<Enter Title Here>");       
+	this.titleTextBox = new TextBoxMorph(null, null, null, "<Enter Title Here>", 1, myself );       
+	this.titleTextBox.canGrow = false;
 	this.authorLabel = new StringMorph("Author : ", null, null, null, true);            // italic
-	this.authorTextBox = new TextBoxMorph(null, null, null, "<Enter Author Here>");      
+	this.authorTextBox = new TextBoxMorph(null, null, null, "<Enter Author Here>", 1, myself );      
+	this.authorTextBox.canGrow = false;
 	this.updateButton = null;
 	this.updateLabel = new StringMorph("Last Updated: ", null, null, null, true);       // italic
 	this.updateText = new TextMorph("MM/DD/YYYY");
-	this.updateText.isEditable = true;
 	this.summaryLabel = new StringMorph("Summary: ", null, null, true);					// bold
-	this.summaryTextBox = new TextBoxMorph(null, null, null, "<Enter Summary Here>");   
+	this.summaryTextBox = new TextBoxMorph(null, null, null, "<Enter Summary Here>", 3, myself );   
 	this.commentLabel = new StringMorph("Comments: ", null, null, true);                // bold
-	this.commentTextBox = new TextBoxMorph(null, null, null, "<Enter Comments Here>");
+	this.commentTextBox = new TextBoxMorph(null, null, null, "<Enter Comments Here>", 3, myself );
 
 	
 	this.frame.contents.add( this.informationLabel );
@@ -116,7 +117,6 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 		
 		// title text box.
 		myself.titleTextBox.setWidth(200);
-		myself.titleTextBox.setHeight(myself.titleLabel.height()  + padding*2);
 		myself.titleTextBox.setPosition( new Point(myself.titleLabel.right() + 6*padding, myself.titleLabel.top() -padding) );
 		
 		// author label.
@@ -124,7 +124,6 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 		
 		// author textbox.
 		myself.authorTextBox.setWidth(200);
-		myself.authorTextBox.setHeight(myself.authorLabel.height() + padding*2);
 		myself.authorTextBox.setPosition( new Point( myself.titleTextBox.left(), myself.authorLabel.top()) );
 		
 		// update button
@@ -141,15 +140,13 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 		
 		// summary text box
 		myself.summaryTextBox.setWidth( myself.width() - 8*padding);
-		myself.summaryTextBox.setHeight( 3*myself.summaryLabel.height() + 2*padding);
 		myself.summaryTextBox.setPosition( new Point( myself.authorLabel.left(), myself.summaryLabel.bottom() + padding ) );
 		
 		// comments label
 		myself.commentLabel.setPosition( new Point( myself.frame.left()+ padding, myself.summaryTextBox.bottom() + padding) );
 		
 		// comments text box
-		myself.commentTextBox.setWidth( 200 );//myself.width() - 8*padding);
-		//myself.commentTextBox.setHeight( 4*myself.commentLabel.height() + 2*padding);
+		myself.commentTextBox.setWidth( myself.width() - 8*padding);
 		myself.commentTextBox.setPosition( new Point( myself.authorLabel.left() , myself.commentLabel.bottom() + padding) );
 		
 	};
