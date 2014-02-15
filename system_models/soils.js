@@ -33,9 +33,6 @@ SoilSystemMorph.prototype.init = function (universalVariables, SoilSprites) {
 	SoilSprites.push(sprite4);
 	
 	// initialize inherited properties
-	SoilSystemMorph.uber.init.call(this, universalVariables, SoilSprites);
+	SoilSystemMorph.uber.init.call(this, universalVariables, SoilSprites, SoilSpriteMorph, SoilSpriteIconMorph);
 	
-    // add/modify properties
-	this.modelSpriteType = SoilSpriteMorph;
-	this.modelSpriteIconType = SoilSpriteIconMorph;
 };

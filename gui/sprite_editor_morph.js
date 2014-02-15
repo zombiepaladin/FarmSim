@@ -29,18 +29,18 @@ function SpriteEditorMorph(universalVariables, sprites) {
 	this.init(universalVariables, sprites);
 };
 
-SpriteEditorMorph.prototype.init = function (universalVariables, sprites) {
+SpriteEditorMorph.prototype.init = function (universalVariables, sprites, spriteType, spriteIconType) {
 
 	// initialize inherited properties
 	SpriteEditorMorph.uber.init.call(this);
 	
     // add/modify properties
-	this.modelSpriteType = SpriteMorph;
-	this.modelSpriteIconType = SpriteIconMorph;
+	this.spriteType = spriteType || SpriteMorph;
+	this.spriteIconType = spriteIconType || SpriteIconMorph;
 	this.globalVariables = new VariableFrame(universalVariables);
 	
 	if (sprites === undefined || sprites.size === 0) {
-		this.sprites = [new this.modelSpriteType(this.globalVariables)];
+		this.sprites = [new this.spriteType(this.globalVariables)];
 	} else {
 		this.sprites = sprites;
 	}
@@ -135,8 +135,12 @@ SpriteEditorMorph.prototype.createCorral = function () {
                 return myself.sprites;
         }
         
-        this.corral = new SpriteCorralMorph(sprites, this.modelSpriteIconType);
+        this.corral = new SpriteCorralMorph(this.sprites);
         this.add(this.corral);
+		
+		this.sprites.forEach( function(sprite) {
+			myself.corral.addSprite(sprite);
+		});
 };
 
 SpriteEditorMorph.prototype.createTabs = function() {

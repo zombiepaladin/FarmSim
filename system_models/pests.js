@@ -24,7 +24,7 @@ PestSystemMorph.prototype.init = function (universalVariables, PestSprites) {
 		sprite3 = new SpriteMorph(),
 		sprite4 = new SpriteMorph();
 	
-	sprite2.name = 'dis 2';
+	sprite2.name = 'Asphids';
 	sprite3.name = 'dis 3';
 	sprite4.name = 'dis 4';
 	
@@ -33,9 +33,6 @@ PestSystemMorph.prototype.init = function (universalVariables, PestSprites) {
 	PestSprites.push(sprite4);
 	
 	// initialize inherited properties
-	PestSystemMorph.uber.init.call(this, universalVariables, PestSprites);
+	PestSystemMorph.uber.init.call(this, universalVariables, PestSprites, PestSpriteMorph, PestSpriteIconMorph);
 	
-    // add/modify properties
-	this.modelSpriteType = PestSpriteMorph;
-	this.modelSpriteIconType = PestSpriteIconMorph;
 };
