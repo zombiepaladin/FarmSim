@@ -43,9 +43,7 @@ DescriptionEditorMorph.prototype.init = function (aSprite) {
 	this.commentLabel = null;
 	this.commentTextBox = null;
 
-	
-	this.updateButton = null; // TODO: need to implement
-	this.createFrame();	
+	this.createFrame(aSprite);	
 	
 	// create layout
 	this.fixLayout();
@@ -62,7 +60,7 @@ DescriptionEditorMorph.prototype.editButtonColors = [ new Color(189,149,57).dark
 
 
 													
-DescriptionEditorMorph.prototype.createFrame = function() {
+DescriptionEditorMorph.prototype.createFrame = function(aSprite) {
 	
 	var myself = this;
 	
@@ -82,9 +80,28 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 	this.authorLabel = new StringMorph("Author : ", null, null, null, true);            // italic
 	this.authorTextBox = new TextBoxMorph(null, null, null, "<Enter Author Here>", 1, myself );      
 	this.authorTextBox.canGrow = false;
-	this.updateButton = null;
 	this.updateLabel = new StringMorph("Last Updated: ", null, null, null, true);       // italic
 	this.updateText = new TextMorph("MM/DD/YYYY");
+	this.updateButton = new ToggleButtonMorph(
+											this.editButtonColors,                      // colors
+											this,                                       // target
+											function() {
+											
+												if( myself.updateText)
+												{
+													myself.updateText.destroy();
+												}
+												
+												var D = new Date();
+												
+												myself.updateText = new TextMorph( D.getMonth() + "/" + D.getDay() + "/" + D.getFullYear() );
+												myself.frame.add(myself.updateText);
+												myself.fixLayout();
+												
+												
+											},                // action
+											"Save"                                      // hint
+											);
 	this.summaryLabel = new StringMorph("Summary: ", null, null, true);					// bold
 	this.summaryTextBox = new TextBoxMorph(null, null, null, "<Enter Summary Here>", 3, myself );   
 	this.commentLabel = new StringMorph("Comments: ", null, null, true);                // bold
@@ -96,7 +113,8 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 	this.frame.contents.add( this.titleTextBox );
 	this.frame.contents.add( this.authorLabel );
 	this.frame.contents.add( this.authorTextBox );
-	//this.frame.contents.add( this.updateButton );
+	this.frame.contents.add( this.updateButton );
+	this.frame.contents.add( this.updateButton );
 	this.frame.contents.add( this.updateLabel );
 	this.frame.contents.add( this.updateText );
 	this.frame.contents.add( this.summaryLabel );
@@ -126,14 +144,14 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 		myself.authorTextBox.setWidth(200);
 		myself.authorTextBox.setPosition( new Point( myself.titleTextBox.left(), myself.authorLabel.top()) );
 		
-		// update button
-		// TODO: place button
-		
 		// update label
-		myself.updateLabel.setPosition( new Point( myself.frame.right() - myself.updateLabel.width() - 2*padding, myself.frame.top() + 2*padding) ) ;
+		myself.updateLabel.setPosition( new Point( myself.frame.right() - myself.updateLabel.width() - 2 * padding, myself.frame.top() + 2 * padding ) ) ;
 		
 		// update text box
 		myself.updateText.setPosition( myself.updateLabel.bottomLeft().add( new Point( 0, padding) ) );
+		
+		// update button
+		myself.updateButton.setPosition( new Point( myself.frame.right() - myself.updateButton.width() - 2 * padding, myself.updateText.bottom() + 2 * padding ) ) ;
 		
 		// summary label
 		myself.summaryLabel.setPosition( new Point( myself.frame.left() + padding, myself.authorTextBox.bottom() + padding) );
@@ -152,6 +170,12 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 	};
 	
 	
+	this.frame.updateContents = function( aSprite) {
+		// TODO call aSprite's properties to update each box
+	};
+	
+
+	
 	// properties
 	this.frame.acceptsDrops = false;
 	this.frame.contents.acceptsDrops = false;
@@ -160,9 +184,7 @@ DescriptionEditorMorph.prototype.createFrame = function() {
 	
 	this.add(this.frame);
 	
-	
-};				
-										
+};													
 
 DescriptionEditorMorph.prototype.fixLayout = function() {
 	var myself = this;
