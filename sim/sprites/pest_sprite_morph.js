@@ -22,3 +22,10 @@ PestSpriteMorph.prototype.init = function (globals) {
 	
     this.name = localize('Pest');
 };
+
+PestSpriteMorph.prototype.exportSprite = function () {
+	
+	var str = SimulatorMorph.prototype.serializer.serialize(this);
+	window.open(str);
+
+};

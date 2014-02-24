@@ -97,6 +97,7 @@ DescriptionEditorMorph.prototype.createFrame = function(aSprite) {
 												myself.updateText = new TextMorph( D.getMonth() + "/" + D.getDay() + "/" + D.getFullYear() );
 												myself.frame.add(myself.updateText);
 												myself.fixLayout();
+												myself.updateSprite();
 												
 												
 											},                // action
@@ -201,8 +202,18 @@ DescriptionEditorMorph.prototype.fixLayout = function() {
 };
 
 
-DescriptionEditorMorph.prototype.toggleTextBoxes = function() {
-	this.title.editButton.labelString = "save";
+DescriptionEditorMorph.prototype.updateSprite = function() {
+	
+	
+	var myself = this;	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 DescriptionEditorMorph.prototype.setExtent = function (point) {

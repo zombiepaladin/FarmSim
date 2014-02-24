@@ -115,11 +115,55 @@ SpriteEditorMorph.prototype.createCorralBar = function () {
 	if(this.corralBar) {
 		this.corralBar.destroy();
 	}
+	
+	var myself = this;
+	
 	this.corralBar = new ControlBarMorph();
 	
-	this.corralBar.add( new StringMorph("Crops") );
-	this.corralBar.setWidth(this.stageDimensions.x);
-	this.corralBar.setHeight(30);
+	// additional corral bar properties.
+	this.corralBar.padding = 3;
+	this.corralBar.title = null;
+	this.corralBar.importButton = null;
+	this.corralBar.exportButton = null;
+	
+	this.corralBar.title = new StringMorph("Title");
+	
+	this.corralBar.importButton = new ToggleButtonMorph(
+														null,
+														this,
+														function() { 
+															
+															myself.importSprite();
+															
+														},
+														"Import",
+														null,
+														null														
+														);
+	this.corralBar.exportButton = new ToggleButtonMorph(
+														null,
+														this,
+														function() { myself.currentSprite.exportSprite(); },
+														"Export",
+														null,
+														null
+														);	
+	
+	
+	
+	this.corralBar.add( this.corralBar.title );
+	this.corralBar.add( this.corralBar.importButton );
+	this.corralBar.add( this.corralBar.exportButton );
+	
+	this.corralBar.fixLayout = function() {
+		
+		myself.corralBar.title.setPosition( myself.corralBar.topLeft().add(10, 10) );
+		myself.corralBar.importButton.setPosition( new Point( myself.corralBar.title.right()+ myself.corralBar.padding , myself.corralBar.title.top() ) );
+		myself.corralBar.exportButton.setPosition( new Point( myself.corralBar.importButton.right() + myself.corralBar.padding, myself.corralBar.title.top() ) );
+		
+	};
+	
+	
 	this.add(this.corralBar);
 };
 
@@ -188,6 +232,10 @@ SpriteEditorMorph.prototype.fixLayout = function () {
 	
 	// corral bar
 	this.corralBar.setPosition(this.stage.bottomLeft().add(new Point(0,10)));
+	this.corralBar.setWidth(this.stageDimensions.x);
+	this.corralBar.setHeight(50);
+	this.corralBar.fixLayout();
+	
 	
 	// corral
 	this.corral.setPosition(this.corralBar.bottomLeft());
@@ -206,7 +254,7 @@ SpriteEditorMorph.prototype.fixLayout = function () {
 // SpriteEditorMorph sprite list access
 
 SpriteEditorMorph.prototype.addNewSprite = function () {
-	var sprite = new SpriteMorph(this.globalVariables);
+	var sprite = [new this.spriteType(this.globalVariables)];
 	
 	sprite.name = sprite.name 
 		+ (this.corral.frame.contents.children.length + 1);
@@ -226,4 +274,14 @@ SpriteEditorMorph.prototype.selectSprite = function (sprite) {
 	this.corral.refresh();
 	this.scriptEditor.loadSprite(this.currentSprite);
 	this.fixLayout();
+};
+
+SpriteEditorMorph.prototype.importSprite = function() {
+	
+	var inputXml = '"<project><sprite morphType="Crop" name="Corn!!" idx="0" x="0" y="0" heading="90" scale="1" rotation="1" draggable="true" costume="0" color="80,80,80" pen="tip" id="1"><costumes><list id="2"></list></costumes><sounds><list id="3"></list></sounds><variables></variables><blocks></blocks><scripts></scripts><description></description></sprite></project>"';
+	
+	SimulatorMorph.prototype.serializer.loadSprites(inputXml,this);
+	
+	
+	
 };

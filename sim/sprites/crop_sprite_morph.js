@@ -22,3 +22,12 @@ CropSpriteMorph.prototype.init = function (globals) {
 	
     this.name = localize('Crop');
 };
+
+CropSpriteMorph.prototype.exportSprite = function () {
+
+	var str = SimulatorMorph.prototype.serializer.serialize(this);
+	
+	window.open(str);
+
+};
+

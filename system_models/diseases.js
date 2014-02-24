@@ -20,9 +20,9 @@ function DiseaseSystemMorph(universalVariables, diseaseSprites) {
 DiseaseSystemMorph.prototype.init = function (universalVariables, diseaseSprites) {
 	
 	var diseaseSprites = [],
-		sprite2 = new SpriteMorph(),
-		sprite3 = new SpriteMorph(),
-		sprite4 = new SpriteMorph();
+		sprite2 = new DiseaseSpriteMorph(),
+		sprite3 = new DiseaseSpriteMorph(),
+		sprite4 = new DiseaseSpriteMorph();
 	
 	sprite2.name = 'dis 2';
 	sprite3.name = 'dis 3';

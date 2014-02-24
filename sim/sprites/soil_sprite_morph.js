@@ -22,3 +22,10 @@ SoilSpriteMorph.prototype.init = function (globals) {
 	
     this.name = localize('Soil');
 };
+
+SoilSpriteMorph.prototype.exportSprite = function () {
+	
+	var str = SimulatorMorph.prototype.serializer.serialize(this);
+	window.open(str);
+
+};

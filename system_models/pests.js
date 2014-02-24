@@ -20,9 +20,9 @@ function PestSystemMorph(universalVariables, PestSprites) {
 PestSystemMorph.prototype.init = function (universalVariables, PestSprites) {
 	
 	var PestSprites = [],
-		sprite2 = new SpriteMorph(),
-		sprite3 = new SpriteMorph(),
-		sprite4 = new SpriteMorph();
+		sprite2 = new PestSpriteMorph( universalVariables ),
+		sprite3 = new PestSpriteMorph( universalVariables ),
+		sprite4 = new PestSpriteMorph( universalVariables );
 	
 	sprite2.name = 'Asphids';
 	sprite3.name = 'dis 3';

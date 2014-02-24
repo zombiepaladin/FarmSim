@@ -562,14 +562,15 @@ SnapSerializer.prototype.loadBlocks = function (xmlString, targetStage) {
     return stage.globalBlocks;
 };
 
-SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
+SnapSerializer.prototype.loadSprites = function (xmlString, systemMorph) {
     // public - import a set of sprites represented by xmlString
     // into the current project of the ide
+	
     var model, project, myself = this;
 
     project = this.project = {
-        globalVariables: ide.globalVariables,
-        stage: ide.stage,
+        globalVariables: systemMorph.globalVariables,
+        stage: systemMorph.stage,
         sprites: {}
     };
     project.sprites[project.stage.name] = project.stage;
@@ -579,11 +580,39 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
         throw 'Module uses newer version of Serializer';
     }
     model.childrenNamed('sprite').forEach(function (model) {
-        var sprite  = new SpriteMorph(project.globalVariables);
-
-        if (model.attributes.id) {
+        
+		var sprite;
+		
+		switch( model.attributes.morphType )
+		{
+			case "Crop":
+				sprite = new CropSpriteMorph( project.globalVariables ) ;
+			break;
+			
+			case "Soil":
+				sprite = new SoilSpriteMorph( project.globalVariables );
+			break;
+			
+			case "Weather":
+				sprite  = new WeatherSpriteMorph( project.globalVariables );
+			break;
+			
+			case "Disease":
+				sprite = new DiseaseSpriteMorph( project.globalVariables );
+			break;
+			
+			case "Pest":
+				sprite = new PestSpriteMorph( project.globalVariables );
+			break;
+			
+			default:
+				sprite = new SpriteMorph( project.globalVariables );
+			break;
+		}
+		
+        /*if (model.attributes.id) {
             myself.objects[model.attributes.id] = sprite;
-        }
+        }*/
         if (model.attributes.name) {
             sprite.name = model.attributes.name;
             project.sprites[model.attributes.name] = sprite;
@@ -595,7 +624,7 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
             sprite.penPoint = model.attributes.pen;
         }
         project.stage.add(sprite);
-        ide.sprites.add(sprite);
+        systemMorph.sprites.push(sprite);
         sprite.scale = parseFloat(model.attributes.scale || '1');
         sprite.rotationStyle = parseFloat(
             model.attributes.rotation || '1'
@@ -610,10 +639,9 @@ SnapSerializer.prototype.loadSprites = function (xmlString, ide) {
     this.objects = {};
     this.project = {};
     this.mediaDict = {};
-
-//    ide.stage.drawNew();
-    ide.createCorral();
-    ide.fixLayout();
+	
+    systemMorph.createCorral();
+    systemMorph.fixLayout();
 };
 
 SnapSerializer.prototype.loadMedia = function (xmlString) {
@@ -1390,7 +1418,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
         ide = stage ? stage.parentThatIsA(IDE_Morph) : null,
         idx = ide ? ide.sprites.asArray().indexOf(this) + 1 : 0;
     return serializer.format(
-        '<sprite name="@" idx="@" x="@" y="@"' +
+        '<sprite morphType="@" name="@" idx="@" x="@" y="@"' +
             ' heading="@"' +
             ' scale="@"' +
             ' rotation="@"' +
@@ -1403,8 +1431,14 @@ SpriteMorph.prototype.toXML = function (serializer) {
             '<variables>%</variables>' +
             '<blocks>%</blocks>' +
             '<scripts>%</scripts>' +
+			'<description>%</description>' +
             '</sprite>',
-        this.name,
+        ( this instanceof CropSpriteMorph) ? 'Crop' :
+		( this instanceof SoilSpriteMorph) ? 'Soil' :
+		( this instanceof WeatherSpriteMorph) ? 'Weather' :
+		( this instanceof DiseaseSpriteMorph) ? 'Desease' :
+		( this instanceof PestSpriteMorph) ? 'Pest' : '',
+		this.name,
         idx,
         this.xPosition(),
         this.yPosition(),
@@ -1436,6 +1470,7 @@ SpriteMorph.prototype.toXML = function (serializer) {
         serializer.store(this.costumes, this.name + '_cst'),
         serializer.store(this.sounds, this.name + '_snd'),
         serializer.store(this.variables),
+		(this.description) ? serializer.store(this.description) : '',
         !this.customBlocks ?
                     '' : serializer.store(this.customBlocks),
         serializer.store(this.scripts)

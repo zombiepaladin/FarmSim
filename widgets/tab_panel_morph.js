@@ -108,7 +108,7 @@ TabPanelMorph.prototype.fixLayout = function() {
 		t = myself.tabBar.bottomLeft().asArray()[1] - tab.height();
 		
 		tab.setPosition( new Point( l + border, t) );
-		console.log(t);
+
 		l += myself.tabs[i-1].width() + 2 * border;
 		
 	});

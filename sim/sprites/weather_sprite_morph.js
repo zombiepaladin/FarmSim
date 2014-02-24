@@ -22,3 +22,10 @@ WeatherSpriteMorph.prototype.init = function (globals) {
 	
     this.name = localize('Weather');
 };
+
+
+WeatherSpriteMorph.prototype.exportSprite = function() {
+	
+	var str = SimulatorMorph.prototype.serializer.serialize(this);
+	window.open(str);
+};

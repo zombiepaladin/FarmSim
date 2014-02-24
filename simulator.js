@@ -82,6 +82,8 @@ SimulatorMorph.prototype.constructor = SimulatorMorph;
 SimulatorMorph.uber = Morph.prototype;
 
 // SimulatorMorph preferences settings, and skins
+SimulatorMorph.prototype.serializer;
+
 
 SimulatorMorph.prototype.setDefaultDesign = function () {
 	MorphicPreferences.isFlat = false;
@@ -174,7 +176,9 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.setSystemsDefaultDesign();
 	
 	// additional properties:
-	this.serializer = new SnapSerializer();
+	SimulatorMorph.prototype.serializer = new SnapSerializer();
+	
+	
 	
 	this.universalVariables = new VariableFrame();
 	this.currentSystem = 'crops';
@@ -395,6 +399,10 @@ SimulatorMorph.prototype.createCropSystem = function() {
 		this.cropSystem.destroy();
 	}
 	this.cropSystem = new CropSystemMorph(this.universalVariables, []);
+	
+	
+	var xml = this.serializer.serialize(this.cropSystem.cropSprites);
+	
 	this.add(this.cropSystem);
 	if(this.currentSystem !== 'crops') this.cropSystem.hide();
 };
@@ -410,7 +418,7 @@ SimulatorMorph.prototype.createSoilSystem = function() {
 		this.soilSystem.Destroy();
 	}
 	
-	this.soilSystem = new SoilSystemMorph(undefined); // pass in undefined for default soil.
+	this.soilSystem = new SoilSystemMorph(this.universalVariables, []); // pass in undefined for default soil.
 
 	this.add(this.soilSystem); // add soil system to the main system
 	

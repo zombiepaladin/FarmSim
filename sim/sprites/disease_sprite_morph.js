@@ -22,3 +22,10 @@ DiseaseSpriteMorph.prototype.init = function (globals) {
 	
     this.name = localize('Disease');
 };
+
+DiseaseSpriteMorph.prototype.exportSprite = function () {
+	
+	var str = SimulatorMorph.prototype.serializer.serialize(this);
+	window.open(str);
+
+};

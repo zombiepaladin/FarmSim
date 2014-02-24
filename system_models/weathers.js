@@ -20,9 +20,9 @@ function WeatherSystemMorph(universalVariables, WeatherSprites) {
 WeatherSystemMorph.prototype.init = function (universalVariables, WeatherSprites) {
 	
 	var WeatherSprites = [],
-		sprite2 = new SpriteMorph(),
-		sprite3 = new SpriteMorph(),
-		sprite4 = new SpriteMorph();
+		sprite2 = new WeatherSpriteMorph( universalVariables ),
+		sprite3 = new WeatherSpriteMorph( universalVariables ),
+		sprite4 = new WeatherSpriteMorph( universalVariables );
 	
 	sprite2.name = 'dis 2';
 	sprite3.name = 'dis 3';

@@ -20,9 +20,9 @@ function SoilSystemMorph(universalVariables, SoilSprites) {
 SoilSystemMorph.prototype.init = function (universalVariables, SoilSprites) {
 	
 	var SoilSprites = [],
-		sprite2 = new SpriteMorph(),
-		sprite3 = new SpriteMorph(),
-		sprite4 = new SpriteMorph();
+		sprite2 = new SoilSpriteMorph( universalVariables ),
+		sprite3 = new SoilSpriteMorph( universalVariables ),
+		sprite4 = new SoilSpriteMorph( universalVariables );
 	
 	sprite2.name = 'dis 2';
 	sprite3.name = 'dis 3';
