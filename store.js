@@ -839,7 +839,7 @@ SnapSerializer.prototype.loadScripts = function (scripts, model) {
     // private
     var myself = this,
         scale = SyntaxElementMorph.prototype.scale;
-    scripts.texture = 'scriptsPaneTexture.gif';
+
     model.children.forEach(function (child) {
         var element;
         if (child.tag === 'script') {
@@ -1431,7 +1431,10 @@ SpriteMorph.prototype.toXML = function (serializer) {
             '<variables>%</variables>' +
             '<blocks>%</blocks>' +
             '<scripts>%</scripts>' +
-			'<description>%</description>' +
+			//'<description title="@" author="@">' +
+			//'<summary>@</summary>' +
+			//'<comments>@</comments' +
+			//'</description>' +
             '</sprite>',
         ( this instanceof CropSpriteMorph) ? 'Crop' :
 		( this instanceof SoilSpriteMorph) ? 'Soil' :

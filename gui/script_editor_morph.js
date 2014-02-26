@@ -226,7 +226,7 @@ ScriptEditorMorph.prototype.fixLayout = function() {
 		
 	// editor
 	this.editor.setHeight(this.height());
-	this.editor.setWidth(this.width() - this.palette.width());
+	this.editor.setWidth( this.width() - this.palette.width() );
 	this.editor.setPosition( this.categories.topRight() );
 
 }

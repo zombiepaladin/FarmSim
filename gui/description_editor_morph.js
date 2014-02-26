@@ -92,10 +92,7 @@ DescriptionEditorMorph.prototype.createFrame = function(aSprite) {
 													myself.updateText.destroy();
 												}
 												
-												var D = new Date();
-												
-												myself.updateText = new TextMorph( D.getMonth() + "/" + D.getDay() + "/" + D.getFullYear() );
-												myself.frame.add(myself.updateText);
+												myself.frame.add( myself.frame.lastUpdate() );
 												myself.fixLayout();
 												myself.updateSprite();
 												
@@ -171,11 +168,20 @@ DescriptionEditorMorph.prototype.createFrame = function(aSprite) {
 	};
 	
 	
-	this.frame.updateContents = function( aSprite) {
-		// TODO call aSprite's properties to update each box
+	this.frame.updateFrame = function( ) {
+	
+		myself.titleTextBox.setText( (myself.currentSprite.title) ? myself.currentSprite.title : "" );
+		myself.authorTextBox.setText( (myself.currentSprite.author) ? myself.currentSprite.author : "" );
+		myself.summaryTextBox.setText( (myself.currentSprite.summary) ? myself.currentSprite.summary : "" );
+		myself.commentTextBox.setText( (myself.currentSprite.comment) ? myself.currentSprite.comment : "" );
+		
 	};
 	
-
+	this.frame.lastUpdate = function() {
+		var D = new Date();
+		return new TextMorph( D.getMonth() + "/" + D.getDay() + "/" + D.getFullYear() );		
+	};
+	
 	
 	// properties
 	this.frame.acceptsDrops = false;
@@ -204,15 +210,12 @@ DescriptionEditorMorph.prototype.fixLayout = function() {
 
 DescriptionEditorMorph.prototype.updateSprite = function() {
 	
-	
 	var myself = this;	
-	
-	
-	
-	
-	
-	
-	
+	myself.currentSprite.title = ( myself.currentSprite.title ) ? myself.currentSprite.title : "";
+	myself.currentSprite.author = ( myself.currentSprite.author ) ? myself.currentSprite.author : "";
+	myself.currentSprite.summary = ( myself.currentSprite.summary ) ? myself.currentSprite.summary : "";
+	myself.currentSprite.comment = ( myself.currentSprite.comment ) ? myself.currentSprite.comment : "";
+	myself.currentSprite.lastUpdate = ( myself.frame.lastUpdate() ) ? myself.frame.lastUpdate()  : ""
 	
 }
 
