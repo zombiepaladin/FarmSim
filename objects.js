@@ -1175,7 +1175,14 @@ SpriteMorph.prototype.init = function (globals) {
     this.version = Date.now(); // for observer optimization
     this.isClone = false; // indicate a "temporary" Scratch-style clone
     this.cloneOriginName = '';
-
+	
+	// sprite description properties
+	this.title = null;      //"<Enter Title Here>";
+	this.author = null;     //"<Enter Author Here>";
+	this.summary = null;    //"<Enter Summary Here>";
+	this.comments = null;   //"<Enter Comments Here>";
+	this.lastUpdate = null; //"MM/DD/YYYY";
+	
     // sprite nesting properties
     this.parts = []; // not serialized, only anchor (name)
     this.anchor = null;

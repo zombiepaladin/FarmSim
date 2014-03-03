@@ -132,7 +132,7 @@ TextBoxMorph.prototype.outlinePath = function (context, radius, inset) {
 };
 
 TextBoxMorph.prototype.setText = function (words){
-	this.textContent.text = words;
+	this.textContent.text = this.createTextMorph(words);
 	this.fixLayout(); // refresh the layout.
 };
 

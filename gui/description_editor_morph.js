@@ -12,11 +12,11 @@ DescriptionEditorMorph.uber = Morph.prototype;
 
 // DescriptionEditorMorph instance creation:
 
-function DescriptionEditorMorph(aSprite){
-	this.init(aSprite);
+function DescriptionEditorMorph(aSprite, corral){
+	this.init(aSprite, corral);
 };
 
-DescriptionEditorMorph.prototype.init = function (aSprite) {
+DescriptionEditorMorph.prototype.init = function (aSprite, corralM) {
 	var myself = this;
 	
 	// set the default properties.
@@ -29,6 +29,7 @@ DescriptionEditorMorph.prototype.init = function (aSprite) {
 	this.setColor( new Color( 0,0,0) ) ; //DescriptionEditorMorph.prototype.backgroundColor );
 	
 	// create submorphs for the page
+	this.corral = corralM;
 	this.frame = null;
 	this.informationLabel = null;
 	this.titleLabel = null;
@@ -42,7 +43,7 @@ DescriptionEditorMorph.prototype.init = function (aSprite) {
 	this.summaryTextBox = null;
 	this.commentLabel = null;
 	this.commentTextBox = null;
-
+	
 	this.createFrame(aSprite);	
 	
 	// create layout
@@ -60,7 +61,7 @@ DescriptionEditorMorph.prototype.editButtonColors = [ new Color(189,149,57).dark
 
 
 													
-DescriptionEditorMorph.prototype.createFrame = function(aSprite) {
+DescriptionEditorMorph.prototype.createFrame = function() {
 	
 	var myself = this;
 	
@@ -75,35 +76,36 @@ DescriptionEditorMorph.prototype.createFrame = function(aSprite) {
 	this.informationLabel = new StringMorph("Information: ", null, null, true);         // bold
 
 	this.titleLabel = new StringMorph("Title : ", null, null, null, true);              // italic 
-	this.titleTextBox = new TextBoxMorph(null, null, null, "<Enter Title Here>", 1, myself );       
+	this.titleTextBox = new TextBoxMorph(null, null, null,  (myself.currentSprite.title) ? myself.currentSprite.title : "", 1, myself );       
 	this.titleTextBox.canGrow = false;
 	this.authorLabel = new StringMorph("Author : ", null, null, null, true);            // italic
-	this.authorTextBox = new TextBoxMorph(null, null, null, "<Enter Author Here>", 1, myself );      
+	this.authorTextBox = new TextBoxMorph(null, null, null,  (myself.currentSprite.author) ? myself.currentSprite.author : "", 1, myself );      
 	this.authorTextBox.canGrow = false;
 	this.updateLabel = new StringMorph("Last Updated: ", null, null, null, true);       // italic
-	this.updateText = new TextMorph("MM/DD/YYYY");
+	this.updateText = new TextMorph( (myself.currentSprite.lastUpdate) ? myself.currentSprite.lastUpdate : "MM/DD/YYYY");
 	this.updateButton = new ToggleButtonMorph(
 											this.editButtonColors,                      // colors
 											this,                                       // target
-											function() {
+											function() {								// action
 											
 												if( myself.updateText)
 												{
 													myself.updateText.destroy();
 												}
 												
-												myself.frame.add( myself.frame.lastUpdate() );
+												myself.updateText =  new TextMorph( myself.frame.lastUpdate() );
+												myself.frame.add( myself.updateText );
 												myself.fixLayout();
 												myself.updateSprite();
+												myself.corral.refresh();
 												
-												
-											},                // action
+											},                
 											"Save"                                      // hint
 											);
-	this.summaryLabel = new StringMorph("Summary: ", null, null, true);					// bold
-	this.summaryTextBox = new TextBoxMorph(null, null, null, "<Enter Summary Here>", 3, myself );   
+	this.summaryLabel = new StringMorph( "Summary: ", null, null, true);					// bold
+	this.summaryTextBox = new TextBoxMorph(null, null, null, (myself.currentSprite.summary) ? myself.currentSprite.summary : "", 3, myself );   
 	this.commentLabel = new StringMorph("Comments: ", null, null, true);                // bold
-	this.commentTextBox = new TextBoxMorph(null, null, null, "<Enter Comments Here>", 3, myself );
+	this.commentTextBox = new TextBoxMorph(null, null, null, (myself.currentSprite.comment) ? myself.currentSprite.comment : "", 3, myself );
 
 	
 	this.frame.contents.add( this.informationLabel );
@@ -170,7 +172,7 @@ DescriptionEditorMorph.prototype.createFrame = function(aSprite) {
 	
 	this.frame.updateFrame = function( ) {
 	
-		myself.titleTextBox.setText( (myself.currentSprite.title) ? myself.currentSprite.title : "" );
+		myself.titleTextBox.setText( (myself.currentSprite.name) ? myself.currentSprite.name : "" );
 		myself.authorTextBox.setText( (myself.currentSprite.author) ? myself.currentSprite.author : "" );
 		myself.summaryTextBox.setText( (myself.currentSprite.summary) ? myself.currentSprite.summary : "" );
 		myself.commentTextBox.setText( (myself.currentSprite.comment) ? myself.currentSprite.comment : "" );
@@ -179,7 +181,7 @@ DescriptionEditorMorph.prototype.createFrame = function(aSprite) {
 	
 	this.frame.lastUpdate = function() {
 		var D = new Date();
-		return new TextMorph( D.getMonth() + "/" + D.getDay() + "/" + D.getFullYear() );		
+		return ( D.getMonth() + "/" + D.getDay() + "/" + D.getFullYear() );		
 	};
 	
 	
@@ -211,15 +213,28 @@ DescriptionEditorMorph.prototype.fixLayout = function() {
 DescriptionEditorMorph.prototype.updateSprite = function() {
 	
 	var myself = this;	
-	myself.currentSprite.title = ( myself.currentSprite.title ) ? myself.currentSprite.title : "";
-	myself.currentSprite.author = ( myself.currentSprite.author ) ? myself.currentSprite.author : "";
-	myself.currentSprite.summary = ( myself.currentSprite.summary ) ? myself.currentSprite.summary : "";
-	myself.currentSprite.comment = ( myself.currentSprite.comment ) ? myself.currentSprite.comment : "";
-	myself.currentSprite.lastUpdate = ( myself.frame.lastUpdate() ) ? myself.frame.lastUpdate()  : ""
+	myself.currentSprite.name =        myself.titleTextBox.getText();
+	myself.currentSprite.author =      myself.authorTextBox.getText();
+	myself.currentSprite.summary =     myself.summaryTextBox.getText()
+	myself.currentSprite.comment =     myself.commentTextBox.getText();
+	myself.currentSprite.lastUpdate =  myself.frame.lastUpdate();
 	
-}
+	
+};
 
 DescriptionEditorMorph.prototype.setExtent = function (point) {
 	DescriptionEditorMorph.uber.setExtent.call(this, point);
 	this.fixLayout();
 };
+
+
+DescriptionEditorMorph.prototype.loadSprite = function (aSprite){
+	
+	this.currentSprite = aSprite;
+	
+	this.createFrame();
+	this.frame.updateFrame();
+	this.fixLayout();
+	
+};
+

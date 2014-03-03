@@ -61,6 +61,7 @@ SpriteEditorMorph.prototype.init = function (universalVariables, sprites, sprite
 	this.corral = null;
 	this.tabs = null;
 	this.scriptEditor = null;
+	this.descEditor = null;
 	
 	// build panes
 	this.createStageBar();
@@ -68,6 +69,7 @@ SpriteEditorMorph.prototype.init = function (universalVariables, sprites, sprite
 	this.createCorralBar();
 	this.createCorral();
 	this.createTabs();
+	this.selectSprite( this.currentSprite );
 };
 
 SpriteEditorMorph.prototype.createStageBar = function () {
@@ -185,6 +187,7 @@ SpriteEditorMorph.prototype.createCorral = function () {
 		this.sprites.forEach( function(sprite) {
 			myself.corral.addSprite(sprite);
 		});
+		
 };
 
 SpriteEditorMorph.prototype.createTabs = function() {
@@ -201,9 +204,9 @@ SpriteEditorMorph.prototype.createTabs = function() {
 	// add pages to the tab panel
 	
 	// description page
-	var descEditor = new DescriptionEditorMorph();
-	descEditor.setColor( SpriteEditorMorph.prototype.scriptEditorColors[2] );
-	this.tabs.addTab('description', descEditor);
+	this.descEditor = new DescriptionEditorMorph(null, this.corral);
+	this.descEditor.setColor( SpriteEditorMorph.prototype.scriptEditorColors[2] );
+	this.tabs.addTab('description', 	this.descEditor);
 
 	// script page
 	if(this.scriptEditor) {
@@ -271,10 +274,12 @@ SpriteEditorMorph.prototype.selectSprite = function (sprite) {
 	this.currentSprite = sprite;
 	this.currentSprite.show();
 	
-	this.corral.refresh();
+	this.descEditor.loadSprite( this.currentSprite );
+	
 	this.scriptEditor.loadSprite(this.currentSprite);
 	this.fixLayout();
 };
+
 
 SpriteEditorMorph.prototype.importSprite = function() {
 	

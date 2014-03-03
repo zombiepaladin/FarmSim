@@ -389,3 +389,19 @@ SpriteIconMorph.prototype.copySound = function (sound) {
     this.object.addSound(dup.audio, dup.name);
 };
 
+SpriteIconMorph.prototype.refresh = function()
+{
+	var myself = this;
+	
+	SpriteIconMorph.uber.refresh.call(this);
+	
+	myself.createLabel();
+	myself.createBackgrounds();
+	myself.createThumbnail();
+	myself.fixLayout();
+	/*
+	*/
+	
+	
+}
+

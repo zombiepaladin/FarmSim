@@ -1431,10 +1431,10 @@ SpriteMorph.prototype.toXML = function (serializer) {
             '<variables>%</variables>' +
             '<blocks>%</blocks>' +
             '<scripts>%</scripts>' +
-			//'<description title="@" author="@">' +
-			//'<summary>@</summary>' +
-			//'<comments>@</comments' +
-			//'</description>' +
+			'<description title="@" author="@" lastUpdate="@">' +
+			'<summary>@</summary>' +
+			'<comments>@</comments>' +
+			'</description>' +
             '</sprite>',
         ( this instanceof CropSpriteMorph) ? 'Crop' :
 		( this instanceof SoilSpriteMorph) ? 'Soil' :
@@ -1472,8 +1472,12 @@ SpriteMorph.prototype.toXML = function (serializer) {
 
         serializer.store(this.costumes, this.name + '_cst'),
         serializer.store(this.sounds, this.name + '_snd'),
-        serializer.store(this.variables),
-		(this.description) ? serializer.store(this.description) : '',
+		this.title,
+		this.author,
+		this.lastUpdate,
+		this.summary,
+		this.comment,		
+		serializer.store(this.variables),
         !this.customBlocks ?
                     '' : serializer.store(this.customBlocks),
         serializer.store(this.scripts)
