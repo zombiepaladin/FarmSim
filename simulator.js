@@ -193,6 +193,7 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.weatherSystem = null;
 	this.pestSystem = null;  
 	this.diseaseSystem = null; 
+	this.farmOpsSystem = null;
 	
 	// gui settings:
 	this.isAutoFill = isAutoFill || true;
@@ -242,6 +243,7 @@ SimulatorMorph.prototype.buildPanes = function() {
 	this.createWeatherSystem();
 	this.createPestSystem();
 	this.createDiseaseSystem();
+	this.createFarmOpsSystem();
 };
 	
 SimulatorMorph.prototype.createLogo = function() {
@@ -490,6 +492,25 @@ SimulatorMorph.prototype.createPestSystem = function() {
 	}
 };
 
+SimulatorMorph.prototype.createFarmOpsSystem = function() {
+	
+	console.log("create farm ops system.");
+	
+	if( this.farmOpsSystem ) {
+		this.farmOpsSystem.destroy();
+	}
+	
+	this.farmOpsSystem = new FarmOpsSystemMorph();
+	
+	this.add( this.farmOpsSystem);
+	if( this.currentSystem !== 'farm ops') {
+		this.farmOpsSystem.hide();
+	}
+	
+	
+};
+
+
 // SimulatorMorph layout
 
 SimulatorMorph.prototype.fixLayout = function (situation) {
@@ -531,6 +552,12 @@ SimulatorMorph.prototype.fixLayout = function (situation) {
 	this.diseaseSystem.setHeight(this.height() - this.systemSelectBar.bottom());
 	this.diseaseSystem.fixLayout();
 
+	// farm ops layout
+	this.farmOpsSystem.setPosition( this.systemSelectBar.bottomLeft());
+	this.farmOpsSystem.setWidth(this.systemSelectBar.width());
+	this.farmOpsSystem.setHeight(this.height() - this.systemSelectBar.bottom());
+	this.farmOpsSystem.fixLayout();
+	
 	Morph.prototype.trackChanges = true;
 	this.changed();
 };
@@ -569,6 +596,7 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	this.weatherSystem.hide();
 	this.pestSystem.hide();
 	this.diseaseSystem.hide();
+	this.farmOpsSystem.hide();
 	
 	switch (system) {
 		case 'crops':
@@ -585,6 +613,9 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 		break;
 		case 'diseases':
 			this.diseaseSystem.show();
+		break;
+		case 'farm ops':
+			this.farmOpsSystem.show();
 		break;
 	}
 	
