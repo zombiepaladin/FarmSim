@@ -1,53 +1,110 @@
 //fields.js
 
 
-var FieldSpriteMorph;
+var FieldMorph;
+var FieldCornerMorph;
 
-FieldSpriteMorph.prototype = new SpriteMorph();
-FieldSpriteMorph.prototype.constructor = FieldSpriteMorph;
-FieldSpriteMorph.uber = SpriteMorph.prototype;
+FieldCornerMorph.prototype = new Morph();
+FieldCornerMorph.prototype.constructor = new Morph();
+FieldCornerMorph.uber =  Morph.prototype;
 
-// FieldSpriteMorph instance creation
+FieldCornerMorph.innerRadius = 5;  
+FieldCornerMorph.outerRadius = 10;
 
-function FieldSpriteMorph(globals) {
-    this.init(globals);
-}
-
-FieldSpriteMorph.prototype.init = function (globals) {
-
-    FieldSpriteMorph.uber.init.call(this, globals);
-	
-	this.boundary = [ new Point(0,0), new Point(0,1), new Point(1,1), new Point(1,0) ];
-	
-	
-	
-	
-    this.name = localize('Field');
+function FieldCornerMorph(point, globals) {
+	this.init(point, globals);
 };
 
-FieldSpriteMorph.prototype.drawField = function (context) {
+FieldCornerMorph.prototype.init = function (point, globals) {
+	
+	this.x = point.x;
+	this.y = point.y;
+	FieldCornerMorph.uber.init.call( this, globals );
+	
+	this.innerRadius = 5;
+	this.outerRadius = 10;
+	
+	this.color = new Color( 0, 0, 0);
+};
+
+
+FieldCornerMorph.prototype.drawCorner = function( context ) {
+	
+	context.moveTo( this.x + this.innerRadius, this.y );
+	context.arc( this.x, this.y, this.innerRadius, 0, Math.PI*2, true);
+	context.moveTo( this.x + this.outerRadius, this.y );
+	context.arc( this.x, this.y, this.outerRadius, 0, Math.PI*2, true);
+
+
+};
+
+FieldCornerMorph.prototype.drawNew = function() {
+
+};
+
+
+FieldMorph.prototype = new Morph();
+FieldMorph.prototype.constructor = Morph;
+FieldMorph.uber = Morph.prototype;
+
+// FieldMorph instance creation
+
+FieldMorph.prototype.Boundary = [ new FieldCornerMorph( new Point(50,   50), null ), 
+                                  new FieldCornerMorph( new Point(150,  50), null ), 
+								  new FieldCornerMorph( new Point(150, 150), null ), 
+								  new FieldCornerMorph( new Point(50, 150), null ) ];
+
+function FieldMorph(globals) {
+    this.init(globals);
+};
+
+FieldMorph.prototype.init = function (globals) {
+
+    FieldMorph.uber.init.call(this, globals);
+	
+	this.color = new Color( 255, 0, 0 );
+	
+};
+
+FieldMorph.prototype.drawNew = function (context) {
 	
 	// need context.
-	/*	
-	context.moveTo(this.boundary[0]);
-	this.boundary.forEach( function(point) {
-		convext.lineTo( point );
+	
+	FieldMorph.uber.drawNew.call(this);
+	
+	var context = this.image.getContext('2d');
+	
+	context.beginPath();
+	context.moveTo(this.Boundary[this.Boundary.length-1].x, this.Boundary[this.Boundary.length-1].y);
+	
+	this.Boundary.forEach( function(corner) {
+		context.lineTo( corner.x, corner.y );
+		
+		corner.drawCorner( context );
+		context.moveTo( corner.x, corner.y);
+		
 	});
+
 	
 	context.stroke(); // just line
-	context.fill(); // fill in field color based on soil sprite.
 	
-	*/
+	
 };
 
+FieldMorph.prototype.fixLayout = function() {
 
-FieldSpriteMorph.prototype.exportSprite = function () {
+//this.drawNew()
+}
+
+
+FieldMorph.prototype.exportSprite = function () {
 
 	var str = SimulatorMorph.prototype.serializer.serialize(this);
 	
 	window.open(str);
 
 };
+
 
 
 

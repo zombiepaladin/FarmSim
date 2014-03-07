@@ -181,7 +181,10 @@ FarmOpsSystemMorph.prototype.createFieldPanel = function() {
 	this.fieldPanel.stage = new StageMorph( this.globalVariables);
 	this.fieldPanel.stage.color = new Color( 255, 255, 255 );
 	this.fieldPanel.add( this.fieldPanel.stage );
-
+	
+	
+	this.testField = new FieldMorph();
+	this.fieldPanel.add( this.testField );
 	
 	this.fieldPanel.fixLayout = function() {
 	
@@ -192,6 +195,11 @@ FarmOpsSystemMorph.prototype.createFieldPanel = function() {
 		myself.fieldPanel.stage.setWidth( myself.fieldPanel.width() );
 		myself.fieldPanel.stage.setHeight( myself.fieldPanel.height() - myself.fieldPanel.titleBar.height() );
 		myself.fieldPanel.stage.setPosition( myself.fieldPanel.titleBar.bottomLeft() );
+		
+		myself.testField.setWidth( myself.fieldPanel.stage.width() );
+		myself.testField.setHeight( myself.fieldPanel.stage.height() );
+		myself.testField.setPosition( myself.fieldPanel.stage.topLeft() );
+		myself.testField.drawNew();
 
 	};
 	
