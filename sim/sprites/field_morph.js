@@ -26,6 +26,7 @@ FieldNodeMorph.prototype.init = function (point, nextNode, globals) {
 	
 	this.innerRadius = 5;
 	this.outerRadius = 10;
+	this.linePoints = [];
 	
 	this.color = new Color( 0, 0, 0);
 };
@@ -40,9 +41,25 @@ FieldNodeMorph.prototype.drawNode = function( context ) {
 	context.moveTo( this.x + this.outerRadius, this.y );
 	context.arc( this.x, this.y, this.outerRadius, 0, Math.PI*2, true);
 	context.moveTo( this.x, this.y );
-	
+	/*
+	var m = ( this.next.y - this.y) / ( this.next.x - this.x );
+	var b = m * this.x + this.y;
+	var count = 0;
+	*/
 	if( this.next ){
 		context.lineTo( this.next.x, this.next.y );
+		/*
+		for( i = this.x; i <= this.next.x; i++)
+		{
+			for( j = this.y; j <= this.next.y; j++)
+			{
+				if( j === m*i+b)
+				{
+					this.linePoints[count] = new Point( i,j);
+					count++;
+				}
+			}
+		}*/
 		this.next.drawNode( context );
 	}
 };
@@ -57,11 +74,11 @@ FieldNodeMorph.prototype.nodeWasClicked = function( x_click, y_click ) {
 	 return (test <= this.outerRadius ) ? true : false;
 };
 
-FieldNodeMorph.prototype.lineWasClicked1 = function( x_click, y_click, nextNode) {
+FieldNodeMorph.prototype.lineWasClicked1 = function( x_click, y_click, startPoint, endPoint) {
 	
-	var startPoint = new Point(this.x, this.y),
-		queryPoint = new Point( x_click, y_click),
-		endPoint = new Point( nextNode.x, nextNode.y);
+	//var startPoint = new Point(this.x, this.y),
+	var	queryPoint = new Point( x_click, y_click);
+	//	endPoint = new Point( nextNode.x, nextNode.y);
 
 	// check that the cross product is not zero
 	var crossproduct = (queryPoint.y - startPoint.y) * (endPoint.x - startPoint.x) - ( queryPoint.x - startPoint.x) * ( endPoint.y - startPoint.y);	
@@ -82,47 +99,97 @@ FieldNodeMorph.prototype.lineWasClicked2 = function( x_click, y_click, nextNode)
 	
 	var m, 
 		b, 
-		test, 
-	    dist1, 
-		dist2, 
-		distTotal;
+		test;
+	m = ( this.y - nextNode.y )/ ( this.x - nextNode.x );
+	b = ( m * this.x ) + this.y;
+	test = m*x_click + b;
+
+	if( Math.abs(test - y_click) > 0.0000000000000001) return false;
+
+	return true;
+
 	
-	for( i = -20; i < 20; i++)
+};
+
+FieldNodeMorph.prototype.lineWasClicked3 = function( x_click, y_click, nextNode) {
+	
+	var horizontal = false;
+	
+	if( Math.abs(this.x - nextNode.x) > Math.abs(this.y - nextNode.y) ) 
 	{
-		m = ( nextNode.y - this.y )/ ( nextNode.x - (this.x+i) );
-		b = this.y/(m*(this.x+i));
-		test = m*x_click + b;
-	
-		dist1 = Math.sqrt( ( x_click - (this.x+i))*( x_click - (this.x+i)) + ( y_click - this.y)*( y_click - this.y) );
-		dist2 = Math.sqrt( ( nextNode.x - x_click )*( nextNode.x - x_click ) + ( nextNode.y - y_click )*( nextNode.y - y_click ) );
-		distTotal = Math.sqrt( (nextNode.x - (this.x+i)) * (nextNode.x - (this.x+i)) + (nextNode.y - this.y) * (nextNode.y - this.y) );
-		if( Math.abs(distTotal - dist1 - dist2) > 0.000000000000001) continue;
-	
-		if( (test - y_click) > 0.0000000000000001) continue;
-	
-		return true;
+		horizontal = true;
 	}
-	return false
+	if( horizontal)
+	{
+		for( i = -15; i < 16; i++)
+		{
+			if(this.lineWasClicked1( x_click, y_click, new Point( this.x, this.y + i ), new Point( nextNode.x, nextNode.y + i )) )
+			{
+				return true;
+			}
+		
+		}
+	}
+	else
+	{
+		for( i = -5; i < 6; i++)
+		{
+			if(this.lineWasClicked1( x_click, y_click, new Point( this.x + i, this.y ), new Point( nextNode.x + i, nextNode.y )) )
+			{
+				return true;
+			}
+		
+		}
+	}
+	return false;
 	
 };
 
 FieldNodeMorph.prototype.lineWasClicked = function( x_click, y_click, nextNode) {
 	
+	var myself = this;
 	
-	for( var i = x_click - 10; i < x_click + 10; i++)
+	var clickArray = [];
+	var dx, dy, test;
+	var count = 0;
+	
+	for( var i = (x_click - this.outerRadius); i < (x_click + this.outerRadius); i++)
 	{
-		for( var j = y_click - 10; j < y_click + 10; j++)
+		for( j = (y_click - this.outerRadius); j < (y_click + this.outerRadius); j++)
 		{
-			if(this.lineWasClicked1( i,j,nextNode) ) {
-				return true;
-			}
-			
-			
+			//dx = Math.abs( i - x_click);
+			//dy = Math.abs( j - y_click);
+			//test = Math.sqrt( dx * dx + dy * dy );
+			//if( test <= this.innerRadius )
+			//{
+				clickArray[count] = new Point( i, j );
+				count++;
+			//}
+		}
+	}
+	var result = false;
+	clickArray.forEach( function(pt) {
+		
+		
+		if( myself.lineWasClicked2( pt.x, pt.y,  nextNode) )
+		{
+			result = true;
 		}
 		
-	}
+		
+		/*
+		myself.linePoints.forEach( function(lpt) {
+			
+			if( lpt.x === pt.x && lpt.y == pt.y)
+			{
+				result = true;
+			}
+			
+		});
+		*/
+	});
 	
-	return false;
+	return result;
 	
 };
 
@@ -195,30 +262,31 @@ FieldMorph.prototype.mouseDownLeft = function(pos) {
 	{
 		case "idle":			
 			this.boundary.forEach( function( node ) {
-				
-				if( !exit)
+			
+				if( node.nodeWasClicked( x_click, y_click ) ) 
 				{
-					if( node.nodeWasClicked( x_click, y_click ) ) 
-					{
-						myself.selectedNode = node;
-						myself.state = "dragging";
-						console.log("dragging click");
-						exit = true;
-					}
-					else if( node.lineWasClicked( x_click, y_click, (node.next) ? node.next : myself.boundary[0] ) )
-					{
-						console.log( "found true");
-						// create new node
-						myself.selectedNode = node;
-						myself.addNode( x_click , y_click, (node.next) ? node.next : myself.boundary[0] )
-						myself.slectedNode = node.next;
-						myself.state = "dragging"
-						myself.refresh();
-						exit = true;
-					}
+					myself.selectedNode = node;
+					myself.state = "dragging";
+					console.log("dragging click");
+					exit = true;
 				}
 			});
-			
+			if( !exit)
+			{
+				this.boundary.forEach( function ( node ) {
+					if( node.lineWasClicked( x_click, y_click, (node.next) ? node.next : myself.boundary[0] ) )
+					{
+							console.log( "found true");
+							// create new node
+							myself.selectedNode = node;
+							myself.addNode( x_click , y_click, (node.next) ? node.next : myself.boundary[0] )
+							myself.slectedNode = node.next;
+							myself.state = "dragging"
+							myself.refresh();
+							exit = true;
+					}
+				});
+			}
 			/* 
 			if( FieldWasClicked(  pos.x - myself.bounds.origin.x, pos.y - myself.bounds.origin.y ) )
 			{
