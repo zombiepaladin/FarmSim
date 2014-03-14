@@ -12,15 +12,14 @@ FieldNodeMorph.prototype.innerRadius = 5;
 FieldNodeMorph.prototype.outerRadius = 10;
 FieldNodeMorph.prototype.border = 2;
 
-function FieldNodeMorph(point, nextNode, globals) {
-	this.init(point, nextNode, globals);
+function FieldNodeMorph(point, globals) {
+	this.init(point, globals);
 };
 
-FieldNodeMorph.prototype.init = function (point, nextNode, globals) {
+FieldNodeMorph.prototype.init = function (point, globals) {
 	
 	this.x = point.x;
 	this.y = point.y;
-	this.next = nextNode;
 	
 	FieldNodeMorph.uber.init.call( this, globals );
 	
@@ -41,27 +40,8 @@ FieldNodeMorph.prototype.drawNode = function( context ) {
 	context.moveTo( this.x + this.outerRadius, this.y );
 	context.arc( this.x, this.y, this.outerRadius, 0, Math.PI*2, true);
 	context.moveTo( this.x, this.y );
-	/*
-	var m = ( this.next.y - this.y) / ( this.next.x - this.x );
-	var b = m * this.x + this.y;
-	var count = 0;
-	*/
-	if( this.next ){
-		context.lineTo( this.next.x, this.next.y );
-		/*
-		for( i = this.x; i <= this.next.x; i++)
-		{
-			for( j = this.y; j <= this.next.y; j++)
-			{
-				if( j === m*i+b)
-				{
-					this.linePoints[count] = new Point( i,j);
-					count++;
-				}
-			}
-		}*/
-		this.next.drawNode( context );
-	}
+	
+	
 };
 
 FieldNodeMorph.prototype.nodeWasClicked = function( x_click, y_click ) {
@@ -74,120 +54,54 @@ FieldNodeMorph.prototype.nodeWasClicked = function( x_click, y_click ) {
 	 return (test <= this.outerRadius ) ? true : false;
 };
 
-FieldNodeMorph.prototype.lineWasClicked1 = function( x_click, y_click, startPoint, endPoint) {
-	
-	//var startPoint = new Point(this.x, this.y),
-	var	queryPoint = new Point( x_click, y_click);
-	//	endPoint = new Point( nextNode.x, nextNode.y);
-
-	// check that the cross product is not zero
-	var crossproduct = (queryPoint.y - startPoint.y) * (endPoint.x - startPoint.x) - ( queryPoint.x - startPoint.x) * ( endPoint.y - startPoint.y);	
-	if( Math.abs(crossproduct) > 0.000000000000000111)  return false; // it is not greater than epsilon for double precesion.		
-	
-	// check that the dot product is positive
-	var dotproduct = (queryPoint.y - startPoint.y) * (endPoint.x - startPoint.x) + (queryPoint.x - startPoint.x) * (endPoint.y - startPoint.y);
-	if( dotproduct < 0)  return false;
-
-	// check that the dot product is less than the squared distance between start to finish
-	var squareLen = ( endPoint.x - startPoint.x) * 	( endPoint.x - startPoint.x) + ( endPoint.y - startPoint.y) *( endPoint.y - startPoint.y) 
-	if( dotproduct > squareLen )  return false;
-
-	return true;
-};
-
-FieldNodeMorph.prototype.lineWasClicked2 = function( x_click, y_click, nextNode) {
-	
-	var m, 
-		b, 
-		test;
-	m = ( this.y - nextNode.y )/ ( this.x - nextNode.x );
-	b = ( m * this.x ) + this.y;
-	test = m*x_click + b;
-
-	if( Math.abs(test - y_click) > 0.0000000000000001) return false;
-
-	return true;
-
-	
-};
-
-FieldNodeMorph.prototype.lineWasClicked3 = function( x_click, y_click, nextNode) {
-	
-	var horizontal = false;
-	
-	if( Math.abs(this.x - nextNode.x) > Math.abs(this.y - nextNode.y) ) 
-	{
-		horizontal = true;
-	}
-	if( horizontal)
-	{
-		for( i = -15; i < 16; i++)
-		{
-			if(this.lineWasClicked1( x_click, y_click, new Point( this.x, this.y + i ), new Point( nextNode.x, nextNode.y + i )) )
-			{
-				return true;
-			}
-		
-		}
-	}
-	else
-	{
-		for( i = -5; i < 6; i++)
-		{
-			if(this.lineWasClicked1( x_click, y_click, new Point( this.x + i, this.y ), new Point( nextNode.x + i, nextNode.y )) )
-			{
-				return true;
-			}
-		
-		}
-	}
-	return false;
-	
-};
 
 FieldNodeMorph.prototype.lineWasClicked = function( x_click, y_click, nextNode) {
 	
 	var myself = this;
+	var startPoint = new Point( this.x, this.y);
+	var endPoint = new Point( nextNode.x, nextNode.y);
+	var clickPoint = new Point( x_click, y_click);
 	
-	var clickArray = [];
-	var dx, dy, test;
-	var count = 0;
-	
-	for( var i = (x_click - this.outerRadius); i < (x_click + this.outerRadius); i++)
-	{
-		for( j = (y_click - this.outerRadius); j < (y_click + this.outerRadius); j++)
-		{
-			//dx = Math.abs( i - x_click);
-			//dy = Math.abs( j - y_click);
-			//test = Math.sqrt( dx * dx + dy * dy );
-			//if( test <= this.innerRadius )
-			//{
-				clickArray[count] = new Point( i, j );
-				count++;
-			//}
-		}
-	}
 	var result = false;
-	clickArray.forEach( function(pt) {
+	
+	
+	Magnitude = function( Point ) {
+		var mag = Math.sqrt(Point.x * Point.x + Point.y * Point.y);
+		return mag;
+	};
+	
+	DotProd = function( point1, point2 ) {
+		var dot = (point1.x * point2.x) + (point1.y * point2.y);
+		return dot;
+	};
+	
+	Angle = function( point1, point2 ) {
 		
+		return Math.acos( DotProd(point1,point2) / ( Magnitude(point1) * Magnitude(point2) ) );
 		
-		if( myself.lineWasClicked2( pt.x, pt.y,  nextNode) )
+	};
+		
+	ProjDistance = function( sPoint, ePoint, cPoint ){
+		
+		return Math.abs(   (sPoint.y - ePoint.y)*cPoint.x 
+		                 - (sPoint.x - ePoint.x)*cPoint.y
+                         + (sPoint.x * ePoint.y)
+                         - (sPoint.y * ePoint.x) ) /
+						 Math.sqrt( (sPoint.x - ePoint.x)*(sPoint.x - ePoint.x) 
+						          + (sPoint.y - ePoint.y)*(sPoint.y - ePoint.y) );
+	};
+	
+	if( ProjDistance( startPoint, endPoint, clickPoint ) < 5 )
+	{
+		if( Angle( startPoint, clickPoint) < Math.PI/2 &&  Angle( endPoint, clickPoint) < Math.PI/2 )
 		{
-			result = true;
-		}
-		
-		
-		/*
-		myself.linePoints.forEach( function(lpt) {
-			
-			if( lpt.x === pt.x && lpt.y == pt.y)
+			if( Magnitude( new Point( startPoint.x - clickPoint.x, startPoint.y - clickPoint.y)) < Magnitude( new Point( startPoint.x - endPoint.x, startPoint.y, endPoint.y ) ) ) 
 			{
 				result = true;
 			}
-			
-		});
-		*/
-	});
+		}
+	}
+	
 	
 	return result;
 	
@@ -199,9 +113,9 @@ FieldNodeMorph.prototype.drawNew = function() {
 };
 
 
-FieldMorph.prototype = new Morph();
-FieldMorph.prototype.constructor = Morph;
-FieldMorph.uber = Morph.prototype;
+FieldMorph.prototype = new StageMorph();
+FieldMorph.prototype.constructor = StageMorph;
+FieldMorph.uber = StageMorph.prototype;
 
 // FieldMorph instance creation
 
@@ -232,15 +146,24 @@ FieldMorph.prototype.init = function (globals) {
 FieldMorph.prototype.drawNew = function (context) {
 	
 	// need context.
+	var myself = this,
+		nextNode;
 	
 	FieldMorph.uber.drawNew.call(this);
 	
 	var context = this.image.getContext('2d');
 	context.lineWidth = 2;
-
-	this.boundary[0].drawNode( context );
 	
-	context.lineTo( this.boundary[0].x, this.boundary[0].y );
+	
+	this.boundary.forEach( function(node, i, nodes){
+	
+		nextNode = (i === nodes.length - 1) ? nodes[0] : nodes[i+1]
+		
+		node.drawNode( context );
+	
+		context.lineTo( nextNode.x, nextNode.y );
+	
+	});
 	
 	context.stroke(); // just line
 	
@@ -249,8 +172,22 @@ FieldMorph.prototype.drawNew = function (context) {
 
 FieldMorph.prototype.fixLayout = function() {
 
-//this.drawNew()
 }
+
+FieldMorph.prototype.refresh = function() {
+	var myself = this;
+	myself.hide();
+	myself.drawNew();
+	myself.show();
+};
+
+FieldMorph.prototype.fieldWasClicked = function() {
+	
+	
+	
+	
+	
+};
 
 FieldMorph.prototype.mouseDownLeft = function(pos) {
 	
@@ -260,35 +197,37 @@ FieldMorph.prototype.mouseDownLeft = function(pos) {
 	var exit = false;
 	switch( this.state)
 	{
-		case "idle":			
-			this.boundary.forEach( function( node ) {
-			
-				if( node.nodeWasClicked( x_click, y_click ) ) 
+		case "idle":		
+			for( var i = 0; i < myself.boundary.length; i++)
+			{
+				if( myself.boundary[i].nodeWasClicked( x_click, y_click ) )
 				{
-					myself.selectedNode = node;
+					myself.selectedNode = myself.boundary[i];
 					myself.state = "dragging";
-					console.log("dragging click");
 					exit = true;
+					break;
 				}
-			});
+			}
 			if( !exit)
 			{
-				this.boundary.forEach( function ( node ) {
-					if( node.lineWasClicked( x_click, y_click, (node.next) ? node.next : myself.boundary[0] ) )
-					{
-							console.log( "found true");
-							// create new node
-							myself.selectedNode = node;
-							myself.addNode( x_click , y_click, (node.next) ? node.next : myself.boundary[0] )
-							myself.slectedNode = node.next;
-							myself.state = "dragging"
-							myself.refresh();
-							exit = true;
+			
+				myself.boundary.forEach( function(node, i, nodes) {
+					var newNode,
+						nextNode = (i === nodes.length - 1) ? nodes[0] : nodes[i+1];
+					
+					if(!exit && node.lineWasClicked(x_click, y_click, nextNode)) {
+						newNode = new FieldNodeMorph( new Point( x_click, y_click), nextNode);
+						myself.boundary.splice( i + 1, 0, newNode);
+						myself.selectedNode = newNode;
+						myself.state = "dragging";
+						exit = true;
 					}
 				});
+				
+				
 			}
 			/* 
-			if( FieldWasClicked(  pos.x - myself.bounds.origin.x, pos.y - myself.bounds.origin.y ) )
+			if( FieldWasClicked(  x_click, y_click ) )
 			{
 				
 			}
@@ -303,30 +242,11 @@ FieldMorph.prototype.mouseDownLeft = function(pos) {
 	}
 };
 
-FieldMorph.prototype.refresh = function() {
-	var myself = this;
-	myself.hide();
-	myself.drawNew();
-	myself.show();
-};
-
-FieldMorph.prototype.addNode = function( x, y , next) {
-	
-	var myself = this;
-	
-	var newNode = new FieldNodeMorph( new Point( x,y), next);
-	myself.selectedNode.next = newNode;
-	myself.boundary.splice( myself.boundary.indexOf( myself.selectedNode ) + 1 , 0 , newNode);
-	
-	
-};
-
 FieldMorph.prototype.mouseMove = function(pos) {
 	
 	var myself = this;
 	var x = (pos.x - myself.bounds.origin.x);
 	var y = (pos.y - myself.bounds.origin.y);
-	console.log(" mouse move x="+ x  + " y="+y );
 	
 	switch( this.state )
 	{
@@ -338,7 +258,6 @@ FieldMorph.prototype.mouseMove = function(pos) {
 			// dragging a node around
 			myself.selectedNode.x = pos.x - myself.bounds.origin.x;
 			myself.selectedNode.y = pos.y - myself.bounds.origin.y;
-			console.log("dragging move x =" + myself.selectedNode.x + " y=" + myself.selectedNode.y);
 			myself.refresh();
 		break;
 		
@@ -352,10 +271,8 @@ FieldMorph.prototype.mouseMove = function(pos) {
 
 }
 
-
 FieldMorph.prototype.mouseClickLeft = function( pos ) {
 	
-	console.log( " mouseClickLeft x=" + pos.x + " y=" + pos.y);
 	switch( this.state )
 	{
 		case "idle":
