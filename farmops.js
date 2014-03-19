@@ -119,7 +119,7 @@ FarmOpsSystemMorph.prototype.createSpritePanel = function() {
 	
 	// add top bar
 	this.spritePanel.controlBar = new ControlBarMorph();
-	this.spritePanel.controlBar.color = new Color( 255, 0,0);
+	this.spritePanel.controlBar.color = new Color( 255, 0, 0);
 	this.spritePanel.add( this.spritePanel.controlBar );
 	
 	
@@ -148,7 +148,7 @@ FarmOpsSystemMorph.prototype.createSpritePanel = function() {
 		myself.spritePanel.categoryMenu.setPosition( myself.spritePanel.controlBar.bottomLeft() );		
 		
 		myself.spritePanel.corral.setWidth( myself.spritePanel.width() );
-		myself.spritePanel.corral.setHeight( myself.spritePanel.height() - myself.spritePanel.categoryMenu.height() - myself.spritePanel.controlBar.height() );
+		myself.spritePanel.corral.setHeight( myself.spritePanel.height() - (myself.spritePanel.categoryMenu.height() + myself.spritePanel.controlBar.height() + 11*padding) );
 		myself.spritePanel.corral.setPosition( new Point( myself.spritePanel.categoryMenu.left(), myself.spritePanel.categoryMenu.bottom() + padding ) );	
 	}
 	
@@ -174,39 +174,50 @@ FarmOpsSystemMorph.prototype.createFieldPanel = function() {
 	this.fieldPanel.titleBar = new ControlBarMorph();
 	this.fieldPanel.titleBar.color = new Color(255, 255, 255)
 	this.fieldPanel.titleBar.border = 1;
+	
+	this.fieldPanel.titleBar.clear = new ToggleButtonMorph( 
+															null, // colors
+															this, // target 
+															function () { myself.reset(); }, //action
+															" Test Clear "
+														   );
+	this.fieldPanel.titleBar.add( this.fieldPanel.titleBar.clear );
+		
+	
 	this.fieldPanel.add( this.fieldPanel.titleBar );
 	
 	
 	// add stage morph
-	this.fieldPanel.stage = new StageMorph( this.globalVariables);
-	this.fieldPanel.stage.color = new Color( 255, 255, 255 );
+	this.fieldPanel.stage = new FieldMorph( this.globalVariables);
+	this.fieldPanel.stage.color = new Color( 50, 255, 100 );
 	this.fieldPanel.add( this.fieldPanel.stage );
-	
-	
-	this.testField = new FieldMorph();
-	this.fieldPanel.add( this.testField );
-	
+
 	this.fieldPanel.fixLayout = function() {
 	
 		myself.fieldPanel.titleBar.setWidth( myself.fieldPanel.width() );
 		myself.fieldPanel.titleBar.setHeight( 80 );
 		myself.fieldPanel.titleBar.setPosition( myself.fieldPanel.topLeft() );
 		
+		myself.fieldPanel.titleBar.clear.setPosition( myself.fieldPanel.titleBar.topLeft() );
+		
 		myself.fieldPanel.stage.setWidth( myself.fieldPanel.width() );
 		myself.fieldPanel.stage.setHeight( myself.fieldPanel.height() - myself.fieldPanel.titleBar.height() );
 		myself.fieldPanel.stage.setPosition( myself.fieldPanel.titleBar.bottomLeft() );
-		
-		myself.testField.setWidth( myself.fieldPanel.stage.width() );
-		myself.testField.setHeight( myself.fieldPanel.stage.height() );
-		myself.testField.setPosition( myself.fieldPanel.stage.topLeft() );
-		myself.testField.drawNew();
-
+		myself.fieldPanel.stage.fixLayout();
 	};
 	
 	this.add( this.fieldPanel );
 	
 };
 
+
+FarmOpsSystemMorph.prototype.reset = function() {
+	
+	var myself = this;
+	
+	myself.fieldPanel.stage.reset();
+	
+};
 
 FarmOpsSystemMorph.prototype.fixLayout = function() {
 
