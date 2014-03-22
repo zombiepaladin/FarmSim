@@ -95,8 +95,8 @@ FieldNodeMorph.prototype.init = function (point, globals) {
 
 FieldNodeMorph.prototype.drawNode = function( context ) {
 	
-
-	context.fillstyle = new Color( 0,0,0);
+	
+	context.lineWidth = 2;
 	context.moveTo( this.x + this.innerRadius, this.y );
 	context.arc( this.x, this.y, this.innerRadius, 0, Math.PI*2, true);
 	context.moveTo( this.x + this.outerRadius, this.y );
@@ -226,7 +226,7 @@ FieldMorph.prototype.drawNew = function (context) {
 	FieldMorph.uber.drawNew.call(this);
 	
 	var context = this.image.getContext('2d');
-	context.lineWidth = 2;
+	context.lineWidth = 4;
 	
 	
 	this.boundary.forEach( function(node, i, nodes){
@@ -239,6 +239,11 @@ FieldMorph.prototype.drawNew = function (context) {
 	
 	});
 	
+	context.moveTo(0,0);
+	context.lineTo( this.width(), 0);
+	context.lineTo( this.width(), this.height() );
+	context.lineTo( 0, this.height() );
+	context.lineTo( 0,0);
 	context.stroke(); // just line	
 	
 };
@@ -401,6 +406,90 @@ FieldMorph.prototype.mouseClickLeft = function( pos ) {
 	
 };
 
+FieldMorph.prototype.RclickX = 07;
+FieldMorph.prototype.RclickY = 7;
+
+FieldMorph.prototype.mouseClickRight = function(pos) {
+	
+	// recorde where the right click was clicked.
+	this.RclickX = pos.x - this.bounds.origin.x;
+	this.RclickY = pos.y - this.bounds.origin.y;
+
+};
+
+FieldMorph.prototype.insertNode = function() {
+	
+	var myself = this;
+	var exit = false;
+	
+	this.boundary.forEach( function(node, i , nodes) {
+		var newNode,
+			nextNode = (i === nodes.length - 1) ? nodes[0] : nodes[i+1];
+
+		if(!exit && node.lineWasClicked(myself.RclickX, myself.RclickY, nextNode)) {
+			// create the new node
+			newNode = new FieldNodeMorph( new Point( myself.RclickX, myself.RclickY), nextNode);
+			
+			// insert new node
+			myself.boundary.splice( i + 1, 0, newNode);
+			myself.selectedNode = newNode;
+			
+			// update state
+			exit = true;
+			myself.refresh();
+		}
+	});
+};
+
+FieldMorph.prototype.removeNode = function() {
+	
+	var myself = this;
+	var exit = false;
+	
+	this.boundary.forEach( function(node, i , nodes) {
+		
+		if(  !exit && node.nodeWasClicked( myself.RclickX, myself.RclickY ) )
+		{
+			myself.boundary.splice( i,1);
+			// myself.boundary.remove
+			// something like these
+			myself.refresh();
+			exit = true;
+		}
+	});
+	
+	
+};
+
+
+FieldMorph.prototype.userMenu = function( pos ) {
+	
+	var myself = this,
+		menu = new MenuMorph(this);
+		
+		menu.addItem("Insert Node",
+		function() {
+			myself.insertNode();
+		},
+		"Adds a new node");
+		
+		
+		menu.addItem("Remove Node", 
+		function() {
+			myself.removeNode();
+		},
+		"Removes the node");
+		
+		
+		menu.addItem("Reset",
+		function() { 
+			myself.reset(); 
+		},
+		' reset the screen to the\n original position' 
+		);		
+		
+	return menu;
+};
 
 /*
 
