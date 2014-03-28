@@ -1,84 +1,34 @@
-/*
-    fields.js
-	
-    a sumulation programming environment
-    based on morphic.js, blocks.js, threads.js and objects.js
-    inspired by Scratch and Snap!
-	
-	written by Byron Wheeler
-	bwheel@ksu.edu
-	
-    Copyright (C) 2014 by Nathan Bean
-
-    This file is part of FarmSim, built upon the Snap! libraries.
-
-    FarmSim and Snap! are free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-    prerequisites:
-    --------------
-    needs blocks.js, threads.js, objects.js and morphic.js
-
-
-    toc
-    ---
-    the following list shows the order in which all constructors are
-    defined. Use this list to locate code in this document:
-
-		FieldMorph
-		FieldNodeMorph
-
-
-    credits
-    -------
-	Jens Mönig contributed the bulk of the Snap! framework.
-    Nathan Dinsmore contributed saving and loading of projects,
-    ypr-Snap! project conversion and countless bugfixes
-    Ian Reynolds contributed handling and visualization of sounds
-
-*/
 
 // Global stuff ////////////////////////////////////////////////////////
 
 modules.crops = '2014-March-18';
 
 // Declarations////////////////////////////////////////////////////////
-var FieldMorph;
-var FieldNodeMorph;
+var FieldMorph2;
+var FieldNodeMorph2;
 
-// FieldNodeMorph /////////////////////////////////////////////////////////
+// FieldNodeMorph2 /////////////////////////////////////////////////////////
 
 // I am FarmSim's field corner
 
-// FieldNodeMorph inherits from Morph:
+// FieldNodeMorph2 inherits from Morph:
 
-FieldNodeMorph.prototype = new BoxMorph();
-FieldNodeMorph.prototype.constructor = FieldNodeMorph;
-FieldNodeMorph.uber =  BoxMorph.prototype;
+FieldNodeMorph2.prototype = new BoxMorph();
+FieldNodeMorph2.prototype.constructor = FieldNodeMorph2;
+FieldNodeMorph2.uber =  BoxMorph.prototype;
 
 // FieldNodeMorph global variables
-FieldNodeMorph.prototype.diameter = 16;
+FieldNodeMorph2.prototype.diameter = 16;
 
-function FieldNodeMorph( pos, field, globals) {
+function FieldNodeMorph2( pos, field, globals) {
 	this.init( pos, field, globals);
 };
 
-FieldNodeMorph.prototype.init = function ( pos, f, globals) {
+FieldNodeMorph2.prototype.init = function ( pos, f, globals) {
 	
 	this.field = f;
 	
-	FieldNodeMorph.uber.init.call(this);
+	FieldNodeMorph2.uber.init.call(this);
 	
 	// parameters
 	this.edge = this.diameter/2;
@@ -93,7 +43,7 @@ FieldNodeMorph.prototype.init = function ( pos, f, globals) {
 	
 };
 
-FieldNodeMorph.prototype.mouseDownLeft = function( pos ) {
+FieldNodeMorph2.prototype.mouseDownLeft = function( pos ) {
 
 	// start state machine for this node
 	switch(this.field.fieldState )
@@ -111,7 +61,7 @@ FieldNodeMorph.prototype.mouseDownLeft = function( pos ) {
 	
 };
 
-FieldNodeMorph.prototype.mouseMove = function(pos) {
+FieldNodeMorph2.prototype.mouseMove = function(pos) {
 	
 	// implement state machine dragging and moving here
 	switch( this.field.fieldState )
@@ -132,7 +82,7 @@ FieldNodeMorph.prototype.mouseMove = function(pos) {
 	
 };
 
-FieldNodeMorph.prototype.mouseClickLeft = function(pos) {
+FieldNodeMorph2.prototype.mouseClickLeft = function(pos) {
 	
 	switch( this.field.fieldState )
 	{
@@ -146,12 +96,12 @@ FieldNodeMorph.prototype.mouseClickLeft = function(pos) {
 
 };
 
-FieldNodeMorph.prototype.userMenu = function( pos ) {
+FieldNodeMorph2.prototype.userMenu = function( pos ) {
 	
 	var myself = this,
 		menu = new MenuMorph(this);
 		
-		menu.addItem("Delete Node", 
+		menu.addItem("Remove Node", 
 		function() {
 			myself.field.selectedNode = myself;
 			myself.field.removeNode();
@@ -161,37 +111,37 @@ FieldNodeMorph.prototype.userMenu = function( pos ) {
 	return menu;
 };
 
-// FieldMorph /////////////////////////////////////////////////////////
+// FieldMorph2 /////////////////////////////////////////////////////////
 
-// I am FarmSim's field corner
+// I am FarmSim's field morph
+// I allow the user to edit, define, and create the field sprites
 
-// FieldMorph inherits from StageMorph:
+// FieldMorph2 inherits from StageMorph:
 
-FieldMorph.prototype = new BoxMorph();
-FieldMorph.prototype.constructor = FieldMorph;
-FieldMorph.uber = BoxMorph.prototype;
+FieldMorph2.prototype = new BoxMorph();
+FieldMorph2.prototype.constructor = FieldMorph2;
+FieldMorph2.uber = BoxMorph.prototype;
 
-// FieldMorph global variables
+// FieldMorph2 global variables
 
-
-function FieldMorph(globals) {
+function FieldMorph2(globals) {
     this.init(globals);
 };
 
-FieldMorph.prototype.init = function ( globals) {
+FieldMorph2.prototype.init = function ( globals) {
 		
 	var myself = this;
 	
-	FieldMorph.uber.init.call(this);
+	FieldMorph2.uber.init.call(this);
 	
 	this.fieldState = "idle";
 	this.selectedNode = null;
 	this.lastClickPos = new Point( 0,0);
 		
-	this.startx = 50;
-	this.starty = 50;
-	this.h = 100;
-	this.w = 100;
+	this.startx = 25;
+	this.starty = 25;
+	this.h = 50;
+	this.w  = 50;
 	this.reset();
 	
 	this.edge = 0;
@@ -200,7 +150,9 @@ FieldMorph.prototype.init = function ( globals) {
 
 };
 
-FieldMorph.prototype.lineWasClicked = function( startPoint, endPoint, clickPoint ) {
+// check if field line was clicked
+// returns true if it was clicked
+FieldMorph2.prototype.lineWasClicked = function( startPoint, endPoint, clickPoint ) {
 
 	var result = false;
 	
@@ -245,7 +197,8 @@ FieldMorph.prototype.lineWasClicked = function( startPoint, endPoint, clickPoint
 	return result;
 };
 
-FieldMorph.prototype.fieldWasClicked = function(clickPoint) {
+// check if inside the field was clicked and not the outside.
+FieldMorph2.prototype.fieldWasClicked = function(clickPoint) {
 	
 	var myself = this,
 		result = false,
@@ -269,7 +222,8 @@ FieldMorph.prototype.fieldWasClicked = function(clickPoint) {
 		return result;	
 };
 
-FieldMorph.prototype.mouseDownLeft = function( pos ) {
+
+FieldMorph2.prototype.mouseDownLeft = function( pos ) {
 	
 	var myself = this,
 		exit = false;
@@ -286,7 +240,7 @@ FieldMorph.prototype.mouseDownLeft = function( pos ) {
 				if( !exit && myself.lineWasClicked( node.position(), nextNode.position(), pos) )
 				{
 				
-					newNode = new FieldNodeMorph( pos.add( new Point(-node.diameter/2, -node.diameter/2) ), myself );
+					newNode = new FieldNodeMorph2( pos.add( new Point(-node.diameter/2, -node.diameter/2) ), myself );
 					
 					myself.boundary.splice( i + 1, 0, newNode);
 					myself.selectedNode = newNode;
@@ -318,7 +272,7 @@ FieldMorph.prototype.mouseDownLeft = function( pos ) {
 	}
 };
 
-FieldMorph.prototype.mouseMove = function(pos) {
+FieldMorph2.prototype.mouseMove = function(pos) {
 	
 	switch( this.fieldState )
 	{
@@ -350,7 +304,7 @@ FieldMorph.prototype.mouseMove = function(pos) {
 	}
 }
 
-FieldMorph.prototype.mouseClickLeft = function(pos) {
+FieldMorph2.prototype.mouseClickLeft = function(pos) {
 	
 	switch( this.fieldState )
 	{	
@@ -363,12 +317,11 @@ FieldMorph.prototype.mouseClickLeft = function(pos) {
 	}	
 };
 
-FieldMorph.prototype.reset = function() {
+// This function resets the field back to the original position
+FieldMorph2.prototype.reset = function() {
 	
 	var myself = this;
-	
-	var offsetx = myself.position().x;
-	var offsety = myself.position().y;
+
 	if( myself.boundary)
 	{
 		myself.boundary.forEach( function( node, i, nodes ) {
@@ -380,10 +333,10 @@ FieldMorph.prototype.reset = function() {
 		});
 	}
 	
-	var n1 = new FieldNodeMorph(  new Point( this.startx + offsetx,          this.starty + offsety          ), this );
-	var n2 = new FieldNodeMorph(  new Point( this.startx + offsetx + this.w, this.starty + offsety          ), this );
-	var n3 = new FieldNodeMorph(  new Point( this.startx + offsetx + this.w, this.starty + offsety + this.h ), this );
-	var n4 = new FieldNodeMorph(  new Point( this.startx + offsetx,          this.starty + offsety + this.h ), this );
+	var n1 = new FieldNodeMorph2(  new Point( this.startx,          this.starty          ), this );
+	var n2 = new FieldNodeMorph2(  new Point( this.startx + this.w, this.starty          ), this );
+	var n3 = new FieldNodeMorph2(  new Point( this.startx + this.w, this.starty + this.h ), this );
+	var n4 = new FieldNodeMorph2(  new Point( this.startx,          this.starty + this.h ), this );
 	
 	this.boundary = [ n1, n2, n3, n4 ];
 	
@@ -396,14 +349,16 @@ FieldMorph.prototype.reset = function() {
 
 };
 
-FieldMorph.prototype.refresh = function() {
+// this function re-draws the field.
+FieldMorph2.prototype.refresh = function() {
 	var myself = this;
 	myself.hide();
 	myself.drawNew();
 	myself.show();
 };
 
-FieldMorph.prototype.removeNode = function() {
+// this function removes the node the mouse it currently over.
+FieldMorph2.prototype.removeNode = function() {
 	
 	var myself = this;
 	if( myself.boundary.length > 3 )
@@ -419,7 +374,8 @@ FieldMorph.prototype.removeNode = function() {
 	
 };
 
-FieldMorph.prototype.insertNode = function(mousePos) {
+// this function inserts a new node at the position the mouse is at
+FieldMorph2.prototype.insertNode = function(mousePos) {
 	
 	var myself = this;
 	var exit = false;
@@ -431,7 +387,7 @@ FieldMorph.prototype.insertNode = function(mousePos) {
 		if(!exit && myself.lineWasClicked( node.position(), nextNode.position(), mousePos )) {
 			
 			// create the new node
-			newNode = new FieldNodeMorph( mousePos, myself);
+			newNode = new FieldNodeMorph2( mousePos, myself);
 			
 			// insert new node
 			myself.boundary.splice( i + 1, 0, newNode);
@@ -445,7 +401,7 @@ FieldMorph.prototype.insertNode = function(mousePos) {
 	});
 };
 
-FieldMorph.prototype.userMenu = function( ) {
+FieldMorph2.prototype.userMenu = function( ) {
 	
 	var myself = this,
 		menu = new MenuMorph(this);
@@ -480,48 +436,44 @@ FieldMorph.prototype.userMenu = function( ) {
 	return menu;
 };
 
-FieldMorph.prototype.drawNew = function ( ) {
+FieldMorph2.prototype.drawNew = function ( ) {
 	
 	var myself = this;
 		
 		
-	FieldMorph.uber.drawNew.call(this);
+	FieldMorph2.uber.drawNew.call(this);
 		
 	if( this.boundary )
 	{
 		var context = this.image.getContext('2d');
-		var offsetx = this.boundary[0].diameter/2 - myself.position().x;
-		var offsety = this.boundary[0].diameter/2 - myself.position().y;
+		var offset = this.boundary[0].diameter/2;
 		
+		// draw two lines over top of each other to give black boarder
+		
+		// draw thicker black line
 		context.lineWidth = 6;
 		context.beginPath();
-		
-		context.moveTo( this.boundary[0].left() + offsetx , this.boundary[0].top() + offsety);
-		
+		var start = new Point( this.boundary[0].left() + offset, this.boundary[0].top() + offset);
+		context.moveTo(start.x, start.y);
 		this.boundary.forEach( function(node, i, nodes){
 		
 			nextNode = (i === nodes.length - 1) ? nodes[0] : nodes[i+1]
-		
-			context.lineTo( nextNode.left() + offsetx, nextNode.top() + offsety);
+			context.lineTo( nextNode.left() + offset, nextNode.top() + offset);
 		
 		});
-		
 		context.strokeStyle  =  new Color( 0, 0, 0 ).toString();
 		context.stroke()
 		
-		
+		// draw thiner brown line.
 		context.lineWidth = 4;
 		context.beginPath();
-		context.moveTo( this.boundary[0].left() + offsetx, this.boundary[0].top() + offsety);
-		
+		context.moveTo( this.boundary[0].left() + offset, this.boundary[0].top() + offset);
 		this.boundary.forEach( function(node, i, nodes){
 		
 			nextNode = (i === nodes.length - 1) ? nodes[0] : nodes[i+1]
-		
-			context.lineTo( nextNode.left() + offsetx, nextNode.top() + offsety);
+			context.lineTo( nextNode.left() + offset, nextNode.top() + offset);
 		
 		});
-		
 		context.strokeStyle  =  new Color( 138, 69, 19 ).toString();
 		context.stroke()
 		

@@ -97,7 +97,7 @@ FarmOpsControlMorph.prototype.init = function (universalVariables, fieldIn) {
 	this.color = new Color(255,255,255);
 	this.boarder = 1;
 	
-	this.createClearButton();
+	//this.createClearButton();
 
 	this.createTimerControl();
 	
@@ -143,7 +143,7 @@ FarmOpsControlMorph.prototype.fixLayout = function() {
 	var padding = 10;
 	var myself = this;
 	
-	this.clearButton.setPosition(new Point( myself.right() - myself.clearButton.width() - padding, myself.top() + padding) );
+	//this.clearButton.setPosition(new Point( myself.right() - myself.clearButton.width() - padding, myself.top() + padding) );
 	
 	this.timerControl.setHeight( myself.height() );
 	this.timerControl.setPosition( myself.topLeft() );
@@ -209,12 +209,6 @@ FarmOpsSystemMorph.prototype.createSpritePanel = function() {
 	this.spritePanel.controlBar.color = new Color( 255, 0, 0);
 	this.spritePanel.add( this.spritePanel.controlBar );
 	
-	
-	// add menu with buttons
-	this.spritePanel.categoryMenu = new Morph();
-	this.spritePanel.categoryMenu.color = new Color( 255, 255, 255 );	
-	this.spritePanel.add( this.spritePanel.categoryMenu );
-	
 	// add sprite corral
 	this.spritePanel.corral = new SpriteCorralMorph();
 	this.spritePanel.corral.color = new Color( 255, 255, 255 );
@@ -230,13 +224,9 @@ FarmOpsSystemMorph.prototype.createSpritePanel = function() {
 		myself.spritePanel.controlBar.setWidth( myself.spritePanel.width() );
 		myself.spritePanel.controlBar.setPosition( myself.spritePanel.topLeft() );
 		
-		myself.spritePanel.categoryMenu.setHeight( 120 )
-		myself.spritePanel.categoryMenu.setWidth( myself.spritePanel.width() );
-		myself.spritePanel.categoryMenu.setPosition( myself.spritePanel.controlBar.bottomLeft() );		
-		
 		myself.spritePanel.corral.setWidth( myself.spritePanel.width() );
-		myself.spritePanel.corral.setHeight( myself.spritePanel.height() - (myself.spritePanel.categoryMenu.height() + myself.spritePanel.controlBar.height() + 11*padding) );
-		myself.spritePanel.corral.setPosition( new Point( myself.spritePanel.categoryMenu.left(), myself.spritePanel.categoryMenu.bottom() + padding ) );	
+		myself.spritePanel.corral.setHeight( myself.spritePanel.height() +- myself.spritePanel.controlBar.height() );
+		myself.spritePanel.corral.setPosition( new Point( myself.spritePanel.controlBar.left(), myself.spritePanel.controlBar.bottom() ) );	
 	}
 	
 	
@@ -252,7 +242,18 @@ FarmOpsSystemMorph.prototype.createFieldPanel = function() {
 		this.fieldPanel.destroy();
 	}
 	
-	this.fieldPanel = new Morph();
+	this.fieldPanel = new TabPanelMorph( [ this.color, 
+	                                       new Color( 0,255, 255 ).darker(25), 
+	                                       new Color( 0,255, 255 ) ]);
+	
+	if( this.fieldPanel.descEditor)
+	{
+		this.fieldPanel.descEditor.destroy();
+	}
+	
+	this.fieldPanel.descEditor = new DescriptionEditorMorph(null, this.corral);
+	this.fieldPanel.descEditor.setColor( new Color( 0, 128, 255) );
+	this.fieldPanel.addTab('description', this.fieldPanel.descEditor);
 	
 	// add stage morph
 	if( this.fieldPanel.stage )
@@ -260,51 +261,53 @@ FarmOpsSystemMorph.prototype.createFieldPanel = function() {
 		this.fieldPanel.stage.destroy();
 	}
 	
-	this.fieldPanel.stage = new FieldMorph( this.globalVariables);
-	this.fieldPanel.stage.color = new Color( 50, 255, 100 );
-	this.fieldPanel.add( this.fieldPanel.stage );
-
-	// add title bar
-	if( this.fieldPanel.titleBar)
-	{
-		this.fieldPanel.titleBar.destroy();
-	}
-	this.fieldPanel.titleBar = new FarmOpsControlMorph(this.universalVariables, this.fieldPanel.stage );
-	this.fieldPanel.add( this.fieldPanel.titleBar );
+	this.fieldPanel.stage = new Morph();
 	
-	// fixlayout
-	this.fieldPanel.fixLayout = function() {
+	this.fieldPanel.stage.toolBar = new ToolBarMorph();
+	this.fieldPanel.stage.toolBar.color = new Color( 255, 255, 255 );
+	this.fieldPanel.stage.add( this.fieldPanel.stage.toolBar );
 	
-		myself.fieldPanel.titleBar.setWidth( myself.fieldPanel.width() );
-		myself.fieldPanel.titleBar.setHeight( 80 );
-		myself.fieldPanel.titleBar.setPosition( myself.fieldPanel.topLeft() );
-		myself.fieldPanel.titleBar.fixLayout();
+	this.fieldPanel.stage.field = new FieldMorph( this.globalVariables);
+	this.fieldPanel.stage.add( this.fieldPanel.stage.field );
+	
+	this.fieldPanel.stage.fixLayout = function() {
+		myself.fieldPanel.stage.toolBar.setHeight( 50 );
+		myself.fieldPanel.stage.toolBar.setWidth( myself.fieldPanel.stage.width() );
+		myself.fieldPanel.stage.toolBar.setPosition( myself.fieldPanel.stage.position() );
+		myself.fieldPanel.stage.toolBar.fixLayout();
 		
-		myself.fieldPanel.stage.setWidth( myself.fieldPanel.width() );
-		myself.fieldPanel.stage.setHeight( myself.fieldPanel.height() - myself.fieldPanel.titleBar.height() );
-		myself.fieldPanel.stage.setPosition( myself.fieldPanel.titleBar.bottomLeft() );
-		myself.fieldPanel.stage.fixLayout();
+		myself.fieldPanel.stage.field.setHeight( myself.fieldPanel.stage.height() - myself.fieldPanel.stage.toolBar.height() );
+		myself.fieldPanel.stage.field.setWidth( myself.fieldPanel.stage.width() );
+		myself.fieldPanel.stage.field.setPosition( myself.fieldPanel.stage.toolBar.bottomLeft() );
+
 	};
+	
+	this.fieldPanel.stage.field.color = new Color( 50, 255, 100 );
+	this.fieldPanel.addTab('Field', this.fieldPanel.stage);
+	
+
+	
 	
 	this.add( this.fieldPanel );
 	
 };
-
-
 
 FarmOpsSystemMorph.prototype.fixLayout = function() {
 
 	var padding = 10;
 
 	this.spritePanel.setWidth(200);
-	this.spritePanel.setHeight( this.height() );
+	this.spritePanel.setHeight( this.height() - 2*padding);
 	this.spritePanel.setPosition( new Point(this.left() + padding, this.top() + padding) );
 	this.spritePanel.fixLayout();
 	
-	this.fieldPanel.setWidth( this.width() - this.spritePanel.width() - 3*padding);
-	this.fieldPanel.setHeight( this.height() - 2*padding);
+	this.fieldPanel.setWidth( this.width() - this.spritePanel.width() - 3*padding );
+	this.fieldPanel.setHeight(  this.height() - 2*padding );
 	this.fieldPanel.setPosition( new Point( this.spritePanel.right() + padding, this.spritePanel.top() ) );	
+	
+	this.fieldPanel.stage.fixLayout();
 	this.fieldPanel.fixLayout();
+	
 
 };
 

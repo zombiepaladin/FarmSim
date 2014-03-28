@@ -20,8 +20,6 @@
 		<script type="text/javascript" src="widgets/control_bar_morph.js"></script>
 		<script type="text/javascript" src="widgets/tab_panel_morph.js"></script>
 		<script type="text/javascript" src="widgets/text_box_morph.js"></script>
-		<script type="text/javascript" src="widgets/tool_bar_morph.js"></script>
-		
 		
 		<!-- Snap -->
 		<script type="text/javascript" src="blocks.js"></script>
@@ -37,6 +35,10 @@
 		<script type="text/javascript" src="sim/sprites/disease_sprite_morph.js"></script>
 		<script type="text/javascript" src="sim/sprites/field_morph.js"></script>
 		
+		<!-- test -->
+		<script type="text/javascript" src="field_morph_test.js"></script>
+		
+		
 		<!-- Gui -->
 		<script type="text/javascript" src="gui.js"></script>
 		<script type="text/javascript" src="gui/script_editor_morph.js"></script>
@@ -50,7 +52,7 @@
 		<script type="text/javascript" src="gui/icons/pest_sprite_icon_morph.js"></script>
 		<script type="text/javascript" src="gui/icons/disease_sprite_icon_morph.js"></script>
 		<script type="text/javascript" src="gui/time_control_morph.js"></script>		
-		
+		<!--
 		<script type="text/javascript" src="system_models\soils.js"></script>
 		<script type="text/javascript" src="system_models\crops.js"></script>
 		<script type="text/javascript" src="system_models\weathers.js"></script>
@@ -58,7 +60,7 @@
 		<script type="text/javascript" src="system_models\diseases.js"></script>
 		<script type="text/javascript" src="farmops.js"></script>
 		<script type="text/javascript" src="simulator.js"></script>
-		
+		-->
 		
 		<script type="text/javascript" src="paint.js"></script>
 		<script type="text/javascript" src="byob.js"></script>
@@ -67,11 +69,39 @@
 		<script type="text/javascript" src="locale.js"></script>
 		<script type="text/javascript" src="cloud.js"></script>
 		<script type="text/javascript" src="sha512.js"></script>
+		
+		
 		<script type="text/javascript">
 			var world;
+			var field;
+			var sourceMorph;
+			var descEditor;
 			window.onload = function () {
 				world = new WorldMorph(document.getElementById('world'));
-				new SimulatorMorph().openIn(world);
+				
+				sourceMorph = new TabPanelMorph( [ new Color( 0,255, 255 ), new Color( 0,255, 255 ).darker(50), new Color( 0,255, 255 ).lighter(50) ]);
+				sourceMorph.setPosition( world.topLeft() );
+				sourceMorph.setWidth(  world.width() );
+				sourceMorph.setHeight( world.height() );
+				sourceMorph.setColor( new Color( 50, 128, 90 ) );
+				world.add( sourceMorph );
+				
+				descEditor = new DescriptionEditorMorph(null, this.corral);
+				descEditor.setColor( new Color( 0, 128, 255) );
+				sourceMorph.addTab('description', 	this.descEditor);
+
+				
+				
+				field = new FieldMorph();
+				field.setPosition( new Point( 75, 75 ) );
+				/*
+				field.setWidth( 800 );
+				field.setHeight( 480 );
+				*/
+				sourceMorph.addTab('Field', field);
+				
+				
+				
 				setInterval(loop, 1);
 			};
 			function loop() {

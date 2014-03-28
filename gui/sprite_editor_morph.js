@@ -243,7 +243,7 @@ SpriteEditorMorph.prototype.fixLayout = function () {
 	// corral
 	this.corral.setPosition(this.corralBar.bottomLeft());
 	this.corral.setWidth(this.corralBar.width());
-	this.corral.setHeight(this.height() - this.corralBar.position().y + 15);
+	this.corral.setHeight(this.height() - this.corralBar.position().y -5);
 	this.corral.fixLayout();
 	
 	// tabs
