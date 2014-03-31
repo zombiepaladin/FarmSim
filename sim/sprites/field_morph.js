@@ -167,9 +167,9 @@ FieldNodeMorph.prototype.userMenu = function( pos ) {
 
 // FieldMorph inherits from StageMorph:
 
-FieldMorph.prototype = new BoxMorph();
+FieldMorph.prototype = new SpriteMorph();
 FieldMorph.prototype.constructor = FieldMorph;
-FieldMorph.uber = BoxMorph.prototype;
+FieldMorph.uber = SpriteMorph.prototype;
 
 // FieldMorph global variables
 
@@ -187,17 +187,19 @@ FieldMorph.prototype.init = function ( globals) {
 	this.fieldState = "idle";
 	this.selectedNode = null;
 	this.lastClickPos = new Point( 0,0);
-		
+	
 	this.startx = 50;
 	this.starty = 50;
 	this.h = 100;
 	this.w = 100;
+	
 	this.reset();
 	
 	this.edge = 0;
     this.border = 2;
-	this.setColor( new Color(  102, 200, 10 ) );
-
+	this.color =  new Color(  102, 200, 10 );
+	
+	
 };
 
 FieldMorph.prototype.lineWasClicked = function( startPoint, endPoint, clickPoint ) {
@@ -483,17 +485,19 @@ FieldMorph.prototype.userMenu = function( ) {
 FieldMorph.prototype.drawNew = function ( ) {
 	
 	var myself = this;
+	
 		
-		
-	FieldMorph.uber.drawNew.call(this);
+	PenMorph.uber.drawNew.call(this);
 		
 	if( this.boundary )
 	{
+
 		var context = this.image.getContext('2d');
 		var offsetx = this.boundary[0].diameter/2 - myself.position().x;
 		var offsety = this.boundary[0].diameter/2 - myself.position().y;
 		
 		context.lineWidth = 6;
+		context.lineCap = "round";
 		context.beginPath();
 		
 		context.moveTo( this.boundary[0].left() + offsetx , this.boundary[0].top() + offsety);
@@ -529,3 +533,5 @@ FieldMorph.prototype.drawNew = function ( ) {
 	
 	
 };
+
+

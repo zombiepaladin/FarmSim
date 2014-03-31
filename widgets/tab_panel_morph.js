@@ -270,12 +270,3 @@ TabPanelMorph.prototype.outlineTabPanel = function() {
 	context.stroke();
 	
 };
-
-
-TabPanelMorph.prototype.show = function() {
-
-	TabPanelMorph.uber.show.call(this);
-	
-	this.reactToTabSelect(this.currentTab);
-	
-};
