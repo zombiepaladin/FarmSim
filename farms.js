@@ -1,5 +1,5 @@
 /*
-    farmops.js
+    Farms.js
 
     a sumulation programming environment
     based on morphic.js, blocks.js, threads.js and objects.js
@@ -36,7 +36,7 @@
     the following list shows the order in which all constructors are
     defined. Use this list to locate code in this document:
 
-		FarmOpsSystemMorph
+		FarmSystemMorph
 		CropIconMorph
 
 
@@ -69,28 +69,28 @@ modules.crops = '2014-March-03'
 
 // Declarations
 
-var FarmOpsControlMorph;
+var FarmsControlMorph;
 
-// FarmOpsControlMorph /////////////////////////////////////////////////////////
+// FarmsControlMorph /////////////////////////////////////////////////////////
 
 // I am FarmSim's Farm operation system control bar atop the editor plane
 
-// FarmOpsControlMorph inherits from Morph:
+// FarmsControlMorph inherits from Morph:
 
-FarmOpsControlMorph.prototype = new ControlBarMorph();
-FarmOpsControlMorph.prototype.constructor = FarmOpsControlMorph;
-FarmOpsControlMorph.uber = ControlBarMorph.prototype;
+FarmsControlMorph.prototype = new ControlBarMorph();
+FarmsControlMorph.prototype.constructor = FarmsControlMorph;
+FarmsControlMorph.uber = ControlBarMorph.prototype;
 
-// FarmOpsControlMorph initialization
+// FarmsControlMorph initialization
 
-function FarmOpsControlMorph(universalVariables, field) {
+function FarmsControlMorph(universalVariables, field) {
     this.init(universalVariables, field);
 }
 
-FarmOpsControlMorph.prototype.init = function (universalVariables, fieldIn) {
+FarmsControlMorph.prototype.init = function (universalVariables, fieldIn) {
 	
 	
-	FarmOpsControlMorph.uber.init.call(this, universalVariables);
+	FarmsControlMorph.uber.init.call(this, universalVariables);
 	
 	this.field = fieldIn;
 	
@@ -104,7 +104,7 @@ FarmOpsControlMorph.prototype.init = function (universalVariables, fieldIn) {
 	
 };
 
-FarmOpsControlMorph.prototype.createClearButton = function() {
+FarmsControlMorph.prototype.createClearButton = function() {
 	
 	var myself = this;
 	
@@ -123,7 +123,7 @@ FarmOpsControlMorph.prototype.createClearButton = function() {
 	this.add( this.clearButton );
 	
 };
-FarmOpsControlMorph.prototype.createTimerControl = function() {
+FarmsControlMorph.prototype.createTimerControl = function() {
 	
 	if( this.timerControl)
 	{
@@ -138,7 +138,7 @@ FarmOpsControlMorph.prototype.createTimerControl = function() {
 	
 };
 
-FarmOpsControlMorph.prototype.fixLayout = function() {
+FarmsControlMorph.prototype.fixLayout = function() {
 
 	var padding = 10;
 	var myself = this;
@@ -154,29 +154,29 @@ FarmOpsControlMorph.prototype.fixLayout = function() {
 
 // Declarations
 
-var FarmOpsSystemMorph;
+var FarmSystemMorph;
 
-// FarmOpsSystemMorph /////////////////////////////////////////////////////////
+// FarmSystemMorph /////////////////////////////////////////////////////////
 
 // I am FarmSim's Farm operation system editor panel
 
-// FarmOpsSystemMorph inherits from Morph:
+// FarmSystemMorph inherits from Morph:
 
-FarmOpsSystemMorph.prototype = new Morph();
-FarmOpsSystemMorph.prototype.constructor = FarmOpsSystemMorph;
-FarmOpsSystemMorph.uber = Morph.prototype;
+FarmSystemMorph.prototype = new Morph();
+FarmSystemMorph.prototype.constructor = FarmSystemMorph;
+FarmSystemMorph.uber = Morph.prototype;
 
-// FarmOpsSystemMorph initialization
+// FarmSystemMorph initialization
 
-function FarmOpsSystemMorph(universalVariables) {
+function FarmSystemMorph(universalVariables) {
     this.init(universalVariables);
 }
 
-FarmOpsSystemMorph.prototype.init = function (universalVariables) {
+FarmSystemMorph.prototype.init = function (universalVariables) {
 	
 	this.universalVariables = universalVariables;
 	
-	FarmOpsSystemMorph.uber.init.call(this, universalVariables);
+	FarmSystemMorph.uber.init.call(this, universalVariables);
 	
 	this.color = new Color(10,183,10);
 	
@@ -190,7 +190,7 @@ FarmOpsSystemMorph.prototype.init = function (universalVariables) {
 	
 };
 
-FarmOpsSystemMorph.prototype.createSpritePanel = function() {
+FarmSystemMorph.prototype.createSpritePanel = function() {
 	
 	var myself = this;
 	
@@ -234,7 +234,7 @@ FarmOpsSystemMorph.prototype.createSpritePanel = function() {
 	
 };
 
-FarmOpsSystemMorph.prototype.createFieldPanel = function() {
+FarmSystemMorph.prototype.createFieldPanel = function() {
 	
 	var myself = this;
 	
@@ -264,10 +264,10 @@ FarmOpsSystemMorph.prototype.createFieldPanel = function() {
 	this.fieldPanel.stage = new Morph();
 	
 	this.fieldPanel.stage.toolBar = new ToolBarMorph();
-	this.fieldPanel.stage.toolBar.color = new Color( 255, 255, 255 );
+	this.fieldPanel.stage.toolBar.color = new Color( 0,255, 255 );
 	this.fieldPanel.stage.add( this.fieldPanel.stage.toolBar );
 	
-	this.fieldPanel.stage.field = new FieldMorph( this.globalVariables);
+	this.fieldPanel.stage.field = new FarmMorph( this.globalVariables);
 	this.fieldPanel.stage.add( this.fieldPanel.stage.field );
 	
 	this.fieldPanel.stage.fixLayout = function() {
@@ -282,7 +282,7 @@ FarmOpsSystemMorph.prototype.createFieldPanel = function() {
 
 	};
 	
-	this.fieldPanel.stage.field.color = new Color( 50, 255, 100 );
+	//this.fieldPanel.stage.field.color = new Color( 50, 255, 100 );
 	this.fieldPanel.addTab('Field', this.fieldPanel.stage);
 	
 
@@ -292,7 +292,7 @@ FarmOpsSystemMorph.prototype.createFieldPanel = function() {
 	
 };
 
-FarmOpsSystemMorph.prototype.fixLayout = function() {
+FarmSystemMorph.prototype.fixLayout = function() {
 
 	var padding = 10;
 

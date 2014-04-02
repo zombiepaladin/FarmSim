@@ -78,33 +78,19 @@
 		<script type="text/javascript">
 			var world;
 			var field;
-			var sourceMorph;
-			var descEditor;
+			
 			window.onload = function () {
+				
 				world = new WorldMorph(document.getElementById('world'));
-				
-				sourceMorph = new TabPanelMorph( [ new Color( 0,255, 255 ), new Color( 0,255, 255 ).darker(50), new Color( 0,255, 255 ).lighter(50) ]);
-				sourceMorph.setPosition( world.topLeft() );
-				sourceMorph.setWidth(  world.width() );
-				sourceMorph.setHeight( world.height() );
-				sourceMorph.setColor( new Color( 50, 128, 90 ) );
-				world.add( sourceMorph );
-				
-				descEditor = new DescriptionEditorMorph(null, this.corral);
-				descEditor.setColor( new Color( 0, 128, 255) );
-				sourceMorph.addTab('description', 	this.descEditor);
-
-				
-				
+			
 				field = new FarmMorph();
-				field.setPosition( new Point( 75, 75 ) );
-				/*
+				
+				field.setPosition( world.topLeft() );
 				field.setWidth( 800 );
 				field.setHeight( 480 );
-				*/
-				sourceMorph.addTab('Field', field);
-				//field.drawNew();
-				//world.add( field );
+				
+				world.add( field );
+				
 				
 				setInterval(loop, 1);
 			};

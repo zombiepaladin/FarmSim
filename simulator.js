@@ -193,7 +193,7 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.weatherSystem = null;
 	this.pestSystem = null;  
 	this.diseaseSystem = null; 
-	this.farmOpsSystem = null;
+	this.farmSystem = null;
 	
 	// gui settings:
 	this.isAutoFill = isAutoFill || true;
@@ -243,7 +243,7 @@ SimulatorMorph.prototype.buildPanes = function() {
 	this.createWeatherSystem();
 	this.createPestSystem();
 	this.createDiseaseSystem();
-	this.createFarmOpsSystem();
+	this.createFarmSystem();
 };
 	
 SimulatorMorph.prototype.createLogo = function() {
@@ -492,19 +492,19 @@ SimulatorMorph.prototype.createPestSystem = function() {
 	}
 };
 
-SimulatorMorph.prototype.createFarmOpsSystem = function() {
+SimulatorMorph.prototype.createFarmSystem = function() {
 	
 	console.log("create farm ops system.");
 	
-	if( this.farmOpsSystem ) {
-		this.farmOpsSystem.destroy();
+	if( this.farmSystem ) {
+		this.farmSystem.destroy();
 	}
 	
-	this.farmOpsSystem = new FarmOpsSystemMorph();
+	this.farmSystem = new FarmSystemMorph();
 	
-	this.add( this.farmOpsSystem);
+	this.add( this.farmSystem);
 	if( this.currentSystem !== 'farm ops') {
-		this.farmOpsSystem.hide();
+		this.farmSystem.hide();
 	}
 	
 	
@@ -553,10 +553,10 @@ SimulatorMorph.prototype.fixLayout = function (situation) {
 	this.diseaseSystem.fixLayout();
 
 	// farm ops layout
-	this.farmOpsSystem.setPosition( this.systemSelectBar.bottomLeft());
-	this.farmOpsSystem.setWidth(this.systemSelectBar.width());
-	this.farmOpsSystem.setHeight(this.height() - this.systemSelectBar.bottom());
-	this.farmOpsSystem.fixLayout();
+	this.farmSystem.setPosition( this.systemSelectBar.bottomLeft());
+	this.farmSystem.setWidth(this.systemSelectBar.width());
+	this.farmSystem.setHeight(this.height() - this.systemSelectBar.bottom());
+	this.farmSystem.fixLayout();
 	
 	Morph.prototype.trackChanges = true;
 	this.changed();
@@ -596,7 +596,7 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	this.weatherSystem.hide();
 	this.pestSystem.hide();
 	this.diseaseSystem.hide();
-	this.farmOpsSystem.hide();
+	this.farmSystem.hide();
 	
 	switch (system) {
 		case 'crops':
@@ -615,7 +615,7 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 			this.diseaseSystem.show();
 		break;
 		case 'farm ops':
-			this.farmOpsSystem.show();
+			this.farmSystem.show();
 		break;
 	}
 	

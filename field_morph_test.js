@@ -56,7 +56,6 @@ modules.crops = '2014-March-18';
 // Declarations////////////////////////////////////////////////////////
 var FarmMorph;
 var FarmNodeMorph;
-var FarmFieldMorph;
 
 // FarmNodeMorph /////////////////////////////////////////////////////////
 
@@ -71,13 +70,15 @@ FarmNodeMorph.uber =  BoxMorph.prototype;
 // FarmNodeMorph global variables
 FarmNodeMorph.prototype.diameter = 16;
 
-function FarmNodeMorph( pos, field, globals) {
-	this.init( pos, field, globals);
+function FarmNodeMorph( pos,farm, field, globals) {
+	this.init( pos, farm, field, globals);
 };
 
-FarmNodeMorph.prototype.init = function ( pos, f, globals) {
+FarmNodeMorph.prototype.init = function ( pos, f, fieldP, globals) {
+	this.farm = f;
+	this.field = fieldP;
+	this.location = pos;
 	
-	this.field = f;
 	
 	FarmNodeMorph.uber.init.call(this);
 	
@@ -90,23 +91,23 @@ FarmNodeMorph.prototype.init = function ( pos, f, globals) {
 	this.setPosition( pos);
 	
 	this.isDraggable = true;
-	this.setColor( new Color( 138, 69, 19 ) );
+	this.setColor( new Color( 148,62,15 ) );
 	
 };
 
 FarmNodeMorph.prototype.mouseDownLeft = function( pos ) {
 
 	// start state machine for this node
-	switch(this.field.fieldState )
+	switch(this.farm.fieldState )
 	{
 		case "idle":
-			this.field.fieldState = "dragging";
-			this.field.selectedNode = this;
+			this.farm.fieldState = "dragging";
+			this.farm.selectedNode = this;
 		break;
 		case "dragging":
 		case "moving":
-			this.field.fieldState = "idle";
-			this.field.selectedNode = null;
+			this.farm.fieldState = "idle";
+			this.farm.selectedNode = null;
 		break;
 	}
 	
@@ -115,7 +116,7 @@ FarmNodeMorph.prototype.mouseDownLeft = function( pos ) {
 FarmNodeMorph.prototype.mouseMove = function(pos) {
 	
 	// implement state machine dragging and moving here
-	switch( this.field.fieldState )
+	switch( this.farm.fieldState )
 	{
 		case "idle":
 		
@@ -123,7 +124,7 @@ FarmNodeMorph.prototype.mouseMove = function(pos) {
 		
 		case "dragging":
 			this.setPosition(new Point( pos.x - this.diameter/2, pos.y - this.diameter/2 ));
-			this.field.refresh();
+			this.farm.refresh();
 			
 		break;
 		
@@ -135,13 +136,13 @@ FarmNodeMorph.prototype.mouseMove = function(pos) {
 
 FarmNodeMorph.prototype.mouseClickLeft = function(pos) {
 	
-	switch( this.field.fieldState )
+	switch( this.farm.fieldState )
 	{
 		case "idle":
 		case "dragging":
 		case "moving":
-		this.field.fieldState = "idle";
-		this.field.selectedNode = null;
+		this.farm.fieldState = "idle";
+		this.farm.selectedNode = null;
 		break;
 	}
 
@@ -154,50 +155,175 @@ FarmNodeMorph.prototype.userMenu = function( pos ) {
 		
 		menu.addItem("Delete Node", 
 		function() {
-			myself.field.selectedNode = myself;
-			myself.field.removeNode(myself.field.selectedNode);
+			myself.farm.selectedNode = myself;
+			myself.farm.removeNode(myself.field, myself);
 		},
 		"Removes the node");
 
 	return menu;
 };
 
-
-// FarmFieldMorph /////////////////////////////////////////////////////////
+// FarmMorph /////////////////////////////////////////////////////////
 
 // I am FarmSim's field corner
 
-// FarmFieldMorph inherits from Morph:
+// FarmMorph inherits from StageMorph:
 
-FarmFieldMorph.prototype = new BoxMorph();
-FarmFieldMorph.prototype.constructor = FarmFieldMorph;
-FarmFieldMorph.uber = BoxMorph.prototype;
+FarmMorph.prototype = new BoxMorph();
+FarmMorph.prototype.constructor = FarmMorph;
+FarmMorph.uber = BoxMorph.prototype;
 
-function FarmFieldMorph(sx, sy, h, w) {
-	this.init( sx, sy, h, w);
+// FarmMorph global variables
+
+
+function FarmMorph(globals) {
+    this.init(globals);
 };
 
-FarmFieldMorph.prototype.init = function(startx, starty, fieldHeight, fieldWidth) {
-	
+FarmMorph.prototype.init = function ( globals) {
+		
 	var myself = this;
 	
-	var n1 = new FarmNodeMorph(  new Point( this.startx,              this.starty               ), this );
-	var n2 = new FarmNodeMorph(  new Point( this.startx + fieldWidth, this.starty               ), this );
-	var n3 = new FarmNodeMorph(  new Point( this.startx + fieldWidth, this.starty + fieldHeight ), this );
-	var n4 = new FarmNodeMorph(  new Point( this.startx,              this.starty + fieldHeight ), this );
+	FarmMorph.uber.init.call(this);
 	
-
-	myself.boundary = [ n1, n2, n3, n4 ];
+	this.fieldState = "idle";
+	this.selectedNode = null;
+	this.selectedField = null;
+	this.lastClickPos = new Point( 0,0);
 	
-	myself.boundary.forEach( function (node, i , nodes ) {
-		
-		myself.add( node );
-		
-	});
-
+	this.startx = 50;
+	this.starty = 50;
+	this.h = 100;
+	this.w = 100;
+	
+	this.offsetx = 35;
+	this.offsety = 35;
+	
+	this.fields = [];
+	
+	this.addField( 50  + this.offsetx,
+	               50  + this.offsety,
+				   100 + this.offsety,
+				   100 + this.offsetx);
+	//this.reset();
+	
+	this.edge = 0;
+    this.border = 2;
+	this.color =  new Color( 204,204,120 );
+	
 };
 
-FarmFieldMorph.prototype.lineWasClicked = function( startPoint, endPoint, clickPoint) {
+
+FarmMorph.prototype.mouseDownLeft = function( pos ) {
+	
+	var myself = this,
+		exit = false;
+	
+	switch( this.fieldState )
+	{
+		case "idle" :
+		
+			myself.fields.forEach( function ( field, f, fields) {
+				
+				// check for line click.
+				if(!exit) {				
+					field.boundary.forEach( function ( node, i , nodes ) {
+						var newNode,
+							nextNode = ( nodes[i+1] ) ? nodes[ i+1] : nodes[0];
+						
+						if( !exit && myself.lineWasClicked( node.position(), nextNode.position(), pos) )
+						{
+						
+							newNode = new FarmNodeMorph( pos.add( new Point(-node.diameter/2, -node.diameter/2) ), myself, field ); // pass in FarmFieldMorph as parameter
+							
+							field.boundary.splice( i + 1, 0, newNode);
+							myself.selectedNode = newNode;
+							
+							myself.add( newNode);
+							
+							myself.fieldState = "dragging";
+							myself.refresh();
+							exit = true;
+						}
+
+					});
+				}
+			});
+			// check for click inside.
+			myself.fields.forEach( function ( field, f, fields) {
+			
+				if( !exit && myself.fieldWasClicked(field.boundary, pos))
+				{	
+					myself.fieldState = "moving";
+					myself.lastClickPos = pos;
+					myself.selectedField = field;
+					exit = true;
+				}
+			});
+			
+		break;
+		
+		case "dragging":
+		case "moving" :
+			myself.fieldState = "idle";
+		break;
+		
+	}
+};
+
+FarmMorph.prototype.mouseMove = function(pos) {
+	
+	switch( this.fieldState )
+	{
+		case "idle" :
+		this.selectedNode = null;
+		this.selectedField = null;
+		break;
+		
+		case "dragging":
+			if( this.selectedNode )
+			{
+				this.selectedNode.setPosition( new Point( pos.x - this.selectedNode.diameter/2, pos.y - this.selectedNode.diameter/2 ) );
+				this.refresh();
+			}
+			
+		break;
+		
+		case "moving" :
+			
+			var diff = new Point(pos.x - this.lastClickPos.x, pos.y - this.lastClickPos.y) ;
+			
+			if( this.selectedField)
+			{
+				this.selectedField.boundary.forEach( function( node, i , nodes) {
+					
+					node.setPosition( node.position().add( diff ) );  // new Point( node.position().x + diffx , node.position().y + diffy ) );
+					
+				});
+			}	
+			
+			this.refresh();
+			this.lastClickPos = pos;
+			
+		break;
+		
+	}
+}
+
+FarmMorph.prototype.mouseClickLeft = function(pos) {
+	
+	switch( this.fieldState )
+	{	
+		case "carrying":
+		case "idle" :
+		case "dragging":
+		case "moving" :
+			this.fieldState = "idle";
+		break;	
+	}	
+};
+
+FarmMorph.prototype.lineWasClicked = function( startPoint, endPoint, clickPoint) {
 	var result = false;
 
 	Magnitude = function( Point ) {
@@ -240,13 +366,13 @@ FarmFieldMorph.prototype.lineWasClicked = function( startPoint, endPoint, clickP
 	return result;
 };
 
-FarmFieldMorph.prototype.fieldWasClicked = function(clickPoint) {
+FarmMorph.prototype.fieldWasClicked = function(points, clickPoint) {
 	
 	var myself = this,
 		result = false,
 		nextNode;
 		
-		myself.boundary.forEach( function( node, i, nodes ) {
+		points.forEach( function( node, i, nodes ) {
 		
 			nextNode = ( i === nodes.length-1) ? nodes[0] : nodes[i+1];
 			
@@ -264,158 +390,6 @@ FarmFieldMorph.prototype.fieldWasClicked = function(clickPoint) {
 		return result;	
 };
 
-// FarmMorph /////////////////////////////////////////////////////////
-
-// I am FarmSim's field corner
-
-// FarmMorph inherits from StageMorph:
-
-FarmMorph.prototype = new SpriteMorph();
-FarmMorph.prototype.constructor = FarmMorph;
-FarmMorph.uber = SpriteMorph.prototype;
-
-// FarmMorph global variables
-
-
-function FarmMorph(globals) {
-    this.init(globals);
-};
-
-FarmMorph.prototype.init = function ( globals) {
-		
-	var myself = this;
-	
-	FarmMorph.uber.init.call(this);
-	
-	this.fieldState = "idle";
-	this.selectedNode = null;
-	this.lastClickPos = new Point( 0,0);
-	
-	this.startx = 50;
-	this.starty = 50;
-	this.h = 100;
-	this.w = 100;
-	
-	this.offsetx = this.position.x;
-	this.offsety = this.position.y;
-	
-	this.fields = [];
-	
-	this.addField( 50  + this.offsetx,
-	               50  + this.offsety,
-				   100 + this.offsety,
-				   100 + this.offsetx);
-	//this.reset();
-	
-	this.edge = 0;
-    this.border = 2;
-	this.color =  new Color(  102, 200, 10 );
-	
-	
-};
-
-
-FarmMorph.prototype.mouseDownLeft = function( pos ) {
-	
-	var myself = this,
-		exit = false;
-	
-	switch( this.fieldState )
-	{
-		case "idle" :
-		
-			myself.fields.forEach( function ( field, f, fields) {
-				
-				// check for line click.
-				field.boundary.forEach( function ( node, i , nodes ) {
-					var newNode,
-						nextNode = ( nodes[i+1] ) ? nodes[ i+1] : nodes[0];
-					
-					if( !exit && field.lineWasClicked( node.position(), nextNode.position(), pos) )
-					{
-					
-						newNode = new FarmNodeMorph( pos.add( new Point(-node.diameter/2, -node.diameter/2) ), myself ); // pass in FarmFieldMorph as parameter
-						
-						field.boundary.splice( i + 1, 0, newNode);
-						field.selectedNode = newNode;
-						
-						field.add( newNode);
-						
-						myself.fieldState = "dragging";
-						myself.refresh();
-						exit = true;
-					}
-
-				});
-			});
-			// check for click inside.
-			myself.fields.forEach( function ( field, f, fields) {
-			
-				if( !exit && field.fieldWasClicked(pos))
-				{	
-					myself.fieldState = "moving";
-					myself.lastClickPos = pos;
-				}
-			});
-			
-		break;
-		
-		case "dragging":
-		case "moving" :
-			myself.fieldState = "idle";
-		break;
-		
-	}
-};
-
-FarmMorph.prototype.mouseMove = function(pos) {
-	
-	switch( this.fieldState )
-	{
-		case "idle" :
-		break;
-		
-		case "dragging":
-		
-			this.selectedNode.setPosition( new Point( pos.x - this.selectedNode.diameter/2, pos.y - this.selectedNode.diameter/2 ) );
-			this.refresh();
-			
-		break;
-		
-		case "moving" :
-			
-			var diff = new Point(pos.x - this.lastClickPos.x, pos.y - this.lastClickPos.y) ;
-			
-			this.fields.forEach( function( field, f, fields) {
-				if( field === selectedField)
-				{
-					field.boundary.forEach( function( node, i , nodes) {
-						
-						node.setPosition( node.position().add( diff ) );  // new Point( node.position().x + diffx , node.position().y + diffy ) );
-						
-					});
-				}
-			});
-			this.refresh();
-			this.lastClickPos = pos;
-			
-		break;
-		
-	}
-}
-
-FarmMorph.prototype.mouseClickLeft = function(pos) {
-	
-	switch( this.fieldState )
-	{	
-		case "carrying":
-		case "idle" :
-		case "dragging":
-		case "moving" :
-			this.fieldState = "idle";
-		break;	
-	}	
-};
 
 FarmMorph.prototype.reset = function() {
 	
@@ -424,15 +398,20 @@ FarmMorph.prototype.reset = function() {
 // destroy all fields and each field's respective boundary node.
 	myself.fields.forEach( function(field, f, fields) {
 		
-		field.destroy();
+		field.boundary.forEach( function( node, i, nodes) {
+			
+			node.destroy();
+			
+		});
 		
 	});
-	
-	myself.addField(  50  + this.offsetx,
-	                  50  + this.offsety,
-				      100 + this.offsety,
-				      100 + this.offsetx );
-
+	this.fields = [];
+	this.addField( 50  + this.offsetx,
+	               50  + this.offsety,
+				   100 + this.offsety,
+				   100 + this.offsetx);
+				   
+	myself.refresh();
 };
 
 FarmMorph.prototype.refresh = function() {
@@ -445,48 +424,55 @@ FarmMorph.prototype.refresh = function() {
 FarmMorph.prototype.addField = function(startx, starty, fieldHeight, fieldWidth) {
 	
 	var myself = this;
-	/*
 	
-	var n1 = new FarmNodeMorph(  new Point( this.startx + offsetx,              this.starty + offsety               ), this );
-	var n2 = new FarmNodeMorph(  new Point( this.startx + offsetx + fieldWidth, this.starty + offsety               ), this );
-	var n3 = new FarmNodeMorph(  new Point( this.startx + offsetx + fieldWidth, this.starty + offsety + fieldHeight ), this );
-	var n4 = new FarmNodeMorph(  new Point( this.startx + offsetx,              this.starty + offsety + fieldHeight ), this );
-	*/
-	var field = new FarmFieldMorph(startx,starty,fieldHeight,fieldWidth);
-	/*field.boundary = [ n1, n2, n3, n4 ];
+	var field = {};
 	
-	this.boundary.forEach( function (node, i , nodes ) {
+	var n1 = new FarmNodeMorph(  new Point( startx,              starty               ), this, field );
+	var n2 = new FarmNodeMorph(  new Point( startx + fieldWidth, starty               ), this, field );
+	var n3 = new FarmNodeMorph(  new Point( startx + fieldWidth, starty + fieldHeight ), this, field );
+	var n4 = new FarmNodeMorph(  new Point( startx,              starty + fieldHeight ), this, field );
+	
+	field.boundary = [ n1, n2, n3, n4 ];
+	
+	field.boundary.forEach( function (node, i , nodes ) {
 		
-		field.add( node );
+		myself.add( node );
 		
 	});
-	*/
-	myself.fields.push( field );
 	
-	//myself.add( field );
+	myself.fields.push( field );
 	
 	myself.refresh();
 };
 
 FarmMorph.prototype.removeField = function( field ){
 	
+	var myself = this;
+	
+	field.boundary.forEach( function( node, i, nodes ) {
+		
+		node.destroy();
+		
+	});
+
+	myself.fields.splice( myself.fields.indexOf( field ), 1);
+	
+	myself.refresh();
 };
 
-// TODO : check which field
-FarmMorph.prototype.removeNode = function(field) {
+FarmMorph.prototype.removeNode = function(field, nodeRemove) {
 	
 	var myself = this;
-	if( field.boundary.length > 3 )
-	{
-		field.boundary.splice( myself.boundary.indexOf( myself.selectedNode ), 1 );
-		
-		if( field.selectedNode)
-		{
-			field.selectedNode.destroy();
-		}
-		myself.refresh();
-	}
+	var exit = false;
 	
+	if( field.boundary.indexOf( nodeRemove ) )
+	{
+		
+		field.boundary.splice( field.boundary.indexOf( nodeRemove ), 1 );
+		nodeRemove.destroy();
+		myself.refresh();
+
+	}
 };
 
 FarmMorph.prototype.insertNode = function(mousePos) {
@@ -500,15 +486,15 @@ FarmMorph.prototype.insertNode = function(mousePos) {
 			var newNode,
 				nextNode = ( nodes[i+1] ) ? nodes[i+1] : nodes[0];
 
-			if(!exit && field.lineWasClicked( node.position(), nextNode.position(), mousePos )) {
+			if(!exit && myself.lineWasClicked( node.position(), nextNode.position(), mousePos )) {
 				
 				// create the new node
-				newNode = new FarmNodeMorph( mousePos, myself);
+				newNode = new FarmNodeMorph( mousePos, myself, field);
 				
 				// insert new node
 				field.boundary.splice( i + 1, 0, newNode);
-				field.selectedNode = newNode;
-				field.add( newNode );
+				myself.selectedNode = newNode;
+				myself.add( newNode );
 				
 				// update state
 				exit = true;
@@ -527,6 +513,9 @@ FarmMorph.prototype.userMenu = function( ) {
 		var mousePos = world.hand.bounds.origin;
 
 		var exit = false;
+		
+		//////////////////////////////////
+		// Click on node - > add new node option
 		myself.fields.forEach( function (field, f, fields) {
 			
 			field.boundary.forEach( function ( node, i , nodes ) {
@@ -535,16 +524,51 @@ FarmMorph.prototype.userMenu = function( ) {
 					
 				if( !exit && myself.lineWasClicked( node.position(), nextNode.position(), mousePos) )
 				{
-					menu.addItem("Insert Node",
+					menu.addItem("Create corner",
 					function() {
 						myself.insertNode(mousePos);
 					},
-					"Adds a new node");
+					"Adds a new corner to the fence.");
 					exit = true;
 				}
 			});
 		});
-		menu.addItem("Reset",
+		exit = false;
+		//////////////////////////////////
+		// Click on area - > remove field option
+		myself.fields.forEach( function ( field, f, fields) {
+			
+			if( !exit && myself.fieldWasClicked(field.boundary, mousePos))
+			{	
+				menu.addItem("Remove Field",
+				function() {
+					myself.removeField(field);
+				},
+				"Removes the field from the farm.");
+				exit = true;
+			}
+		});
+		
+		
+		//////////////////////////////////
+		// Click outside area - > add new field option
+		
+		
+		if( !exit ) //  if exit is true then we just found an area previously
+		{	
+			menu.addItem("Create Field",
+			function() {
+				myself.addField(mousePos.x, mousePos.y, 100, 100);
+			},
+			"Adds a new field to the farm.");
+		}
+		
+		
+		
+		
+		//////////////////////////////////
+		// Click anywhere - > reset whole farm
+		menu.addItem("Reset Farm",
 		function() { 
 			myself.reset(); 
 		},
@@ -559,52 +583,61 @@ FarmMorph.prototype.drawNew = function ( ) {
 	var myself = this;
 	
 		
-	PenMorph.uber.drawNew.call(this);
+	FarmMorph.uber.drawNew.call(this);
 		
-	if( this.boundary )
+	if( this.fields  )
 	{
-
+		
 		var context = this.image.getContext('2d');
-		var offsetx = this.boundary[0].diameter/2 - myself.position().x;
-		var offsety = this.boundary[0].diameter/2 - myself.position().y;
+		var offsetx = this.fields[0].boundary[0].diameter/2 - myself.position().x;
+		var offsety = this.fields[0].boundary[0].diameter/2 - myself.position().y;
+	
 		
 		context.lineWidth = 6;
 		context.lineCap = "round";
 		context.beginPath();
 		
-		context.moveTo( this.boundary[0].left() + offsetx , this.boundary[0].top() + offsety);
 		this.fields.forEach( function(field, f, fields ) {
+		
+			context.moveTo( field.boundary[0].position().x + offsetx , field.boundary[0].position().y + offsety);
 			
 			field.boundary.forEach( function(node, i, nodes){
 			
 				nextNode = (i === nodes.length - 1) ? nodes[0] : nodes[i+1]
 			
-				context.lineTo( nextNode.left() + offsetx, nextNode.top() + offsety);
+				context.lineTo( nextNode.position().x + offsetx, nextNode.position().y + offsety);
 			
 			});
 		});
-		context.strokeStyle  =  new Color( 0, 0, 0 ).toString();
-		context.stroke()
+
+			
+		context.fillStyle = new Color( 96, 79, 49 ).toString();
+		context.fill();
 		
+		context.strokeStyle  =  new Color( 0, 0, 0 ).toString();
+		context.stroke()		
+	
 		
 		context.lineWidth = 4;
 		context.beginPath();
-		context.moveTo( this.boundary[0].left() + offsetx, this.boundary[0].top() + offsety);
 		
 		this.fields.forEach( function(field, f, fields ) {
+			
+			context.moveTo( field.boundary[0].position().x + offsetx , field.boundary[0].position().y + offsety);
 			
 			field.boundary.forEach( function(node, i, nodes){
 			
 				nextNode = (i === nodes.length - 1) ? nodes[0] : nodes[i+1]
 			
-				context.lineTo( nextNode.left() + offsetx, nextNode.top() + offsety);
+				context.lineTo( nextNode.position().x + offsetx, nextNode.position().y + offsety);
 			
 			});
 		});
 		
-		context.strokeStyle  =  new Color( 138, 69, 19 ).toString();
-		context.stroke()
 		
+		context.strokeStyle  =  new Color( 138, 69, 19 ).toString();
+		context.stroke();
+	
 	}
 	
 	
