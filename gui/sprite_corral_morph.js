@@ -109,6 +109,11 @@ SpriteCorralMorph.prototype.addSprite = function(sprite) {
 	this.fixLayout();
 };
 
+SpriteCorralMorph.prototype.addMorph = function( morph) {
+	this.frame.contents.add( morph);
+	this.fixLayout();
+};
+
 // events
 SpriteCorralMorph.prototype.wantsDropOf = function( Morph ) {
 	return morph instanceof spriteIconMorph;

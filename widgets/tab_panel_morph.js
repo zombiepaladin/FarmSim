@@ -188,7 +188,10 @@ TabPanelMorph.prototype.addTab = function(tabName, panelMorph) {
 	this.tabBar.add(tab);
 	
 	this.displayPanel.add(panelMorph);
-	this.currentTab = (this.currentTab) ? this.currentTab : tabName;
+	if( !this.currentTab )
+	{
+		this.currentTab = tabName;
+	}
 	
 	if (this.currentTab !== tabName) {
 		panelMorph.hide();
@@ -269,4 +272,11 @@ TabPanelMorph.prototype.outlineTabPanel = function() {
 	context.lineTo(x3,y1);
 	context.stroke();
 	
+};
+
+TabPanelMorph.prototype.show = function() {
+	
+	
+	TabPanelMorph.uber.show.call(this);
+	this.reactToTabSelect( this.currentTab);
 };

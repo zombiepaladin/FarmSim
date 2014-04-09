@@ -66,92 +66,6 @@ sb, CommentMorph, CommandBlockMorph, BlockLabelPlaceHolderMorph*/
 
 modules.crops = '2014-March-03'
 
-
-// Declarations
-
-var FarmsControlMorph;
-
-// FarmsControlMorph /////////////////////////////////////////////////////////
-
-// I am FarmSim's Farm operation system control bar atop the editor plane
-
-// FarmsControlMorph inherits from Morph:
-
-FarmsControlMorph.prototype = new ControlBarMorph();
-FarmsControlMorph.prototype.constructor = FarmsControlMorph;
-FarmsControlMorph.uber = ControlBarMorph.prototype;
-
-// FarmsControlMorph initialization
-
-function FarmsControlMorph(universalVariables, field) {
-    this.init(universalVariables, field);
-}
-
-FarmsControlMorph.prototype.init = function (universalVariables, fieldIn) {
-	
-	
-	FarmsControlMorph.uber.init.call(this, universalVariables);
-	
-	this.field = fieldIn;
-	
-	this.color = new Color(255,255,255);
-	this.boarder = 1;
-	
-	//this.createClearButton();
-
-	this.createTimerControl();
-	
-	
-};
-
-FarmsControlMorph.prototype.createClearButton = function() {
-	
-	var myself = this;
-	
-	if( this.clearButton )
-	{
-		this.clearButton.destroy();
-	}
-
-	this.clearButton = new ToggleButtonMorph( 
-											null, // colors
-											this, // target 
-											function () { myself.field.reset(); }, //action
-											" Test Clear "
-											);
-											
-	this.add( this.clearButton );
-	
-};
-FarmsControlMorph.prototype.createTimerControl = function() {
-	
-	if( this.timerControl)
-	{
-		this.timerControl.destroy();
-	}
-	
-	this.timerControl = new TimeControlMorph();
-	
-	this.timerControl.color = new Color( 15,255, 255 );
-	
-	this.add( this.timerControl );
-	
-};
-
-FarmsControlMorph.prototype.fixLayout = function() {
-
-	var padding = 10;
-	var myself = this;
-	
-	//this.clearButton.setPosition(new Point( myself.right() - myself.clearButton.width() - padding, myself.top() + padding) );
-	
-	this.timerControl.setHeight( myself.height() );
-	this.timerControl.setPosition( myself.topLeft() );
-	this.timerControl.fixLayout();
-};
-
-
-
 // Declarations
 
 var FarmSystemMorph;
@@ -168,24 +82,43 @@ FarmSystemMorph.uber = Morph.prototype;
 
 // FarmSystemMorph initialization
 
-function FarmSystemMorph(universalVariables) {
-    this.init(universalVariables);
+function FarmSystemMorph(universalVariables, fields) {
+    this.init(universalVariables, fields);
 }
 
-FarmSystemMorph.prototype.init = function (universalVariables) {
+FarmSystemMorph.prototype.init = function (universalVariables, import_fields) {
+	
+	var myself = this;
 	
 	this.universalVariables = universalVariables;
 	
-	FarmSystemMorph.uber.init.call(this, universalVariables);
 	
-	this.color = new Color(10,183,10);
+	var icon1 = new FarmIconMorph();
+		icon2 = new FarmIconMorph();
+		
+		icon1.name = 'test1';
+		icon2.name = 'test2';
 	
-	this.spritePanel = null;
+	this.fields = [];
+	
+	this.fields.push( icon1 );
+	this.fields.push( icon2 );
+
+	FarmSystemMorph.uber.init.call(this, universalVariables );
+	
+	this.color = new Color(20, 200, 20);
+	
+	
+	
+	this.controlBar = null;
+	this.corral = null;
 	this.fieldPanel = null;
+	
+	
 	
 	this.createSpritePanel();
 	this.createFieldPanel();
-	
+	this.fieldPanel.descEditor.loadSprite( icon1 );
 	this.fixLayout();
 	
 };
@@ -194,44 +127,28 @@ FarmSystemMorph.prototype.createSpritePanel = function() {
 	
 	var myself = this;
 	
-	if( this.spritePanel ){
-		this.spritePanel.destroy();
-	}
-	
-	this.spritePanel = new Morph();
-	
-	// group properties
-	this.spritePanel.color = this.color;
-	
 	
 	// add top bar
-	this.spritePanel.controlBar = new ControlBarMorph();
-	this.spritePanel.controlBar.color = new Color( 255, 0, 0);
-	this.spritePanel.add( this.spritePanel.controlBar );
+	if( this.controlBar){
+		myself.controlBar.destroy();
+	}
+
+	this.controlBar = new ControlBarMorph();
+	this.controlBar.color = new Color( 255, 0, 0);
+	this.add( this.controlBar );
 	
 	// add sprite corral
-	this.spritePanel.corral = new SpriteCorralMorph();
-	this.spritePanel.corral.color = new Color( 255, 255, 255 );
-	this.spritePanel.add( this.spritePanel.corral );
-	
-	
-	
-	this.spritePanel.fixLayout = function() {
-		
-		var padding = 2;
-		
-		myself.spritePanel.controlBar.setHeight( 30 );
-		myself.spritePanel.controlBar.setWidth( myself.spritePanel.width() );
-		myself.spritePanel.controlBar.setPosition( myself.spritePanel.topLeft() );
-		
-		myself.spritePanel.corral.setWidth( myself.spritePanel.width() );
-		myself.spritePanel.corral.setHeight( myself.spritePanel.height() +- myself.spritePanel.controlBar.height() );
-		myself.spritePanel.corral.setPosition( new Point( myself.spritePanel.controlBar.left(), myself.spritePanel.controlBar.bottom() ) );	
+	if( this.corral ) {
+		myself.corral.destroy();
 	}
+    
+	this.corral = new FarmCorralMorph(this.fields);
+		
+	this.add( this.corral );
 	
-	
-	this.add( this.spritePanel );
-	
+	this.fields.forEach( function(field, f, fs) {
+		myself.corral.addMorph(field);
+	});
 };
 
 FarmSystemMorph.prototype.createFieldPanel = function() {
@@ -279,31 +196,30 @@ FarmSystemMorph.prototype.createFieldPanel = function() {
 		myself.fieldPanel.stage.field.setHeight( myself.fieldPanel.stage.height() - myself.fieldPanel.stage.toolBar.height() );
 		myself.fieldPanel.stage.field.setWidth( myself.fieldPanel.stage.width() );
 		myself.fieldPanel.stage.field.setPosition( myself.fieldPanel.stage.toolBar.bottomLeft() );
-
 	};
 	
 	//this.fieldPanel.stage.field.color = new Color( 50, 255, 100 );
-	this.fieldPanel.addTab('Field', this.fieldPanel.stage);
-	
+	this.fieldPanel.addTab('field', this.fieldPanel.stage);
 
-	
-	
 	this.add( this.fieldPanel );
-	
 };
 
 FarmSystemMorph.prototype.fixLayout = function() {
 
 	var padding = 10;
-
-	this.spritePanel.setWidth(200);
-	this.spritePanel.setHeight( this.height() - 2*padding);
-	this.spritePanel.setPosition( new Point(this.left() + padding, this.top() + padding) );
-	this.spritePanel.fixLayout();
 	
-	this.fieldPanel.setWidth( this.width() - this.spritePanel.width() - 3*padding );
+	this.controlBar.setWidth( 240 );
+	this.controlBar.setHeight( 30 );
+	this.controlBar.setPosition( new Point(this.left() + padding/2, this.top() + padding/2) );
+	
+	this.corral.setWidth( this.controlBar.width() );
+	this.corral.setHeight( this.height() - this.controlBar.height()  - 2*padding);
+	this.corral.setPosition( this.controlBar.bottomLeft() );
+	this.corral.fixLayout();
+	
+	this.fieldPanel.setWidth( this.width() - this.corral.width() - 3*padding );
 	this.fieldPanel.setHeight(  this.height() - 2*padding );
-	this.fieldPanel.setPosition( new Point( this.spritePanel.right() + padding, this.spritePanel.top() ) );	
+	this.fieldPanel.setPosition( new Point( this.corral.right() + padding, this.controlBar.top() ) );	
 	
 	this.fieldPanel.stage.fixLayout();
 	this.fieldPanel.fixLayout();

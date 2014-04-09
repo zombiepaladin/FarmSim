@@ -26,7 +26,7 @@ DescriptionEditorMorph.prototype.init = function (aSprite, corralM) {
 	this.currentSprite = aSprite || new SpriteMorph();
 	this.defaultWidth = 200;
 	this.currentCategory = 'motion';
-	this.setColor( new Color( 0,0,0) ) ; //DescriptionEditorMorph.prototype.backgroundColor );
+	this.setColor( new Color( 0,0,0) );
 	
 	// create submorphs for the page
 	this.corral = corralM;

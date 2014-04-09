@@ -194,6 +194,7 @@ SimulatorMorph.prototype.init = function (isAutoFill) {
 	this.pestSystem = null;  
 	this.diseaseSystem = null; 
 	this.farmSystem = null;
+	this.operationSystem = null
 	
 	// gui settings:
 	this.isAutoFill = isAutoFill || true;
@@ -244,6 +245,7 @@ SimulatorMorph.prototype.buildPanes = function() {
 	this.createPestSystem();
 	this.createDiseaseSystem();
 	this.createFarmSystem();
+	this.createOperationSystem();
 };
 	
 SimulatorMorph.prototype.createLogo = function() {
@@ -380,7 +382,7 @@ SimulatorMorph.prototype.createSystemSelectBar = function () {
     }
 
 	// TODO: Systems should probably be moved!
-	['farm ops', 'crops', 'soils', 'weathers', 'pests', 'diseases', 'equipment', 'markets'].forEach(function(system) {
+	['operations', 'crops', 'soils', 'weathers', 'pests', 'diseases', 'farms', 'equipment', 'markets'].forEach(function(system) {
 		addSystemButton(system);
 	});
     fixSystemSelectBarLayout();
@@ -503,13 +505,31 @@ SimulatorMorph.prototype.createFarmSystem = function() {
 	this.farmSystem = new FarmSystemMorph();
 	
 	this.add( this.farmSystem);
-	if( this.currentSystem !== 'farm ops') {
+	if( this.currentSystem !== 'farms') {
 		this.farmSystem.hide();
 	}
 	
 	
 };
 
+// this function creates the farm system to be displayed on the main page.
+SimulatorMorph.prototype.createOperationSystem = function() {
+	
+	console.log("create operation system.");
+	
+	if( this.operationsSystem ) {
+		this.operationsSystem.destroy();
+	}
+	
+	this.operationsSystem = new Morph();
+	
+	this.add( this.operationsSystem);
+	if( this.currentSystem !== 'operations') {
+		this.operationsSystem.hide();
+	}
+	
+	
+};
 
 // SimulatorMorph layout
 
@@ -552,11 +572,17 @@ SimulatorMorph.prototype.fixLayout = function (situation) {
 	this.diseaseSystem.setHeight(this.height() - this.systemSelectBar.bottom());
 	this.diseaseSystem.fixLayout();
 
-	// farm ops layout
+	// farms layout
 	this.farmSystem.setPosition( this.systemSelectBar.bottomLeft());
 	this.farmSystem.setWidth(this.systemSelectBar.width());
 	this.farmSystem.setHeight(this.height() - this.systemSelectBar.bottom());
 	this.farmSystem.fixLayout();
+	
+	// operations layout
+	this.operationsSystem.setPosition( this.systemSelectBar.bottomLeft() );
+	this.operationsSystem.setWidth( this.systemSelectBar.width() );
+	this.operationsSystem.setHeight(this.height() - this.systemSelectBar.bottom() );
+	//this.operationsSystem.fixLayout();
 	
 	Morph.prototype.trackChanges = true;
 	this.changed();
@@ -597,6 +623,7 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 	this.pestSystem.hide();
 	this.diseaseSystem.hide();
 	this.farmSystem.hide();
+	this.operationsSystem.hide();
 	
 	switch (system) {
 		case 'crops':
@@ -614,8 +641,11 @@ SimulatorMorph.prototype.reactToSystemSelect = function(system) {
 		case 'diseases':
 			this.diseaseSystem.show();
 		break;
-		case 'farm ops':
+		case 'farms':
 			this.farmSystem.show();
+		break;
+		case 'operations':
+			this.operationsSystem.show();
 		break;
 	}
 	
