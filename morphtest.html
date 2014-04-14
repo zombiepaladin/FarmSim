@@ -33,8 +33,9 @@
 		<script type="text/javascript" src="sim/sprites/soil_sprite_morph.js"></script>
 		<script type="text/javascript" src="sim/sprites/weather_sprite_morph.js"></script>
 		<script type="text/javascript" src="sim/sprites/pest_sprite_morph.js"></script>
-		<script type="text/javascript" src="sim/sprites/disease_sprite_morph.js"></script>-->
+		<script type="text/javascript" src="sim/sprites/disease_sprite_morph.js"></script>
 		<script type="text/javascript" src="sim/sprites/field_morph.js"></script>
+		-->
 		
 		<!-- test -->
 		<script type="text/javascript" src="field_morph_test.js"></script>
@@ -56,7 +57,7 @@
 		<script type="text/javascript" src="gui/time_control_morph.js"></script>		
 		
 		
-		<!--
+		<script type="text/javascript" src="system_models\operations.js"></script>
 		<script type="text/javascript" src="system_models\soils.js"></script>
 		<script type="text/javascript" src="system_models\crops.js"></script>
 		<script type="text/javascript" src="system_models\weathers.js"></script>
@@ -64,7 +65,7 @@
 		<script type="text/javascript" src="system_models\diseases.js"></script>
 		<script type="text/javascript" src="farmops.js"></script>
 		<script type="text/javascript" src="simulator.js"></script>
-		-->
+	
 		
 		<script type="text/javascript" src="paint.js"></script>
 		<script type="text/javascript" src="byob.js"></script>
@@ -77,19 +78,19 @@
 		
 		<script type="text/javascript">
 			var world;
-			var field;
+			var system;
 			
 			window.onload = function () {
 				
 				world = new WorldMorph(document.getElementById('world'));
 			
-				field = new FarmMorph();
+				system = new OperationSystemMorph();
 				
-				field.setPosition( world.topLeft() );
-				field.setWidth( 800 );
-				field.setHeight( 480 );
+				system.setPosition( world.topLeft() );
+				system.setWidth( 1024 );
+				system.setHeight( 680 );
 				
-				world.add( field );
+				world.add( system );
 				
 				
 				setInterval(loop, 1);

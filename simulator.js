@@ -521,7 +521,7 @@ SimulatorMorph.prototype.createOperationSystem = function() {
 		this.operationsSystem.destroy();
 	}
 	
-	this.operationsSystem = new Morph();
+	this.operationsSystem = new OperationSystemMorph();
 	
 	this.add( this.operationsSystem);
 	if( this.currentSystem !== 'operations') {
