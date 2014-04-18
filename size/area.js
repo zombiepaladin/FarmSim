@@ -1,11 +1,84 @@
 
+var Area;
 
 
 
-// square kilometer, square meter, square foot, square yard, square mile, acer, hectare, section
-Area.units = { "km2", "m2", "ft2", "yd2", "mi2", "a", "ha" , "sec" };
+Area.units = { 
+               kilometer_squared : "km2" , // square kilometer
+               meter_squared     : "m2"  , // square meter
+			   feet_squared      : "ft2" , // square foot
+			   yard_squared      : "yd2" , // square yard
+			   mile_squared      : "mi2" , // square mile
+			   acre              : "a"   , // acer
+			   hectare           : "ha"  , // hectare
+			   section           : "sec"   // section
+			 };
 
-Area.baseUnit = "ft2";
+Area.baseUnit = Area.units.feet_squared;
+
+/*
+ * Author: Byron Wheeler
+ *
+ * Desc: This global unction will return an area amount in the
+ * specified units.
+ *
+ * Params:	
+ *  amount the amount of the unit passed in.
+ *  unit - The unit of the returned quantity.
+ *
+ * Return: The area in the specified unit
+ */
+Area.parseToBase = function( amount, unit ){
+	
+	var myself = this;
+
+	switch( unit )
+	{
+		case "km2":
+		
+			amount *= 1.076e7;
+			break;
+			
+		case "m2":
+		
+			amount *=  10.7639;
+			break;
+			
+		case "ft2":
+		
+			amount *= amount; 
+			break;
+			
+		case "yd2":
+		
+			amount *= 9;
+			break;    
+			          
+		case "mi2":   
+		              
+			amount *= 27878400;
+			break;    
+			          
+		case "a":     
+		              
+			amount *= 43560;
+			break;    
+			          
+		case "ha":    
+		              
+			amount *= 107639;
+			break;    
+			          
+		case "sec":   
+		              
+			amount *= 27878400;
+			break;	
+	}
+	
+	return amount;
+};
+
+
 
 function Area( amount, unit ){
 	this.init( amount, unit);
@@ -13,8 +86,11 @@ function Area( amount, unit ){
 
 Area.prototype.init = function ( amount, unit ) {
 	
-	var this = myself;
-	this.Area = null;
+	var myself = this;
+	
+	myself.area = null;
+	myself.name = "Area";
+	
 	myself.setArea( amount, unit);
 	
 };
@@ -37,28 +113,43 @@ Area.prototype.setArea = function ( amount, unit ) {
 	switch( unit )
 	{
 		case "km2":
-			amount 
+		
+			amount *= 1.076e7;
 			break;
+			
 		case "m2":
-			amount 
+		
+			amount *= 10.7639;
 			break;
-		case "ft2":
-			amount 
+			
+		case "ft":
+		
+			amount = amount;
 			break;
-		case "yd2":
-			amount 
+			
+		case "yd":
+		
+			amount *= 9;
 			break;
+			
 		case "mi2":
-			amount 
+		
+			amount *= 27878400;
 			break;
+			
 		case "a":
-			amount 
+		
+			amount *= 43560;
 			break;
+			
 		case "ha":
-			amount 
+		
+			amount *= 107639;
 			break;
+			
 		case "sec":
-			amount 
+		
+			amount *= 27878400;
 			break;
 		
 	}	
@@ -81,36 +172,51 @@ Area.prototype.setArea = function ( amount, unit ) {
 Area.prototype.getArea = function ( unit ) {
 	
 	var myself = this;
-	var area = null;
+	var amount = myself.area;
 	switch( unit )
 	{
 		case "km2":
-			area  = new Area();
+		
+			amount /= 1.076e7;
 			break;
+			
 		case "m2":
-			area  = new Area(); 
+		
+			amount /=  10.7639;
 			break;
+			
 		case "ft2":
-			area  = new Area(); 
+		
+			amount /= amount; 
 			break;
+			
 		case "yd2":
-			area  = new Area(); 
-			break;
-		case "mi2":
-			area  = new Area(); 
-			break;
-		case "a":
-			area  = new Area(); 
-			break;
-		case "ha":
-			area  = new Area(); 
-			break;
-		case "sec":
-			area  = new Area(); 
+		
+			amount /= 9;
+			break;    
+			          
+		case "mi2":   
+		              
+			amount /= 27878400;
+			break;    
+			          
+		case "a":     
+		              
+			amount /= 43560;
+			break;    
+			          
+		case "ha":    
+		              
+			amount /= 107639;
+			break;    
+			          
+		case "sec":   
+		              
+			amount /= 27878400;
 			break;	
 	}
 	
-	return len;
+	return amount;
 };
 
 /*
@@ -130,7 +236,7 @@ Area.prototype.addArea = function ( amount, unit ) {
 	var myself = this,
 	    result = null;
 	
-	result = new Area( myself.getArea(myself.Distance, unit) + amount, unit);
+	result = new Area( myself.getArea(myself.area, unit) + amount, unit);
 	
 	return result;
 };
@@ -151,7 +257,7 @@ Area.prototype.subArea = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 	
-	result = new Area( myself.getArea(myself.Distance, unit) - amount, unit);
+	result = new Area( myself.getArea(myself.area, unit) - amount, unit);
 	
 	return result;
 };
@@ -172,7 +278,7 @@ Area.prototype.mulArea = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 		
-	result = new Area( myself.getArea(myself.Distance, unit) * amount, unit);		
+	result = new Area( myself.getArea(myself.area, unit) * amount, unit);		
 	
 	return result;
 };
@@ -194,7 +300,7 @@ Area.prototype.divArea = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 		
-		result = new Area( myself.getArea(myself.Distance, unit) / amount, unit);
+		result = new Area( myself.getArea(myself.area, unit) / amount, unit);
 		
 	return result;
 };

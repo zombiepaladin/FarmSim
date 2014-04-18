@@ -5,6 +5,12 @@
 		<title>Smart Farm Sim! Alpha</title>
         <link rel="shortcut icon" href="http://snap.berkeley.edu/fav3.gif" type="image/gif">
 		
+		<!-- Custom -->
+		<script type="text/javascript" src="size/area.js"></script>
+		<script type="text/javascript" src="size/length.js"></script>
+		<script type="text/javascript" src="size/mass.js"></script>
+		<script type="text/javascript" src="size/volume.js"></script>
+		
 		<!-- Morphic -->
 		<script type="text/javascript" src="morphic.js"></script>
 		
@@ -27,6 +33,9 @@
 		<script type="text/javascript" src="objects.js"></script>
 		<script type="text/javascript" src="lists.js"></script>
 		
+		<script type="text/javascript" src="sizereporterblockmorph.js"></script>
+		
+		
 		<!-- Simulator -->
 		<!--
 		<script type="text/javascript" src="sim/sprites/crop_sprite_morph.js"></script>
@@ -42,18 +51,18 @@
 		
 		
 		<!-- Gui -->
-		
+		<!--
 		<script type="text/javascript" src="gui.js"></script>
 		<script type="text/javascript" src="gui/script_editor_morph.js"></script>
 		<script type="text/javascript" src="gui/description_editor_morph.js"></script>
 		<script type="text/javascript" src="gui/sprite_corral_morph.js"></script>
 		<script type="text/javascript" src="gui/sprite_editor_morph.js"></script>
-		<!--<script type="text/javascript" src="gui/icons/sprite_icon_morph.js"></script>
+		<script type="text/javascript" src="gui/icons/sprite_icon_morph.js"></script>
 		<script type="text/javascript" src="gui/icons/crop_sprite_icon_morph.js"></script>
 		<script type="text/javascript" src="gui/icons/soil_sprite_icon_morph.js"></script>
 		<script type="text/javascript" src="gui/icons/weather_sprite_icon_morph.js"></script>
 		<script type="text/javascript" src="gui/icons/pest_sprite_icon_morph.js"></script>
-		<script type="text/javascript" src="gui/icons/disease_sprite_icon_morph.js"></script>-->
+		<script type="text/javascript" src="gui/icons/disease_sprite_icon_morph.js"></script>
 		<script type="text/javascript" src="gui/time_control_morph.js"></script>		
 		
 		
@@ -63,8 +72,9 @@
 		<script type="text/javascript" src="system_models\weathers.js"></script>
 		<script type="text/javascript" src="system_models\pests.js"></script>
 		<script type="text/javascript" src="system_models\diseases.js"></script>
-		<script type="text/javascript" src="farmops.js"></script>
-		<script type="text/javascript" src="simulator.js"></script>
+		<script type="text/javascript" src="system_models\farms.js"></script>-->
+		<script type="text/javascript" src="system_models\operations.js"></script>
+		<!-- <script type="text/javascript" src="simulator.js"></script> -->
 	
 		
 		<script type="text/javascript" src="paint.js"></script>
@@ -79,6 +89,10 @@
 		<script type="text/javascript">
 			var world;
 			var system;
+			var block1;
+			var button;
+			
+			var ResultText;
 			
 			window.onload = function () {
 				
@@ -89,10 +103,32 @@
 				system.setPosition( world.topLeft() );
 				system.setWidth( 1024 );
 				system.setHeight( 680 );
+
+				block1 = new SizeReporterBlockMorph(Volume);
+				block1.isDraggable = true;
+				system.add(block1);
+				
+				ResultText = new StringMorph("0");
+				system.add( ResultText );
+				ResultText.setPosition( new Point( 5,5));
+				
+				
+				button = new ToggleButtonMorph(  [new Color( 255, 0, 0) , new Color( 0, 255,0), new Color( 0,0,255) ],
+												system,
+												function(){ 
+																if(ResultText) { ResultText.destroy(); }
+																ResultText = new StringMorph(block1.evaluate().toString());
+																system.add(ResultText);
+																ResultText.setPosition( new Point( 5, 5));
+															},
+												"Test");
+												
+				system.add( button);
+				button.setPosition( new Point( 300, 200) );
+				
+				block1.setPosition( new Point( 50, 50) );
 				
 				world.add( system );
-				
-				
 				setInterval(loop, 1);
 			};
 			function loop() {

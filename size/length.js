@@ -1,11 +1,63 @@
 
+var Length;
 
 
+Length.units = { 
+			      kilometer : "km", // kilometer
+				  meter     : "m",  // meter
+ 				  feet      : "ft", // foot
+				  yard      : "yd", // yard
+				  mile      : "mi"  // mile
+			   };
 
-// kilometer, meter, centimeter, milimeter, inch, foot, yard, mile
-Length.units = { "km", "m", "ft", "yd", "mi" };
+Length.baseUnit = Length.units.ft;
 
-Length.baseUnit = "ft";
+/*
+ * Author: Byron Wheeler
+ *
+ * Desc: This global function will return a length amount in the
+ * specified units.
+ *
+ * Params:	
+ *  amount - the amount of the unit passed in.
+ *  unit - The unit of the returned quantity.
+ *
+ * Return: The area in the specified unit
+ */
+Length.parseToBase = function( amount, unit ){
+	
+	switch( unit )
+	{
+		case "km":
+		
+			amount *= 3280.84;
+			break;
+			
+		case "m":
+			
+			amount *= 3.28084;
+			break;
+			
+		case "ft":
+			
+			amount = amount;
+			break;
+			
+		case "yd":
+			
+			amount *= 3.0;
+			break;
+			
+		case "mi":
+		
+			amount *= 5280.0;
+			break;
+			
+	}
+	
+	return amount;
+};
+
 
 
 function Length( amount, unit ){
@@ -14,7 +66,10 @@ function Length( amount, unit ){
 
 Length.prototype.init = function ( amount, unit ) {
 	
-	var this = myself;
+	var myself = this;
+	
+	myself.length = null;
+	myself.name = "Length";
 	
 	myself.setLength( amount, unit);
 	
@@ -62,7 +117,7 @@ Length.prototype.setLength = function ( amount, unit ) {
 			break;
 		
 	}	
-	myself.Distance = amount;
+	myself.length = amount;
 	
 };
 
@@ -81,37 +136,37 @@ Length.prototype.setLength = function ( amount, unit ) {
 Length.prototype.getLength = function ( unit ) {
 	
 	var myself = this;
-	var len = null;
+	var amount = myself.length;
 	switch( unit )
 	{
 		case "km":
 		
-			len = myself.Distance / 3280.84;
+			amount /= 3280.84;
 			break;
 			
 		case "m":
 			
-			len = myself.Distance / 3.28084;
+			amount /= 3.28084;
 			break;
 			
 		case "ft":
 			
-			len = myself.Distance;
+			amount = amount;
 			break;
 			
 		case "yd":
 			
-			len = myself.Distance / 3.0;
+			amount /= 3.0;
 			break;
 			
 		case "mi":
 		
-			len = myself.Distance / 5280.0;
+			amount /= 5280.0;
 			break;
 			
 	}
 	
-	return len;
+	return amount;
 };
 
 /*
@@ -131,7 +186,7 @@ Length.prototype.addLength = function ( amount, unit ) {
 	var myself = this,
 	    result = null;
 	
-	result = new Length( myself.getLength(myself.Distance, unit) + amount, unit);
+	result = new Length( myself.getLength(myself.length, unit) + amount, unit);
 	
 	return result;
 };
@@ -152,7 +207,7 @@ Length.prototype.subLength = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 	
-	result = new Length( myself.getLength(myself.Distance, unit) - amount, unit);
+	result = new Length( myself.getLength(myself.length, unit) - amount, unit);
 	
 	return result;
 };
@@ -173,7 +228,7 @@ Length.prototype.mulLength = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 		
-	result = new Length( myself.getLength(myself.Distance, unit) * amount, unit);		
+	result = new Length( myself.getLength(myself.length, unit) * amount, unit);		
 	
 	return result;
 };
@@ -195,7 +250,7 @@ Length.prototype.divLength = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 		
-		result = new Length( myself.getLength(myself.Distance, unit) / amount, unit);
+		result = new Length( myself.getLength(myself.length, unit) / amount, unit);
 		
 	return result;
 };

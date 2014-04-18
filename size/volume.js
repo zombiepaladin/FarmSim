@@ -1,11 +1,55 @@
 
+var Volume;
 
 
+Volume.units = {  
+				  meter_cubed     : "m3",  // kilometer cubed
+				  kilometer_cubed : "km3", // meter cubed
+ 				  feet_cubed      : "ft3", // foot cubed
+				  yard_cubed      : "yd3"  // yard cubed
+			   };
 
-// kilometer cubed, meter cubed, foot cubed, yard cubed, 
-Volume.units = {  "m3", "km3", "ft3", "yd3"};
+Volume.baseUnit = Volume.units.feet_cubed;
 
-Volume.baseUnit = "ft3";
+/*
+ * Author: Byron Wheeler
+ *
+ * Desc: This global function will return a mass amount in the
+ * specified units.
+ *
+ * Params:	
+ *  amount - the amount of the unit passed in.
+ *  unit - The unit of the returned quantity.
+ *
+ * Return: The area in the specified unit
+ */
+Volume.parseToBase = function( amount, unit ){
+	
+	switch( unit )
+	{
+		case "m3":
+			
+			amount *= 35.3146667;
+			break;
+			
+		case "km3":
+			
+			amount *= 2.8316846592e-11
+			break;
+			
+		case "ft3":
+			
+			amount = amount;
+			break;
+			
+		case "yd3":
+			
+			amount *= 27;
+			break;		
+	}
+	
+	return amount;
+};
 
 function Volume( amount, unit ){
 	this.init( amount, unit);
@@ -13,7 +57,10 @@ function Volume( amount, unit ){
 
 Volume.prototype.init = function ( amount, unit ) {
 	
-	var this = myself;
+	var myself = this;
+	
+	this.name = "Volume";
+	this.volume = null;
 	
 	myself.setVolume( amount, unit);
 	
@@ -36,12 +83,29 @@ Volume.prototype.setVolume = function ( amount, unit ) {
 	
 	switch( unit )
 	{
-		
+		case "m3":
+			
+			amount *= 35.3146667;
+			break;
+			
+		case "km3":
+			
+			amount *= 2.8316846592e-11
+			break;
+			
+		case "ft3":
+			
+			amount = amount;
+			break;
+			
+		case "yd3":
+			
+			amount *= 27;
+			break;
 	}	
-	myself.Distance = amount;
+	myself.volume = amount;
 	
 };
-
 
 /*
  * Author: Byron Wheeler
@@ -57,13 +121,32 @@ Volume.prototype.setVolume = function ( amount, unit ) {
 Volume.prototype.getVolume = function ( unit ) {
 	
 	var myself = this;
-	var len = null;
+	var amount = myself.volume;
+	
 	switch( unit )
 	{
-				
+		case "m3":
+			
+			amount /= 35.3146667;
+			break;
+			
+		case "km3":
+			
+			amount /= 2.8316846592e-11
+			break;
+			
+		case "ft3":
+			
+			amount = amount;
+			break;
+			
+		case "yd3":
+			
+			amount /= 27;
+			break;		
 	}
 	
-	return len;
+	return amount;
 };
 
 /*
@@ -83,7 +166,7 @@ Volume.prototype.addVolume = function ( amount, unit ) {
 	var myself = this,
 	    result = null;
 	
-	result = new Volume( myself.getVolume(myself.Distance, unit) + amount, unit);
+	result = new Volume( myself.getVolume(myself.volume, unit) + amount, unit);
 	
 	return result;
 };
@@ -104,7 +187,7 @@ Volume.prototype.subVolume = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 	
-	result = new Volume( myself.getVolume(myself.Distance, unit) - amount, unit);
+	result = new Volume( myself.getVolume(myself.volume, unit) - amount, unit);
 	
 	return result;
 };
@@ -125,7 +208,7 @@ Volume.prototype.mulVolume = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 		
-	result = new Volume( myself.getVolume(myself.Distance, unit) * amount, unit);		
+	result = new Volume( myself.getVolume(myself.volume, unit) * amount, unit);		
 	
 	return result;
 };
@@ -142,12 +225,11 @@ Volume.prototype.mulVolume = function ( amount, unit ) {
  *
  * Return: A volume object from the divided volume
  */
-
 Volume.prototype.divVolume = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 		
-		result = new Volume( myself.getVolume(myself.Distance, unit) / amount, unit);
+		result = new Volume( myself.getVolume(myself.volume, unit) / amount, unit);
 		
 	return result;
 };

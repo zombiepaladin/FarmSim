@@ -1,11 +1,67 @@
 
+var Mass;
 
 
+Mass.units = { 
+			   kilogram   : "kg", // kilgram
+			   gram       : "g",  // gram
+			   metric_ton : "mt", // metric ton
+			   ounce      : "oz", // ounce
+			   pound      : "lb", // pound
+			   ton        : "t"   // ton
+			 };
 
-// kilgram, gram, metric ton, ounce, pound, ton
-Mass.units = { "kg", "g", "mt", "oz", "lb", "t" };
+Mass.baseUnit = Mass.units.pound;
 
-Mass.baseUnit = "lb";
+/*
+ * Author: Byron Wheeler
+ *
+ * Desc: This global function will return a mass amount in the
+ * specified units.
+ *
+ * Params:	
+ *  amount - the amount of the unit passed in.
+ *  unit - The unit of the returned quantity.
+ *
+ * Return: The area in the specified unit
+ */
+Mass.parseToBase = function( amount, unit ){
+	
+	switch( unit )
+	{
+		case "kg":
+			
+			amount /= 2.20462;
+			break;
+			
+		case "g":
+			
+			amount /= 0.00220462;
+			break;
+			
+		case "mt":
+			
+			amount /= 2204.62;
+			break;
+			
+		case "oz":
+			
+			amount /= 0.0625;
+			break;
+			
+		case "lb":
+			
+			amount = amount;
+			break;
+			
+		case "ton":
+			
+			amount /= 2000;
+			break;		
+	}
+	
+	return amount;
+};
 
 function Mass( amount, unit ){
 	this.init( amount, unit);
@@ -13,7 +69,10 @@ function Mass( amount, unit ){
 
 Mass.prototype.init = function ( amount, unit ) {
 	
-	var this = myself;
+	var myself = this;
+	
+	myself.name = "Mass";
+	myself.mass = null;
 	
 	myself.setMass( amount, unit);
 	
@@ -36,9 +95,37 @@ Mass.prototype.setMass = function ( amount, unit ) {
 	
 	switch( unit )
 	{
-		
+		case "kg":
+			
+			amount *= 2.20462;
+			break;
+			
+		case "g":
+			
+			amount *= 0.00220462;
+			break;
+			
+		case "mt":
+			
+			amount *= 2204.62;
+			break;
+			
+		case "oz":
+			
+			amount *= 0.0625;
+			break;
+			
+		case "lb":
+			
+			amount = amount;
+			break;
+			
+		case "t":
+			
+			amount *= 2000;
+			break;
 	}	
-	myself.Distance = amount;
+	myself.mass = amount;
 	
 };
 
@@ -57,13 +144,41 @@ Mass.prototype.setMass = function ( amount, unit ) {
 Mass.prototype.getMass = function ( unit ) {
 	
 	var myself = this;
-	var len = null;
+	var amount = myself.mass;
 	switch( unit )
 	{
-				
+		case "kg":
+			
+			amount *= 2.20462;
+			break;
+			
+		case "g":
+			
+			amount *= 0.00220462;
+			break;
+			
+		case "mt":
+			
+			amount *= 2204.62;
+			break;
+			
+		case "oz":
+			
+			amount *= 0.0625;
+			break;
+			
+		case "lb":
+			
+			amount = amount;
+			break;
+			
+		case "ton":
+			
+			amount *= 2000;
+			break;		
 	}
 	
-	return len;
+	return amount;
 };
 
 /*
@@ -83,7 +198,7 @@ Mass.prototype.addMass = function ( amount, unit ) {
 	var myself = this,
 	    result = null;
 	
-	result = new Mass( myself.getMass(myself.Distance, unit) + amount, unit);
+	result = new Mass( myself.getMass(myself.mass, unit) + amount, unit);
 	
 	return result;
 };
@@ -104,7 +219,7 @@ Mass.prototype.subMass = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 	
-	result = new Mass( myself.getMass(myself.Distance, unit) - amount, unit);
+	result = new Mass( myself.getMass(myself.mass, unit) - amount, unit);
 	
 	return result;
 };
@@ -125,7 +240,7 @@ Mass.prototype.mulMass = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 		
-	result = new Mass( myself.getMass(myself.Distance, unit) * amount, unit);		
+	result = new Mass( myself.getMass(myself.mass, unit) * amount, unit);		
 	
 	return result;
 };
@@ -147,7 +262,7 @@ Mass.prototype.divMass = function ( amount, unit ) {
 	var myself = this,
 		result = null;
 		
-		result = new Mass( myself.getMass(myself.Distance, unit) / amount, unit);
+		result = new Mass( myself.getMass(myself.mass, unit) / amount, unit);
 		
 	return result;
 };
