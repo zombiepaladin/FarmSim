@@ -10,6 +10,7 @@
 		<script type="text/javascript" src="size/length.js"></script>
 		<script type="text/javascript" src="size/mass.js"></script>
 		<script type="text/javascript" src="size/volume.js"></script>
+		<script type="text/javascript" src="patch.js"></script>
 		
 		<!-- Morphic -->
 		<script type="text/javascript" src="morphic.js"></script>
@@ -33,7 +34,8 @@
 		<script type="text/javascript" src="objects.js"></script>
 		<script type="text/javascript" src="lists.js"></script>
 		
-		<script type="text/javascript" src="sizereporterblockmorph.js"></script>
+		<script type="text/javascript" src="blocks/size_reporter_block_morph.js"></script>
+		<script type="text/javascript" src="blocks/patch_reporter_block_morph.js"></script>
 		
 		
 		<!-- Simulator -->
@@ -105,7 +107,7 @@
 				system.setHeight( 680 );
 
 				block1 = new SizeReporterBlockMorph(Volume);
-				block1.isDraggable = true;
+				//block1.isDraggable = true;
 				system.add(block1);
 				
 				ResultText = new StringMorph("0");

@@ -19,7 +19,7 @@ Area.baseUnit = Area.units.feet_squared;
 /*
  * Author: Byron Wheeler
  *
- * Desc: This global unction will return an area amount in the
+ * Desc: This global function will return an area amount in the
  * specified units.
  *
  * Params:	
