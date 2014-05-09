@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/1711/trunk/blocks
+END
+text.js
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/1691/trunk/blocks/text.js
+END
+variables.js
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/1647/trunk/blocks/variables.js
+END
+math.js
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/1711/trunk/blocks/math.js
+END
+procedures.js
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/1648/trunk/blocks/procedures.js
+END
+loops.js
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/1711/trunk/blocks/loops.js
+END
+logic.js
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/1711/trunk/blocks/logic.js
+END
+lists.js
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/1648/trunk/blocks/lists.js
+END
+colour.js
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/1647/trunk/blocks/colour.js
+END

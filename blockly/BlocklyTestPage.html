@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>FarmSim: A customizable farm simulator</title>
+	
+	<script type="text/javascript" src="length.js"></script>
+	<script type="text/javascript" src="area.js"></script>
+	<script type="text/javascript" src="volume.js"></script>
+	<script type="text/javascript" src="mass.js"></script>
+	
+	<script type="text/javascript" src="blockly_compressed.js"></script>
+    <script type="text/javascript" src="blocks_compressed.js"></script>
+	<script type="text/javascript" src="javascript_compressed.js"></script>
+    <script type="text/javascript" src="msg/js/en.js"></script>
+	<script type="text/javascript" src="farmsim_toolbox.js"></script>
+	<script type="text/javascript" src="tractor.js"></script>
+</head>
+<body>
+
+    <p>This is a simple test of generating code from blocks.</p>
+    <p>
+        <button onclick="showCode()">Show JavaScript</button>
+        <button onclick="runCode()">Run JavaScript </button>
+		<button type="submit" name="crops" onclick="openSystem(this.name)"> Crops</button>
+    </p>
+	<div style=" position:relative; height:700px; " >
+		
+		<div id="canvasDiv" style="position:absolute; border:1px solid #000000; top:0; left:0; width: 500px; height: 500px;"">
+			<canvas id="scratchCanvas" height="500" width="500" style="display: none"></canvas>
+			<canvas id="displayCanvas" height="500" width="500" ></canvas>
+		</div>
+		<div id="blocklyDiv" style="position:absolute; top:0; left:510px; width:700px; height:700px;"></div>
+
+	</div>	
+
+
+
+	
+  
+	<xml id="toolbox" style="display: none">
+		<category name="Control">
+		    <block type="controls_if"></block>
+			<block type="controls_repeat_ext">
+				<value name="TIMES">
+					<block type="math_number">
+						<field name="NUM">10</field>
+					</block>
+				</value>
+			</block>
+			<block type="controls_whileUntil"></block>
+			<block type="controls_repeat_ext">
+				<value name="TIMES">
+					<block type="math_number">
+						<field name="NUM">10</field>
+					</block>
+				</value>
+			</block>
+			<block type="controls_whileUntil"></block>
+			<block type="controls_for">
+				<value name="FROM">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+				<value name="TO">
+					<block type="math_number">
+						<field name="NUM">10</field>
+					</block>
+				</value>
+				<value name="BY">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+			</block>
+			<block type="controls_forEach"></block>
+			<block type="controls_flow_statements"></block>
+		</category>
+		<category name="Logic">
+			<block type="controls_if"></block>
+			<block type="logic_compare"></block>
+			<block type="logic_operation"></block>
+			<block type="logic_negate"></block>
+			<block type="logic_boolean"></block>
+			<block type="logic_ternary"></block>
+		</category>
+		<category name="Math">
+		    <block type="math_number"></block>
+		    <block type="math_arithmetic"></block>
+		    <block type="math_single"></block>
+		    <block type="math_trig"></block>
+		    <block type="math_constant"></block>
+		    <block type="math_number_property"></block>
+		    <block type="math_change">
+				<value name="DELTA">
+				    <block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+		    </block>
+		    <block type="math_round"></block>
+		    <block type="math_on_list"></block>
+		    <block type="math_modulo"></block>
+		    <block type="math_constrain">
+					<value name="LOW">
+				    <block type="math_number">
+						<field name="NUM">1</field>
+				    </block>
+				</value>
+				<value name="HIGH">
+				    <block type="math_number">
+						<field name="NUM">100</field>
+				    </block>
+				</value>
+		    </block>
+		    <block type="math_random_int">
+				<value name="FROM">
+					<block type="math_number">
+						<field name="NUM">1</field>
+					</block>
+				</value>
+				<value name="TO">
+					<block type="math_number">
+						<field name="NUM">100</field>
+					</block>
+				</value>
+			</block>
+		</category>
+		<category name="Text">
+		    <block type="text"></block>
+		    <block type="text_length"></block>
+		    <block type="text_print"></block>
+		</category>
+		<category name="Custom">
+			<!-- insert custom blocks here -->
+			<block type="move_forward"></block>
+			<block type="turn"></block>
+			<block type="move_to"></block>
+		</category>
+		<category name="Data">
+			<block type="length_type"></block>
+			<block type="area_type"></block>
+			<block type="volume_type"></block>
+			<block type="mass_type"></block>
+		</category>
+    </xml>
+  
+  <!-- put the blockly div window here -->
+  <script type="text/javascript">
+    Blockly.inject(document.getElementById('blocklyDiv'),
+        {path: './', toolbox: document.getElementById('toolbox')});
+  
+    function showCode() {
+      // Generate JavaScript code and display it.
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      var code = Blockly.JavaScript.workspaceToCode();
+      alert(code);
+    }
+
+    function runCode() {
+	/*	Tractor.execute();*/
+		
+      // Generate JavaScript code and run it.
+      window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code = Blockly.JavaScript.workspaceToCode();
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        eval(code);
+      } catch (e) {
+        alert(e);
+      }
+	  Tractor.execute();
+    }
+
+	function openSystem(clicked_name) {
+		switch( clicked_name)
+		{
+			case "crops":
+				window.open("cropsystem.html", "_self")
+		}
+	}
+	
+	</script>
+  
+</body>
+</html>

@@ -263,7 +263,7 @@ FarmMorph.prototype.mouseDownLeft = function( pos ) {
 			
 		break;
 		
-		case "dragging":
+		case "dragging":	
 		case "moving" :
 			myself.fieldState = "idle";
 		break;

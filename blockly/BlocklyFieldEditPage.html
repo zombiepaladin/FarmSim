@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>FarmSim: A customizable farm simulator</title>
+	
+	<script type="text/javascript" src="FieldEditor.js"></script>
+	
+	<!--
+	<script type="text/javascript" src="length.js"></script>
+	<script type="text/javascript" src="area.js"></script>
+	<script type="text/javascript" src="volume.js"></script>
+	<script type="text/javascript" src="mass.js"></script>
+	
+	<script type="text/javascript" src="blockly_compressed.js"></script>
+    <script type="text/javascript" src="blocks_compressed.js"></script>
+	<script type="text/javascript" src="javascript_compressed.js"></script>
+    <script type="text/javascript" src="msg/js/en.js"></script>
+	<script type="text/javascript" src="farmsim_toolbox.js"></script>
+	<script type="text/javascript" src="tractor.js"></script>
+	-->
+	
+</head>
+<body onLoad="init()">
+
+    <p>This is a test page for generating the points in a field/farm.</p>
+	<button onclick="farm.addNewField()">Add Field</button>	
+	<button onclick="farm.reset()">Reset</button>
+	<button onclick="farm.removeField()">Remove Field</button>
+	<button onclick="farm.removeCorner()">Remove Corner</button>
+	<button onclick="farm.exportFarm()"  >Export</button>
+	<a id="download" download="AbdiasCanvasDemo.png"></a>
+	
+	<p> Upload a background image. </p>
+	<input type="file" id="imageLoader" name="imageLoader"/>
+
+	<div style=" position:relative; height:700px; " >
+		
+		<div id="canvasDiv" style=" border:1px solid #000000;  width: 650px; height: 650px;"">
+			
+			<canvas id="displayCanvas"    style="z-index: 2; position:absolute; top:0; left:0;" height="650" width="650" ></canvas>
+			<canvas id="topgroundCanvas" style="z-index: 3; position:absolute; top:0; left:0;" height="650" width="650" ></canvas>
+			<canvas id="backgroundCanvas" style="z-index: 1; position:absolute; top:0; left:0;" height="650" width="650" ></canvas>
+		</div>
+
+		
+
+	</div>
+
+		
+
+</body>
+
+<script>
+	var farm;
+	function init() {
+		farm = new Farm();
+		var canvas = document.getElementById("topgroundCanvas");
+		var imageLoader = document.getElementById("imageLoader");
+		
+		canvas.addEventListener("mousedown", doMouseDown, false);
+		canvas.addEventListener("mousemove", doMouseMove, false);
+		canvas.addEventListener("click", doMouseClick, false);
+		canvas.addEventListener("mouseup", doMouseClickUp, false);
+		canvas.addEventListener("contextmenu", doContextMenu, false);
+
+		imageLoader.addEventListener('change', doHandleImage, false);
+	};
+	
+	function doMouseDown(event) {
+
+		farm.doMouseDown(event);
+	};
+	
+	function doMouseMove(event) {
+
+		farm.doMouseMove(event)
+	};
+	function doMouseClick(event) {
+
+	};
+	function doMouseClickUp(event) {
+
+		farm.doMouseUp(event);
+	};
+	
+	function doContextMenu(event){
+		farm.doContextMenu(event);
+	};
+	
+	function doHandleImage(event) {
+		farm.doHandleImage(event);
+	};
+</script>
+
+
+</html>

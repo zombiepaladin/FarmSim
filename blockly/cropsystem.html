@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>FarmSim: A customizable farm simulator</title>
+	<script type="text/javascript" src="blockly_compressed.js"></script>
+    <script type="text/javascript" src="blocks_compressed.js"></script>
+	<script type="text/javascript" src="javascript_compressed.js"></script>
+    <script type="text/javascript" src="msg/js/en.js"></script>
+</head>
+<body>
+
+    <p>Design a new crop here</p>
+    <p>
+        <button onclick="showCode()">Show JavaScript</button>
+        <button onclick="runCode()">Run JavaScript</button>
+		<button type="submit" name="crops" onclick="openSystem(this.name)"> Crops</button>
+    </p>
+    <div id="blocklyDiv" style="height: 700px; width: 800;"></div>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <!-- put the blockly dev window here -->
+  <script type="text/javascript">
+ 
+    function showCode() {
+      // Generate JavaScript code and display it.
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      var code = Blockly.JavaScript.workspaceToCode();
+      alert(code);
+    }
+
+    function runCode() {
+      // Generate JavaScript code and run it.
+      window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code = Blockly.JavaScript.workspaceToCode();
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        eval(code);
+      } catch (e) {
+        alert(e);
+      }
+    } 
+	</script>
+  
+</body>

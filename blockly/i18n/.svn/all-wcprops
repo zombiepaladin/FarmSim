@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 29
+/svn/!svn/ver/1688/trunk/i18n
+END
+common.py
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/1674/trunk/i18n/common.py
+END
+create_messages.py
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/1674/trunk/i18n/create_messages.py
+END
+dedup_json.py
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/1624/trunk/i18n/dedup_json.py
+END
+tests.py
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/1624/trunk/i18n/tests.py
+END
+status.py
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/1624/trunk/i18n/status.py
+END
+xliff_to_json.py
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/1688/trunk/i18n/xliff_to_json.py
+END
+json_to_js.py
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/1674/trunk/i18n/json_to_js.py
+END
+js_to_json.py
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/1624/trunk/i18n/js_to_json.py
+END
